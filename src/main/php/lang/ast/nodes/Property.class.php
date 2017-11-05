@@ -1,13 +1,13 @@
 <?php namespace lang\ast\nodes;
 
-class PropertyValue extends Annotated implements Member {
+class Property extends Annotated implements Member {
   public $name, $modifiers, $expression, $type, $annotations, $comment;
 
-  public function __construct($name, $modifiers, $expression, $type, $annotations, $comment) {
-    $this->name= $name;
+  public function __construct($modifiers, $name, $type, $expression= null, $annotations= [], $comment= null) {
     $this->modifiers= $modifiers;
-    $this->expression= $expression;
+    $this->name= $name;
     $this->type= $type;
+    $this->expression= $expression;
     $this->annotations= $annotations;
     $this->comment= $comment;
   }
