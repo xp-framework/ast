@@ -19,7 +19,6 @@ Register transformations to be used by the [XP Compiler](https://github.com/xp-f
 use lang\ast\transform\Transformations;
 use lang\ast\nodes\Method;
 use lang\ast\nodes\Signature;
-use lang\ast\nodes\Parameter;
 use lang\ast\Code;
 
 Transformations::register('class', function($class) {
