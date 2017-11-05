@@ -20,7 +20,7 @@ class Node implements Element, \lang\Value {
   public function led($left) {
     return $this->symbol->led
       ? $this->symbol->led->__invoke($this, $left)
-      : $this->symbol->error('Missing operator')
+      : $this
     ;
   }
 
