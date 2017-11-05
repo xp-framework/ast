@@ -17,4 +17,24 @@ class Method extends Annotated implements Member {
 
   /** @return string */
   public function lookup() { return $this->name.'()'; }
+
+  /**
+   * Prepend a node to the method body
+   *
+   * @param  lang.ast.Node $node
+   * @return void
+   */
+  public function prepend($node) {
+    array_unshift($this->body, $node);
+  }
+
+  /**
+   * Append a node to the method body
+   *
+   * @param  lang.ast.Node $node
+   * @return void
+   */
+  public function append($node) {
+    $this->body[]= $node;
+  }
 }
