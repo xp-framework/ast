@@ -37,3 +37,20 @@ Transformations::register('class', function($class) {
   return $class;
 });
 ```
+
+When compiling the following sourcecode, getters for the `id` and `name` members will automatically be added.
+
+```php
+<?php
+
+<<getters>>
+class Person {
+  private int $id;
+  private string $name;
+
+  public function __construct(int $id, string $name) {
+    $this->id= $id;
+    $this->name= $name;
+  }
+}
+```
