@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\nodes\ClassValue;
-use lang\ast\nodes\MethodValue;
+use lang\ast\nodes\Method;
 use lang\ast\nodes\Signature;
 use lang\ast\Node;
 
@@ -10,7 +10,7 @@ class ClassTest extends \unittest\TestCase {
 
   /** @return void */
   public function setUp() {
-    $this->method= new MethodValue('toString', [], new Signature([], null), [], [], null);
+    $this->method= new Method([], 'toString', new Signature([], null), [], [], null);
   }
 
   #[@test]
@@ -27,7 +27,7 @@ class ClassTest extends \unittest\TestCase {
 
   #[@test]
   public function overwrite() {
-    $overwritten= new MethodValue('toString', [], new Signature([], null), [], [], 'Overwritten');
+    $overwritten= new Method([], 'toString', new Signature([], null), [], [], 'Overwritten');
 
     $fixture= new ClassValue('Test', [], null, [], ['toString()' => new Node(null, 'method', $this->method)], [], null);
     $fixture->overwrite($overwritten);
@@ -36,7 +36,7 @@ class ClassTest extends \unittest\TestCase {
 
   #[@test]
   public function inject() {
-    $overwritten= new MethodValue('toString', [], new Signature([], null), [], [], 'Overwritten');
+    $overwritten= new Method([], 'toString', new Signature([], null), [], [], 'Overwritten');
 
     $fixture= new ClassValue('Test', [], null, [], ['toString()' => new Node(null, 'method', $this->method)], [], null);
     $fixture->inject($overwritten);

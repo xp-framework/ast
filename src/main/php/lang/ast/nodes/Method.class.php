@@ -1,14 +1,14 @@
 <?php namespace lang\ast\nodes;
 
-class MethodValue extends Annotated implements Member {
+class Method extends Annotated implements Member {
   public $name, $modifiers, $signature, $annotations, $body, $comment;
 
-  public function __construct($name, $modifiers, $signature, $annotations, $body, $comment) {
+  public function __construct($modifiers, $name, $signature, $body= null, $annotations= [], $comment= null) {
     $this->name= $name;
     $this->modifiers= $modifiers;
     $this->signature= $signature;
-    $this->annotations= $annotations;
     $this->body= $body;
+    $this->annotations= $annotations;
     $this->comment= $comment;
   }
 
