@@ -5,7 +5,11 @@ class Code implements Element {
   public $line= -1;
   public $value;
 
-  public function __construct($value) {
+  public function __construct($value= '') {
     $this->value= $value;
+  }
+
+  public function append($value) {
+    $this->value.= $value;
   }
 }
