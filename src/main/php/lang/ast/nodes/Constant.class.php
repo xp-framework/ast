@@ -1,11 +1,11 @@
 <?php namespace lang\ast\nodes;
 
-class ConstValue extends Value implements Member {
+class Constant extends Value implements Member {
   public $name, $modifiers, $expression;
 
-  public function __construct($name, $modifiers, $expression) {
-    $this->name= $name;
+  public function __construct($modifiers, $name, $expression) {
     $this->modifiers= $modifiers;
+    $this->name= $name;
     $this->expression= $expression;
   }
 
