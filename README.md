@@ -25,8 +25,8 @@ Transformations::register('class', function($class) {
   if ($class->value->annotation('getters')) {
     foreach ($class->value->properties() as $property) {
       $class->value->inject(new Method(
-        $property->name,
         ['public'],
+        $property->name,
         new Signature([], $property->type),
         [new Code('return $this->'.$property->name.';')]
       ));
