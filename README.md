@@ -28,9 +28,7 @@ Transformations::register('class', function($class) {
         $property->name,
         ['public'],
         new Signature([], $property->type),
-        [],
-        [new Code('return $this->'.$property->name.';')],
-        null
+        [new Code('return $this->'.$property->name.';')]
       ));
     }
   }
