@@ -10,3 +10,18 @@ XP AST
 [![Latest Stable Version](https://poser.pugx.org/xp-framework/ast/version.png)](https://packagist.org/packages/xp-framework/ast)
 
 Abstract syntax tree library used for [Compile-time metaprogramming](https://github.com/xp-framework/rfc/issues/327).
+
+Example
+-------
+Register transformations to be used by the [XP Compiler](https://github.com/xp-framework/compiler). This can be done in your library's `module.xp`, for instance.
+
+```php
+use lang\ast\transform\Transformations;
+
+Transformations::register('class', function($class) {
+  if (array_key_exists('value', $class->value->annotations)) {
+    // Transform AST
+  }
+  return $class;
+});
+```
