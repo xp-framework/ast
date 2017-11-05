@@ -3,12 +3,14 @@
 use util\Objects;
 
 class Node implements Element, \lang\Value {
-  public $symbol;
-  public $value= null, $kind= null, $line= null;
+  public $symbol, $value, $kind;
+  public $line= -1;
 
   /** @param lang.ast.Symbol */
-  public function __construct(Symbol $symbol) {
+  public function __construct(Symbol $symbol= null, $kind= null, $value= null) {
     $this->symbol= $symbol;
+    $this->kind= $kind;
+    $this->value= $value;
   }
 
   /**

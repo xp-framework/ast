@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class MethodValue extends Annotated {
+class MethodValue extends Annotated implements Member {
   public $name, $modifiers, $signature, $annotations, $body, $comment;
 
   public function __construct($name, $modifiers, $signature, $annotations, $body, $comment) {
@@ -11,4 +11,10 @@ class MethodValue extends Annotated {
     $this->body= $body;
     $this->comment= $comment;
   }
+
+  /** @return string */
+  public function kind() { return 'method'; }
+
+  /** @return string */
+  public function lookup() { return $this->name.'()'; }
 }
