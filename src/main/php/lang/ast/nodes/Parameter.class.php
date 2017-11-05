@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class Parameter extends Value {
+class Parameter extends Annotated {
   public $name, $reference, $type, $variadic, $promote, $default, $annotations;
 
   public function __construct($name, $reference, $type, $variadic, $promote, $default, $annotations) {

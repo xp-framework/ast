@@ -19,7 +19,7 @@ Register transformations to be used by the [XP Compiler](https://github.com/xp-f
 use lang\ast\transform\Transformations;
 
 Transformations::register('class', function($class) {
-  if (array_key_exists('value', $class->value->annotations)) {
+  if ($class->value->annotation('value')) {
     // Transform AST
   }
   return $class;

@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class PropertyValue extends Value {
+class PropertyValue extends Annotated {
   public $name, $modifiers, $expression, $type, $annotations, $comment;
 
   public function __construct($name, $modifiers, $expression, $type, $annotations, $comment) {

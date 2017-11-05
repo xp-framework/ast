@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class ClassValue extends Value {
+class ClassValue extends Annotated {
   public $name, $modifiers, $parent, $implements, $body, $annotations, $comment;
 
   public function __construct($name, $modifiers, $parent, $implements, $body, $annotations, $comment) {
