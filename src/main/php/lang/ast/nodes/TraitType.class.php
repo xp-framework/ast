@@ -1,11 +1,11 @@
 <?php namespace lang\ast\nodes;
 
-class TraitValue extends Value {
+class TraitType extends ValueType {
   public $name, $modifiers, $body, $annotations, $comment;
 
-  public function __construct($name, $modifiers, $body, $annotations, $comment) {
-    $this->name= $name;
+  public function __construct($modifiers, $name, $body, $annotations= [], $comment= null) {
     $this->modifiers= $modifiers;
+    $this->name= $name;
     $this->body= $body;
     $this->annotations= $annotations;
     $this->comment= $comment;

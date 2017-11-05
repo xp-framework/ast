@@ -1,9 +1,9 @@
 <?php namespace lang\ast\nodes;
 
-class InterfaceValue extends Value {
+class InterfaceType extends ValueType {
   public $name, $modifiers, $parents, $body, $annotations, $comment;
 
-  public function __construct($name, $modifiers, $parents, $body, $annotations, $comment) {
+  public function __construct($modifiers, $name, $parents, $body, $annotations= [], $comment= null) {
     $this->name= $name;
     $this->modifiers= $modifiers;
     $this->parents= $parents;
