@@ -12,7 +12,7 @@ abstract class Annotated extends Value {
    */
   public function annotation($name) {
     return array_key_exists($name, $this->annotations)
-      ? new Annotation($this->annotations[$name])
+      ? new Annotation($name, $this->annotations[$name])
       : null
     ;
   }
