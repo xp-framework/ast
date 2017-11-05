@@ -17,10 +17,23 @@ Register transformations to be used by the [XP Compiler](https://github.com/xp-f
 
 ```php
 use lang\ast\transform\Transformations;
+use lang\ast\nodes\Method;
+use lang\ast\nodes\Signature;
+use lang\ast\nodes\Parameter;
+use lang\ast\Code;
 
 Transformations::register('class', function($class) {
-  if ($class->value->annotation('value')) {
-    // Transform AST
+  if ($class->value->annotation('getters')) {
+    foreach ($class->value->properties() as $property) {
+      $class->value->inject(new Method(
+        $property->name,
+        ['public'],
+        new Signature([], $property->type),
+        [],
+        [new Code('return $this->'.$property->name.';')],
+        null
+      ));
+    }
   }
   return $class;
 });
