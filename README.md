@@ -32,7 +32,7 @@ Transformations::register('class', function($class) {
       ));
     }
   }
-  return $class;
+  yield $class;
 });
 ```
 
