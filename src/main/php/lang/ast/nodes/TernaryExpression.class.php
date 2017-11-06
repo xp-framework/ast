@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class TernaryValue extends Value {
+class TernaryExpression extends Value {
   public $condition, $expression, $otherwise;
 
   public function __construct($condition, $expression, $otherwise) {

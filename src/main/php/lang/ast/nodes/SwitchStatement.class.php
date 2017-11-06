@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class SwitchValue extends Value {
+class SwitchStatement extends Value {
   public $expression, $cases;
 
   public function __construct($expression, $cases) {

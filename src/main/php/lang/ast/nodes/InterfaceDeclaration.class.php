@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class InterfaceType extends ValueType {
+class InterfaceDeclaration extends TypeDeclaration {
   public $name, $modifiers, $parents, $body, $annotations, $comment;
 
   public function __construct($modifiers, $name, $parents, $body, $annotations= [], $comment= null) {

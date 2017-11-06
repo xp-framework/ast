@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class ForeachValue extends Value {
+class ForeachLoop extends Value {
   public $expression, $key, $value, $body;
 
   public function __construct($expression, $key, $value, $body) {

@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class IfValue extends Value {
+class IfStatement extends Value {
   public $expression, $body, $otherwise;
 
   public function __construct($expression, $body, $otherwise) {

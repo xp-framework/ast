@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class ClassType extends ValueType {
+class ClassDeclaration extends TypeDeclaration {
   public $name, $modifiers, $parent, $implements, $body, $annotations, $comment;
 
   public function __construct($modifiers, $name, $parent, $implements, $body, $annotations= [], $comment= null) {

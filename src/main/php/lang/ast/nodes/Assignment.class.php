@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class AssignmentValue extends Value {
+class Assignment extends Value {
   public $variable, $operator, $expression;
 
   public function __construct($variable, $operator, $expression) {

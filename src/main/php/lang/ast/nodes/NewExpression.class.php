@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class NewValue extends Value {
+class NewExpression extends Value {
   public $type, $arguments;
 
   public function __construct($type, $arguments) {

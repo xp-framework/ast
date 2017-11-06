@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class LambdaValue extends Value {
+class LambdaExpression extends Value {
   public $signature, $body;
 
   public function __construct($signature, $body) {

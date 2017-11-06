@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class DoValue extends Value {
+class CaseLabel extends Value {
   public $expression, $body;
 
   public function __construct($expression, $body) {

@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class CastValue extends Value {
+class CastExpression extends Value {
   public $type, $expression;
 
   public function __construct($type, $expression) {

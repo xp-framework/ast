@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class NewClassValue extends Value {
+class NewClassExpression extends Value {
   public $definition, $arguments;
 
   public function __construct($definition, $arguments) {

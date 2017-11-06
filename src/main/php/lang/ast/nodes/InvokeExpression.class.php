@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class InvokeValue extends Value {
+class InvokeExpression extends Value {
   public $expression, $arguments;
 
   public function __construct($expression, $arguments) {

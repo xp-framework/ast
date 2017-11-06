@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class InstanceValue extends Value {
+class InstanceExpression extends Value {
   public $expression, $member;
 
   public function __construct($expression, $member) {

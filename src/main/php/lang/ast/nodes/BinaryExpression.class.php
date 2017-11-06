@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class BinaryValue extends Value {
+class BinaryExpression extends Value {
   public $left, $operator, $right;
 
   public function __construct($left, $operator, $right) {

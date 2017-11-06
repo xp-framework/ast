@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class YieldValue extends Value {
+class YieldExpression extends Value {
   public $key, $value;
 
   public function __construct($key, $value) {

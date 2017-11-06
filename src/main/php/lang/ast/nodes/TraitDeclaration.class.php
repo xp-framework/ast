@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class TraitType extends ValueType {
+class TraitDeclaration extends TypeDeclaration {
   public $name, $modifiers, $body, $annotations, $comment;
 
   public function __construct($modifiers, $name, $body, $annotations= [], $comment= null) {

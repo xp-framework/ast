@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class FunctionValue extends Value {
+class FunctionDeclaration extends Value {
   public $name, $signature, $body;
 
   public function __construct($name, $signature, $body) {

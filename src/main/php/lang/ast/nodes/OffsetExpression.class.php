@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class OffsetValue extends Value {
+class OffsetExpression extends Value {
   public $expression, $offset;
 
   public function __construct($expression, $offset) {

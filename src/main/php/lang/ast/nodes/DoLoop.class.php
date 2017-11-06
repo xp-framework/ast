@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class CaseValue extends Value {
+class DoLoop extends Value {
   public $expression, $body;
 
   public function __construct($expression, $body) {

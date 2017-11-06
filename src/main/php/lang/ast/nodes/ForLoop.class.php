@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class ForValue extends Value {
+class ForLoop extends Value {
   public $initialization, $condition, $loop, $body;
 
   public function __construct($initialization, $condition, $loop, $body) {

@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class UseValue extends Value {
+class UseExpression extends Value {
   public $types, $aliases;
 
   public function __construct($types, $aliases) {

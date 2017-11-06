@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class ClosureValue extends Value {
+class ClosureExpression extends Value {
   public $signature, $use, $body;
 
   public function __construct($signature, $use, $body) {

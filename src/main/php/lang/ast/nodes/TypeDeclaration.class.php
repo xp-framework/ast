@@ -2,7 +2,7 @@
 
 use lang\ast\Node;
 
-abstract class ValueType extends Annotated {
+abstract class TypeDeclaration extends Annotated {
 
   /**
    * Overwrite a given member; if it is already present, replace.

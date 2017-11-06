@@ -1,6 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-class ScopeValue extends Value {
+class ScopeExpression extends Value {
   public $type, $member;
 
   public function __construct($type, $member) {
