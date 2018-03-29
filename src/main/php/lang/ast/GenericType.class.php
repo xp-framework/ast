@@ -23,6 +23,6 @@ class GenericType extends Type {
     foreach ($this->components as $type) {
       $n.= ', '.$type->name();
     }
-    return $this->base.'<'.substr($n, 2).'>';
+    return strtr(ltrim($this->base, '\\'), '\\', '.').'<'.substr($n, 2).'>';
   }
 }
