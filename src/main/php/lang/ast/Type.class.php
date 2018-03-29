@@ -16,7 +16,10 @@ class Type implements \lang\Value {
 
   /** @return string */
   public function name() {
+    static $map= ['mixed' => 'var'];
+
     $name= strtr(ltrim($this->literal, '?\\'), '\\', '.');
+    isset($map[$name]) && $name= $map[$name];
     return '?' === $this->literal{0} ? '?'.$name : $name;
   }
 

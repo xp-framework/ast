@@ -12,6 +12,7 @@ class TypeTest extends \unittest\TestCase {
   #[@test, @values([
   #  'string',
   #  '?string',
+  #  'mixed',
   #  'array',
   #  'array<int>',
   #  'array<string, string>',
@@ -26,6 +27,7 @@ class TypeTest extends \unittest\TestCase {
   #[@test, @values([
   #  ['string', 'string'],
   #  ['?string', '?string'],
+  #  ['mixed', 'var'],
   #  ['array', 'array'],
   #  ['array<int>', 'array<int>'],
   #  ['array<string, string>', 'array<string, string>'],
