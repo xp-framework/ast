@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 1.3.0 / 2018-04-02
+
+* Added `lang.ast.nodes.UsingStatement` in preparation for adding support
+  for the `using` statement in xp-framework/compiler#33
+  (@thekid)
+
 ## 1.2.0 / 2018-03-30
 
 * Added type to class constants - @thekid
