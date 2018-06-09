@@ -3,6 +3,13 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 1.4.0 / 2018-06-09
+
+* Added comment member to `lang.ast.Node`.This will make it possible
+  to attach comments to nodes; which in turn is a crucial part of
+  reconstructing the code from the parse tree
+  (@thekid)
+
 ## 1.3.0 / 2018-04-02
 
 * Added `lang.ast.nodes.UsingStatement` in preparation for adding support

@@ -1,12 +1,20 @@
 <?php namespace lang\ast;
 
+use lang\Value;
 use util\Objects;
 
-class Node implements Element, \lang\Value {
+class Node implements Element, Value {
   public $symbol, $value, $kind;
+  public $comment= null;
   public $line= -1;
 
-  /** @param lang.ast.Symbol */
+  /**
+   * Creates a new node
+   *
+   * @param lang.ast.Symbol $symbol
+   * @param string $kind
+   * @param var $value
+   */
   public function __construct(Symbol $symbol= null, $kind= null, $value= null) {
     $this->symbol= $symbol;
     $this->kind= $kind;
@@ -19,10 +27,7 @@ class Node implements Element, \lang\Value {
    * @return lang.ast.Node
    */
   public function nud() {
-    return $this->symbol->nud
-      ? $this->symbol->nud->__invoke($this)
-      : $this
-    ;
+    return $this->symbol->nud ? $this->symbol->nud->__invoke($this) : $this;
   }
 
   /**
@@ -32,10 +37,7 @@ class Node implements Element, \lang\Value {
    * @return lang.ast.Node
    */
   public function led($left) {
-    return $this->symbol->led
-      ? $this->symbol->led->__invoke($this, $left)
-      : $this
-    ;
+    return $this->symbol->led ? $this->symbol->led->__invoke($this, $left) : $this;
   }
 
   /**
