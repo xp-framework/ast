@@ -1,11 +1,13 @@
 <?php namespace lang\ast;
 
+use lang\Value;
+
 /**
  * Represents a type
  *
  * @test  xp://lang.ast.unittest.TypeTest
  */
-class Type implements \lang\Value {
+class Type implements Value {
   public $literal;
 
   /** @param string $literal */
@@ -20,7 +22,7 @@ class Type implements \lang\Value {
 
     $name= strtr(ltrim($this->literal, '?\\'), '\\', '.');
     isset($map[$name]) && $name= $map[$name];
-    return '?' === $this->literal{0} ? '?'.$name : $name;
+    return '?' === $this->literal[0] ? '?'.$name : $name;
   }
 
   /** @return string */
