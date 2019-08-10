@@ -3,16 +3,9 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 1.5.0 / 2019-08-10
+## 1.4.0 / 2019-08-10
 
 * Made compatible with PHP 7.4 - refrain using `{}` for string offsets
-  (@thekid)
-
-## 1.4.0 / 2018-06-09
-
-* Added comment member to `lang.ast.Node`.This will make it possible
-  to attach comments to nodes; which in turn is a crucial part of
-  reconstructing the code from the parse tree
   (@thekid)
 
 ## 1.3.0 / 2018-04-02
