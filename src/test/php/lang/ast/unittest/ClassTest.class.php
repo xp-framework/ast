@@ -3,9 +3,9 @@
 use lang\ast\nodes\ClassDeclaration;
 use lang\ast\nodes\Method;
 use lang\ast\nodes\Signature;
-use lang\ast\Node;
+use unittest\TestCase;
 
-class ClassTest extends \unittest\TestCase {
+class ClassTest extends TestCase {
   private $method;
 
   /** @return void */
@@ -15,13 +15,13 @@ class ClassTest extends \unittest\TestCase {
 
   #[@test]
   public function method() {
-    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => new Node(null, 'method', $this->method)], [], null);
+    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => $this->method], [], null);
     $this->assertEquals($this->method, $fixture->method('toString'));
   }
 
   #[@test]
   public function methods() {
-    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => new Node(null, 'method', $this->method)], [], null);
+    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => $this->method], [], null);
     $this->assertEquals([$this->method], iterator_to_array($fixture->methods()));
   }
 
@@ -29,7 +29,7 @@ class ClassTest extends \unittest\TestCase {
   public function overwrite() {
     $overwritten= new Method([], 'toString', new Signature([], null), [], [], 'Overwritten');
 
-    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => new Node(null, 'method', $this->method)], [], null);
+    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => $this->method], [], null);
     $fixture->overwrite($overwritten);
     $this->assertEquals($overwritten, $fixture->method('toString'));
   }
@@ -38,7 +38,7 @@ class ClassTest extends \unittest\TestCase {
   public function inject() {
     $overwritten= new Method([], 'toString', new Signature([], null), [], [], 'Overwritten');
 
-    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => new Node(null, 'method', $this->method)], [], null);
+    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => $this->method], [], null);
     $fixture->inject($overwritten);
     $this->assertEquals($this->method, $fixture->method('toString'));
   }

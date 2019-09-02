@@ -3,8 +3,5 @@
 interface Member {
 
   /** @return string */
-  public function kind();
-
-  /** @return string */
   public function lookup();
 }
