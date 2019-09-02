@@ -8,4 +8,12 @@ class CatchStatement extends Value {
     $this->variable= $variable;
     $this->body= $body;
   }
+
+  /** @return iterable */
+  public function children() {
+    yield $this->variable;
+    foreach ($this->body as $element) {
+      yield $element;
+    }
+  }
 }

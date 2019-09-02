@@ -20,9 +20,9 @@ use lang\ast\nodes\{Method, Signature};
 use lang\ast\Code;
 
 Transformations::register('class', function($class) {
-  if ($class->value->annotation('getters')) {
-    foreach ($class->value->properties() as $property) {
-      $class->value->inject(new Method(
+  if ($class->annotation('getters')) {
+    foreach ($class->properties() as $property) {
+      $class->inject(new Method(
         ['public'],
         $property->name,
         new Signature([], $property->type),

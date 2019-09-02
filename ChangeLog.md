@@ -3,6 +3,13 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 2.0.0 / ????-??-??
+
+* Refactored AST to no longer consist of nodes and values but instead
+  simply of values. This makes programmatic AST creation far eaiser,
+  and improves on memory usage.
+  (@thekid)
+
 ## 1.4.0 / 2019-08-10
 
 * Made compatible with PHP 7.4 - refrain using `{}` for string offsets

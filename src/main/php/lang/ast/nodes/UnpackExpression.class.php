@@ -1,11 +1,10 @@
 <?php namespace lang\ast\nodes;
 
-class CastExpression extends Value {
-  public $kind= 'cast';
-  public $type, $expression;
+class UnpackExpression extends Value {
+  public $kind= 'unpack';
+  public $expression;
 
-  public function __construct($type, $expression, $line= -1) {
-    $this->type= $type;
+  public function __construct($expression, $line= -1) {
     $this->expression= $expression;
     $this->line= $line;
   }

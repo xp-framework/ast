@@ -1,6 +1,7 @@
 <?php namespace lang\ast\nodes;
 
 class Signature extends Value {
+  public $kind= 'signature';
   public $parameters, $returns;
 
   public function __construct($parameters= [], $returns= null) {
