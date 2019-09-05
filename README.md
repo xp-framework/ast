@@ -30,7 +30,7 @@ Transformations::register('class', function($class) {
       ));
     }
   }
-  yield $class;
+  return $class;
 });
 ```
 
