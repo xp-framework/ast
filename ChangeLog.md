@@ -5,6 +5,7 @@ XP AST ChangeLog
 
 ## 2.0.0 / ????-??-??
 
+* Merged PR #3: Allow multiple transformations per kind - @thekid
 * **Heads up:** Removed `Symbol` and `Node` classes, which belong to the
   compiler internals now only
   (@thekid)
