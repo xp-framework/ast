@@ -43,7 +43,7 @@ class TransformationsTest extends TestCase {
 
   #[@test]
   public function register_function() {
-    $function= function($class) { return $class; };
+    $function= function($codegen, $class) { return $class; };
 
     $this->register('class', $function);
     $this->assertRegistered([['class' => $function]]);
@@ -51,8 +51,8 @@ class TransformationsTest extends TestCase {
 
   #[@test]
   public function register_two_functions() {
-    $first= function($class) { return $class; };
-    $second= function($class) { $class->annotations['author']= 'Test'; return $class; };
+    $first= function($codegen, $class) { return $class; };
+    $second= function($codegen, $class) { $class->annotations['author']= 'Test'; return $class; };
 
     $this->register('class', $first);
     $this->register('class', $second);

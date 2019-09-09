@@ -19,7 +19,7 @@ use lang\ast\transform\Transformations;
 use lang\ast\nodes\{Method, Signature};
 use lang\ast\Code;
 
-Transformations::register('class', function($class) {
+Transformations::register('class', function($codegen, $class) {
   if ($class->annotation('getters')) {
     foreach ($class->properties() as $property) {
       $class->inject(new Method(

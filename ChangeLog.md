@@ -5,6 +5,9 @@ XP AST ChangeLog
 
 ## 3.0.0 / 2019-09-09
 
+* **Heads up:** Changed transformation API - functions must accept a
+  reference to the code generation process as their first parameter.
+  (@thekid)
 * **Heads up:** Added kind to `UnaryExpression` constructor which is
   either `prefix` or `suffix`, supporting `++$i` as well as `$i++`.
   (@thekid)
