@@ -3,10 +3,10 @@
 use lang\ast\Node;
 
 class UnaryExpression extends Node {
-  public $kind= 'unary';
   public $expression, $operator;
 
-  public function __construct($expression, $operator, $line= -1) {
+  public function __construct($kind, $expression, $operator, $line= -1) {
+    $this->kind= $kind;
     $this->expression= $expression;
     $this->operator= $operator;
     $this->line= $line;

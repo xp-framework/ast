@@ -5,6 +5,9 @@ XP AST ChangeLog
 
 ## 3.0.0 / 2019-09-09
 
+* **Heads up:** Added kind to `UnaryExpression` constructor which is
+  either `prefix` or `suffix`, supporting `++$i` as well as `$i++`.
+  (@thekid)
 * Merged PR #4: Add Node class replacing Element and Value - @thekid
 
 ## 2.0.0 / 2019-09-06
