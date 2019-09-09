@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class LambdaExpression extends Value {
+use lang\ast\Node;
+
+class LambdaExpression extends Node {
   public $kind= 'lambda';
   public $signature, $body;
 

@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class ForeachLoop extends Value {
+use lang\ast\Node;
+
+class ForeachLoop extends Node {
   public $kind= 'foreach';
   public $expression, $key, $value, $body;
 

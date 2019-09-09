@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class YieldExpression extends Value {
+use lang\ast\Node;
+
+class YieldExpression extends Node {
   public $kind= 'yield';
   public $key, $value;
 

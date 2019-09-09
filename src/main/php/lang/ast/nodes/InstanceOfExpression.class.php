@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class InstanceOfExpression extends Value {
+use lang\ast\Node;
+
+class InstanceOfExpression extends Node {
   public $kind= 'instanceof';
   public $expression, $type;
 

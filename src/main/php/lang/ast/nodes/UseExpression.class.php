@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class UseExpression extends Value {
+use lang\ast\Node;
+
+class UseExpression extends Node {
   public $kind= 'use';
   public $types, $aliases;
 

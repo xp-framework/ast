@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class Variable extends Value {
+use lang\ast\Node;
+
+class Variable extends Node {
   public $kind= 'variable';
   public $name;
 

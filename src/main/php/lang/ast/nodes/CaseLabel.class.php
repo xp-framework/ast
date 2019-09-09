@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class CaseLabel extends Value {
+use lang\ast\Node;
+
+class CaseLabel extends Node {
   public $kind= 'case';
   public $expression, $body;
 

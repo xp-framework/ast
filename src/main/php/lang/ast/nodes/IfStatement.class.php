@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class IfStatement extends Value {
+use lang\ast\Node;
+
+class IfStatement extends Node {
   public $kind= 'if';
   public $expression, $body, $otherwise;
 

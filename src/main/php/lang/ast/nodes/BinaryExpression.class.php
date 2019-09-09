@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class BinaryExpression extends Value {
+use lang\ast\Node;
+
+class BinaryExpression extends Node {
   public $kind= 'binary';
   public $left, $operator, $right;
 

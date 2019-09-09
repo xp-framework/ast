@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class UnpackExpression extends Value {
+use lang\ast\Node;
+
+class UnpackExpression extends Node {
   public $kind= 'unpack';
   public $expression;
 

@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class SwitchStatement extends Value {
+use lang\ast\Node;
+
+class SwitchStatement extends Node {
   public $kind= 'switch';
   public $expression, $cases;
 

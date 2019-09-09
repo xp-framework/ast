@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class Braced extends Value {
+use lang\ast\Node;
+
+class Braced extends Node {
   public $kind= 'braced';
   public $expression;
 

@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-abstract class Annotated extends Value {
+use lang\ast\Node;
+
+abstract class Annotated extends Node {
   public $annotations;
 
   /**

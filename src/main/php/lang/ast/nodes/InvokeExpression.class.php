@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class InvokeExpression extends Value {
+use lang\ast\Node;
+
+class InvokeExpression extends Node {
   public $kind= 'invoke';
   public $expression, $arguments;
 

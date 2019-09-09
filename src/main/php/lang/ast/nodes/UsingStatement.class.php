@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class UsingStatement extends Value {
+use lang\ast\Node;
+
+class UsingStatement extends Node {
   public $kind= 'using';
   public $arguments, $body;
 

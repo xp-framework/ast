@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class ScopeExpression extends Value {
+use lang\ast\Node;
+
+class ScopeExpression extends Node {
   public $kind= 'scope';
   public $type, $member;
 

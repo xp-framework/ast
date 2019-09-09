@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class InstanceExpression extends Value {
+use lang\ast\Node;
+
+class InstanceExpression extends Node {
   public $kind= 'instance';
   public $expression, $member;
 

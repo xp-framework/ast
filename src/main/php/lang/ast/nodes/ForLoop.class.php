@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class ForLoop extends Value {
+use lang\ast\Node;
+
+class ForLoop extends Node {
   public $kind= 'for';
   public $initialization, $condition, $loop, $body;
 

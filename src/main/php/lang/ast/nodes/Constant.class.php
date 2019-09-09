@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class Constant extends Value implements Member {
+use lang\ast\Node;
+
+class Constant extends Node implements Member {
   public $kind= 'const';
   public $name, $modifiers, $expression, $type;
 

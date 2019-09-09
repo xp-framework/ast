@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class Block extends Value {
+use lang\ast\Node;
+
+class Block extends Node {
   public $kind= 'block';
   public $statements;
 

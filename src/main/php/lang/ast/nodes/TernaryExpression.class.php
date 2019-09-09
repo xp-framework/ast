@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class TernaryExpression extends Value {
+use lang\ast\Node;
+
+class TernaryExpression extends Node {
   public $kind= 'ternary';
   public $condition, $expression, $otherwise;
 

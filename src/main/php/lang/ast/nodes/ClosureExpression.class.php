@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class ClosureExpression extends Value {
+use lang\ast\Node;
+
+class ClosureExpression extends Node {
   public $kind= 'closure';
   public $signature, $use, $body;
 

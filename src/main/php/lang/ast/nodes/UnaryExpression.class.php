@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class UnaryExpression extends Value {
+use lang\ast\Node;
+
+class UnaryExpression extends Node {
   public $kind= 'unary';
   public $expression, $operator;
 

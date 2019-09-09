@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class EchoStatement extends Value {
+use lang\ast\Node;
+
+class EchoStatement extends Node {
   public $kind= 'echo';
   public $expressions;
 
