@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 3.0.0 / 2019-09-09
+
+* Merged PR #4: Add Node class replacing Element and Value - @thekid
+
 ## 2.0.0 / 2019-09-06
 
 * Merged PR #3: Allow multiple transformations per kind - @thekid
