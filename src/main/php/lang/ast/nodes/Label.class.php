@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class Label extends Value {
+use lang\ast\Node;
+
+class Label extends Node {
   public $kind= 'label';
   public $name;
 

@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class NamespaceDeclaration extends Value {
+use lang\ast\Node;
+
+class NamespaceDeclaration extends Node {
   public $kind= 'namespace';
   public $name;
 

@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class TryStatement extends Value {
+use lang\ast\Node;
+
+class TryStatement extends Node {
   public $kind= 'try';
   public $body, $catches, $finally;
 

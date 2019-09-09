@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class UseStatement extends Value {
+use lang\ast\Node;
+
+class UseStatement extends Node {
   public $kind= 'import';
   public $type, $names;
 

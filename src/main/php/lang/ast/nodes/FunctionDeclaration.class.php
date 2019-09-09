@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class FunctionDeclaration extends Value {
+use lang\ast\Node;
+
+class FunctionDeclaration extends Node {
   public $kind= 'function';
   public $name, $signature, $body;
 

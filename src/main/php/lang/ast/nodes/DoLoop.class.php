@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class DoLoop extends Value {
+use lang\ast\Node;
+
+class DoLoop extends Node {
   public $kind= 'do';
   public $expression, $body;
 

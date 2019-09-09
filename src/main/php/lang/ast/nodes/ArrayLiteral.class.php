@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class ArrayLiteral extends Value {
+use lang\ast\Node;
+
+class ArrayLiteral extends Node {
   public $kind= 'array';
   public $values;
 

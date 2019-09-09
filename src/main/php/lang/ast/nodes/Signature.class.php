@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class Signature extends Value {
+use lang\ast\Node;
+
+class Signature extends Node {
   public $kind= 'signature';
   public $parameters, $returns;
 

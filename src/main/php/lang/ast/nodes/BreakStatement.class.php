@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class BreakStatement extends Value {
+use lang\ast\Node;
+
+class BreakStatement extends Node {
   public $kind= 'break';
   public $expression;
 

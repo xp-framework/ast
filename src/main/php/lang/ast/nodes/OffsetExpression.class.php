@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class OffsetExpression extends Value {
+use lang\ast\Node;
+
+class OffsetExpression extends Node {
   public $kind= 'offset';
   public $expression, $offset;
 

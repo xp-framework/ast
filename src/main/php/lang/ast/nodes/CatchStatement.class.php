@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class CatchStatement extends Value {
+use lang\ast\Node;
+
+class CatchStatement extends Node {
   public $types, $variable, $body;
 
   public function __construct($types, $variable, $body) {

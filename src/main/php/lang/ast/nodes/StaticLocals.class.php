@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class StaticLocals extends Value {
+use lang\ast\Node;
+
+class StaticLocals extends Node {
   public $kind= 'static';
   public $initializations;
 

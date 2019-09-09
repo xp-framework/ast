@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class YieldFromExpression extends Value {
+use lang\ast\Node;
+
+class YieldFromExpression extends Node {
   public $kind= 'from';
   public $iterable;
 

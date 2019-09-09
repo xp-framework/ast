@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class CastExpression extends Value {
+use lang\ast\Node;
+
+class CastExpression extends Node {
   public $kind= 'cast';
   public $type, $expression;
 

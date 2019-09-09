@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class GotoStatement extends Value {
+use lang\ast\Node;
+
+class GotoStatement extends Node {
   public $kind= 'goto';
   public $label;
 

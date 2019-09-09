@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class ContinueStatement extends Value {
+use lang\ast\Node;
+
+class ContinueStatement extends Node {
   public $kind= 'continue';
   public $expression;
 

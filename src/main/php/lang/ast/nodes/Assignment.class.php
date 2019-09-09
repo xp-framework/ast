@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class Assignment extends Value {
+use lang\ast\Node;
+
+class Assignment extends Node {
   public $kind= 'assignment';
   public $variable, $operator, $expression;
 

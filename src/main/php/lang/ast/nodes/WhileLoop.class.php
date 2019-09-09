@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class WhileLoop extends Value {
+use lang\ast\Node;
+
+class WhileLoop extends Node {
   public $kind= 'while';
   public $expression, $body;
 

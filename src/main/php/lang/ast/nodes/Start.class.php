@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class Start extends Value {
+use lang\ast\Node;
+
+class Start extends Node {
   public $kind= 'start';
   public $syntax;
 

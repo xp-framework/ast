@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class ThrowExpression extends Value {
+use lang\ast\Node;
+
+class ThrowExpression extends Node {
   public $kind= 'throwexpression';
   public $expression;
 

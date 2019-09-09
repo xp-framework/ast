@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class Literal extends Value {
+use lang\ast\Node;
+
+class Literal extends Node {
   public $kind= 'literal';
   public $expression;
 

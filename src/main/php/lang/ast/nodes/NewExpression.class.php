@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class NewExpression extends Value {
+use lang\ast\Node;
+
+class NewExpression extends Node {
   public $kind= 'new';
   public $type, $arguments;
 

@@ -1,6 +1,8 @@
 <?php namespace lang\ast\nodes;
 
-class ReturnStatement extends Value {
+use lang\ast\Node;
+
+class ReturnStatement extends Node {
   public $kind= 'return';
   public $expression;
 
