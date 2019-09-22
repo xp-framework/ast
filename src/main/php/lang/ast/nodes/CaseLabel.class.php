@@ -2,6 +2,11 @@
 
 use lang\ast\Node;
 
+/**
+ * Case label inside a switch statement
+ *
+ * @test xp://lang.ast.unittest.nodes.CaseLabelTest
+ */
 class CaseLabel extends Node {
   public $kind= 'case';
   public $expression, $body;
@@ -12,5 +17,12 @@ class CaseLabel extends Node {
   }
 
   /** @return iterable */
-  public function children() { return [$this->expression]; }
+  public function children() {
+    if (null !== $this->expression) {
+      yield $this->expression;
+    }
+    foreach ($this->body as $node) {
+      yield $node;
+    }
+  }
 }

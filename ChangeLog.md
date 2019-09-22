@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed `lang.ast.nodes.CaseLabel::children()` not returning case body
+  (@thekid)
 * Fixed xp-framework/compiler#71: Call to a member function children()
   on array, which occured with `if` statements
   (@thekid)
