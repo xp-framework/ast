@@ -2,6 +2,11 @@
 
 use lang\ast\Node;
 
+/**
+ * Switch statement with cases
+ *
+ * @test xp://lang.ast.unittest.nodes.SwitchStatementTest
+ */
 class SwitchStatement extends Node {
   public $kind= 'switch';
   public $expression, $cases;
