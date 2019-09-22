@@ -2,6 +2,11 @@
 
 use lang\ast\Node;
 
+/**
+ * Catch statement
+ *
+ * @test  xp://lang.ast.unittest.nodes.CatchStatementTest
+ */
 class CatchStatement extends Node {
   public $types, $variable, $body;
 
@@ -13,7 +18,6 @@ class CatchStatement extends Node {
 
   /** @return iterable */
   public function children() {
-    yield $this->variable;
     foreach ($this->body as $element) {
       yield $element;
     }
