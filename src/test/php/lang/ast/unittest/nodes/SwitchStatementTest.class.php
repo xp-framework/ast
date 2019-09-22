@@ -31,9 +31,9 @@ class SwitchStatementTest extends NodeTest {
   #[@test]
   public function cases() {
     $cases= [
-      new CaseLabel(new Literal(0), $this->returns('"no"')),
-      new CaseLabel(new Literal(1), $this->returns('"one"')),
-      new CaseLabel(null, $this->returns('"more"'))
+      new CaseLabel(new Literal(0), [$this->returns('"no"')]),
+      new CaseLabel(new Literal(1), [$this->returns('"one"')]),
+      new CaseLabel(null, [$this->returns('"more"')])
     ];
     $this->assertEquals($cases, (new SwitchStatement($this->expression, $cases))->cases);
   }
@@ -41,9 +41,9 @@ class SwitchStatementTest extends NodeTest {
   #[@test]
   public function children() {
     $cases= [
-      new CaseLabel(new Literal(0), $this->returns('"no"')),
-      new CaseLabel(new Literal(1), $this->returns('"one"')),
-      new CaseLabel(null, $this->returns('"more"'))
+      new CaseLabel(new Literal(0), [$this->returns('"no"')]),
+      new CaseLabel(new Literal(1), [$this->returns('"one"')]),
+      new CaseLabel(null, [$this->returns('"more"')])
     ];
     $this->assertEquals(
       array_merge([$this->expression], $cases),
