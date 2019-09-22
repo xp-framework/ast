@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed xp-framework/compiler#71: Call to a member function children()
+  on array, which occured with `if` statements
+  (@thekid)
+
 ## 3.0.0 / 2019-09-09
 
 * **Heads up:** Changed transformation API - functions must accept a

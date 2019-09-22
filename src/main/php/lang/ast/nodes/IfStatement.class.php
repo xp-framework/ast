@@ -2,6 +2,11 @@
 
 use lang\ast\Node;
 
+/**
+ * If statement with optional else
+ *
+ * @test xp://lang.ast.unittest.nodes.IfStatementTest
+ */
 class IfStatement extends Node {
   public $kind= 'if';
   public $expression, $body, $otherwise;
@@ -16,9 +21,11 @@ class IfStatement extends Node {
   /** @return iterable */
   public function children() {
     yield $this->expression;
-    yield $this->body;
-    if ($this->otherwise) {
-      yield $this->otherwise;
+    foreach ($this->body as $node) {
+      yield $node;
+    }
+    foreach ((array)$this->otherwise as $node) {
+      yield $node;
     }
   }
 }
