@@ -3,14 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
-* Fixed `lang.ast.nodes.CatchStatement::children()` returning variable
-  (@thekid)
-* Fixed `lang.ast.nodes.ArrayLiteral::children()` returning NULL keys
-  (@thekid)
-* Fixed `lang.ast.nodes.CaseLabel::children()` not returning case body
-  (@thekid)
+## 3.0.1 / 2019-09-22
+
 * Fixed xp-framework/compiler#71: Call to a member function children()
-  on array, which occured with `if` statements
+  on array, which occured with `if`, `catch` and `switch` statements
+  as well as for array literals.
   (@thekid)
 
 ## 3.0.0 / 2019-09-09
