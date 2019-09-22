@@ -40,7 +40,7 @@ class IfStatementTest extends NodeTest {
 
     $this->assertEquals(
       array_merge([$this->condition], $body, $otherwise),
-      iterator_to_array((new IfStatement($this->condition, $body, $otherwise))->children())
+      $this->childrenOf(new IfStatement($this->condition, $body, $otherwise))
     );
   }
 }
