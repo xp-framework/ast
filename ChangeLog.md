@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 3.0.2 / 2019-10-04
+
+* Fixed issue #5: Call to a member function children() on null - @thekid
+
 ## 3.0.1 / 2019-09-22
 
 * Fixed xp-framework/compiler#71: Call to a member function children()
