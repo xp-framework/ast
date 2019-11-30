@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 3.0.3 / 2019-11-30
+
+* Added compatibility with XP 10, see xp-framework/rfc#333 - @thekid
+
 ## 3.0.2 / 2019-10-04
 
 * Fixed issue #5: Call to a member function children() on null - @thekid
