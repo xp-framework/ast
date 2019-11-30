@@ -1,7 +1,6 @@
 <?php namespace lang\ast\unittest\nodes;
 
-use lang\ast\nodes\ArrayLiteral;
-use lang\ast\nodes\Literal;
+use lang\ast\nodes\{ArrayLiteral, Literal};
 
 class ArrayLiteralTest extends NodeTest {
 

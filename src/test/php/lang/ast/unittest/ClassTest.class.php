@@ -1,8 +1,6 @@
 <?php namespace lang\ast\unittest;
 
-use lang\ast\nodes\ClassDeclaration;
-use lang\ast\nodes\Method;
-use lang\ast\nodes\Signature;
+use lang\ast\nodes\{ClassDeclaration, Method, Signature};
 use unittest\TestCase;
 
 class ClassTest extends TestCase {

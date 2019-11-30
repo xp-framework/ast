@@ -1,7 +1,6 @@
 <?php namespace lang\ast\unittest\nodes;
 
-use lang\ast\nodes\Literal;
-use lang\ast\nodes\ReturnStatement;
+use lang\ast\nodes\{Literal, ReturnStatement};
 use unittest\TestCase;
 
 abstract class NodeTest extends TestCase {

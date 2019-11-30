@@ -1,9 +1,6 @@
 <?php namespace lang\ast\unittest\nodes;
 
-use lang\ast\nodes\CaseLabel;
-use lang\ast\nodes\Literal;
-use lang\ast\nodes\SwitchStatement;
-use lang\ast\nodes\Variable;
+use lang\ast\nodes\{CaseLabel, Literal, SwitchStatement, Variable};
 
 class SwitchStatementTest extends NodeTest {
   private $expression;

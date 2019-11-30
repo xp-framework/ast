@@ -1,7 +1,6 @@
 <?php namespace lang\ast\unittest\nodes;
 
-use lang\ast\nodes\CaseLabel;
-use lang\ast\nodes\Literal;
+use lang\ast\nodes\{CaseLabel, Literal};
 
 class CaseLabelTest extends NodeTest {
   private $expression;

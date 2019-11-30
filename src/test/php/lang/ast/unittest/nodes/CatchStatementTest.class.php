@@ -1,8 +1,7 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\IllegalArgumentException;
-use lang\ast\nodes\CatchStatement;
-use lang\ast\nodes\Variable;
+use lang\ast\nodes\{CatchStatement, Variable};
 
 class CatchStatementTest extends NodeTest {
   private $types;

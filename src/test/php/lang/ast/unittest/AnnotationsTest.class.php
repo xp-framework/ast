@@ -1,7 +1,6 @@
 <?php namespace lang\ast\unittest;
 
-use lang\ast\nodes\ClassDeclaration;
-use lang\ast\nodes\Annotation;
+use lang\ast\nodes\{Annotation, ClassDeclaration};
 
 class AnnotationsTest extends \unittest\TestCase {
 
