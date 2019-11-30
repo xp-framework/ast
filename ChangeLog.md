@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 4.0.0 / 2019-11-30
+
+* Dropped support for PHP 5.6, see xp-framework/rfc#334 - @thekid
+
 ## 3.0.3 / 2019-11-30
 
 * Added compatibility with XP 10, see xp-framework/rfc#333 - @thekid
