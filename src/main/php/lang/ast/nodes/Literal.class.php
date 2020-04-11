@@ -10,4 +10,8 @@ class Literal extends Node {
     $this->expression= $expression;
     $this->line= $line;
   }
+
+  public function resolve() {
+    return eval('return '.$this->expression.';');
+  }
 }
