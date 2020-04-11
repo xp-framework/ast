@@ -13,4 +13,14 @@ class Parameter extends Annotated {
     $this->promote= $promote;
     $this->annotations= $annotations;
   }
+
+  /**
+   * Checks whether this node is of a given kind
+   *
+   * @param  string $kind
+   * @return bool
+   */
+  public function is($kind) {
+    return $this->kind === $kind || parent::is($kind);
+  }
 }

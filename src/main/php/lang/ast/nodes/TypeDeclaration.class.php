@@ -6,6 +6,38 @@ abstract class TypeDeclaration extends Annotated {
   public function children() { return $this->body; }
 
   /**
+   * Checks whether this node is of a given kind
+   *
+   * @param  string $kind
+   * @return bool
+   */
+  public function is($kind) {
+    return $this->kind === $kind || '@type' === $kind || parent::is($kind);
+  }
+
+  /**
+   * Returns class name (excluding the leading backslash)
+   *
+   * @return string
+   */
+  public function name() {
+    return substr($this->name, 1);
+  }
+
+  /**
+   * Returns class declaration
+   *
+   * @return string
+   */
+  public function declaration() {
+    return substr($this->name, strrpos($this->name, '\\') + 1);
+  }
+
+  public function parent() { return null; }
+
+  public function interfaces() { return []; }
+
+  /**
    * Overwrite a given member; if it is already present, replace.
    *
    * @param  lang.ast.nodes.Member $member

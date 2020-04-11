@@ -14,6 +14,16 @@ class Constant extends Node implements Member {
     $this->line= $line;
   }
 
+  /**
+   * Checks whether this node is of a given kind
+   *
+   * @param  string $kind
+   * @return bool
+   */
+  public function is($kind) {
+    return $this->kind === $kind || '@member' === $kind;
+  }
+
   /** @return string */
   public function lookup() { return $this->name; }
 }
