@@ -14,4 +14,8 @@ class ClassDeclaration extends TypeDeclaration {
     $this->comment= $comment;
     $this->line= $line;
   }
+
+  public function parent() { return $this->parent; }
+
+  public function interfaces() { return $this->implements; }
 }

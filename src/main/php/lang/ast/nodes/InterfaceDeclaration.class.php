@@ -2,7 +2,7 @@
 
 class InterfaceDeclaration extends TypeDeclaration {
   public $kind= 'interface';
-  public $name, $modifiers, $parents, $body, $annotations, $comment;
+  public $parents;
 
   public function __construct($modifiers, $name, $parents, $body, $annotations= [], $comment= null, $line= -1) {
     $this->name= $name;
@@ -13,4 +13,8 @@ class InterfaceDeclaration extends TypeDeclaration {
     $this->comment= $comment;
     $this->line= $line;
   }
+
+  public function parent() { return null; }
+
+  public function interfaces() { return $this->parents; }
 }

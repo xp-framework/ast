@@ -1,6 +1,7 @@
 <?php namespace lang\ast\nodes;
 
 abstract class TypeDeclaration extends Annotated {
+  public $name, $modifiers, $body, $annotations, $comment;
 
   /** @return iterable */
   public function children() { return $this->body; }
