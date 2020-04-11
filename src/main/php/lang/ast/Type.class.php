@@ -38,6 +38,6 @@ class Type implements Value {
    * @return int
    */
   public function compareTo($value) {
-    return $value instanceof self ? strcmp($this->name(), $value->name()) : 1;
+    return $value instanceof self ? $this->name() <=> $value->name() : 1;
   }
 }
