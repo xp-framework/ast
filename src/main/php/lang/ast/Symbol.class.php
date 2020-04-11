@@ -22,6 +22,6 @@ class Symbol implements Value {
    * @return int
    */
   public function compareTo($value) {
-    return $value instanceof self ? strcmp($this->id, $value->id) : 1;
+    return $value instanceof self ? $this->id <=> $value->id : 1;
   }
 }
