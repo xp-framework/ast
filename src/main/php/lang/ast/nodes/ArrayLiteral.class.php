@@ -23,4 +23,17 @@ class ArrayLiteral extends Node {
       yield $pair[1];
     }
   }
+
+  /** @return var */
+  public function resolve() {
+    $r= [];
+    foreach ($this->values as $pair) {
+      if (null === $pair[0]) {
+        $r[]= $pair[1]->resolve();
+      } else {
+        $r[$pair[0]->resolve()]= $pair[1]->resolve();
+      }
+    }
+    return $r;
+  }
 }
