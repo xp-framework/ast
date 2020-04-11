@@ -10,7 +10,7 @@
     "php" : ">=7.0.0"
   },
   "require-dev" : {
-    "xp-framework/unittest": "^10.0 | ^9.3"
+    "xp-framework/unittest": "^11.0 | ^10.0 | ^9.3"
   },
   "autoload" : {
     "files" : ["src/main/php/autoload.php"]
