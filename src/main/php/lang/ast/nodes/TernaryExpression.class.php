@@ -21,4 +21,8 @@ class TernaryExpression extends Node {
     }
     yield $this->otherwise;
   }
+
+  public function resolve() {
+    return $this->condition->resolve() ? $this->expression->resolve() : $this->otherwise->resolve();
+  }
 }

@@ -15,4 +15,34 @@ class BinaryExpression extends Node {
 
   /** @return iterable */
   public function children() { return [$this->left, $this->right]; }
+
+  public function resolve() {
+    switch ($this->operator) {
+      case '.': return $this->left->resolve().$this->right->resolve();
+      case '+': return $this->left->resolve() + $this->right->resolve();
+      case '-': return $this->left->resolve() - $this->right->resolve();
+      case '*': return $this->left->resolve() * $this->right->resolve();
+      case '/': return $this->left->resolve() / $this->right->resolve();
+      case '%': return $this->left->resolve() % $this->right->resolve();
+      case '^': return $this->left->resolve() ^ $this->right->resolve();
+      case '|': return $this->left->resolve() | $this->right->resolve();
+      case '&': return $this->left->resolve() & $this->right->resolve();
+      case '**': return $this->left->resolve() ** $this->right->resolve();
+      case '?:': return $this->left->resolve() ?: $this->right->resolve();
+      case '??': return $this->left->resolve() ?? $this->right->resolve();
+      case '<<': return $this->left->resolve() << $this->right->resolve();
+      case '>>': return $this->left->resolve() >> $this->right->resolve();
+      case '||': return $this->left->resolve() || $this->right->resolve();
+      case '&&': return $this->left->resolve() && $this->right->resolve();
+      case '==': return $this->left->resolve() == $this->right->resolve();
+      case '!=': return $this->left->resolve() != $this->right->resolve();
+      case '<': return $this->left->resolve() < $this->right->resolve();
+      case '>': return $this->left->resolve() > $this->right->resolve();
+      case '<=': return $this->left->resolve() <= $this->right->resolve();
+      case '>=': return $this->left->resolve() >= $this->right->resolve();
+      case '<=>': return $this->left->resolve() <=> $this->right->resolve();
+      case '===': return $this->left->resolve() === $this->right->resolve();
+      case '!==': return $this->left->resolve() !== $this->right->resolve();
+    }
+  }
 }
