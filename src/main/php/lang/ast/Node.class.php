@@ -7,6 +7,9 @@ abstract class Node {
   /** @return iterable */
   public function children() { return []; }
 
+  /** @return var */
+  public function resolve() { return null; }
+
   /**
    * Checks whether this node is of a given kind
    *
