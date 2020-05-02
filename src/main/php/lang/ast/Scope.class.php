@@ -1,5 +1,7 @@
 <?php namespace lang\ast;
 
+use lang\ast\types\{Compiled, Reflection};
+
 /**
  * Scope
  *
@@ -63,21 +65,19 @@ class Scope {
   public function type($name) {
     $resolved= $this->resolve($name);
     if (isset($this->types[$resolved])) {
-      return new types\Compiled($this->types[$resolved], $this);
+      return new Compiled($this->types[$resolved], $this);
+    } else {
+      // TODO: Locate source?
+      // return $this->locate->type($resolved);
+      return $this->parent ? $this->parent->type($name) : new Reflection($resolved); // FIXME: GlobalScope
     }
-
-    // TODO: Locate source?
-    // return $this->locate->type($resolved);
-    return $this->parent ? $this->parent->type($name) : new types\Reflection($resolved); // FIXME: GlobalScope
   }
 
   public function enter($type) {
     $scope= new self($this);
-    $scope->imports['self']= $type->name;
-    $scope->imports['static']= $type->name;
-    if (isset($type->parent)) {
-      $scope->imports['parent']= $type->parent;
-    }
+    $scope->types['self']= $type;
+    $scope->types['static']= $type;
+    $scope->types['parent']= $type->parent ?? null;
     return $scope;
   }
 

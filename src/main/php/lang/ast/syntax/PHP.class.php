@@ -765,7 +765,7 @@ class PHP extends Language {
       $parse->scope->annotations= [];
       $parse->scope= $parse->scope->enter($parse->scope->declare($name, $decl));
       $parse->expecting('{', 'interface');
-      $decl->body= $this->typeBody($parse);
+      $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'interface');
       $parse->scope= $parse->scope->parent;
 
@@ -782,14 +782,14 @@ class PHP extends Language {
       $parse->scope->annotations= [];
       $parse->scope= $parse->scope->enter($parse->scope->declare($name, $decl));
       $parse->expecting('{', 'trait');
-      $decl->body= $this->typeBody($parse);
+      $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'trait');
       $parse->scope= $parse->scope->parent;
 
       return $decl;
     });
 
-    $this->body('use', function($parse, &$body, $annotations, $modifiers) {
+    $this->body('use', function($parse, &$body, $annotations, $modifiers, $holder) {
       $line= $parse->token->line;
 
       $parse->forward();
@@ -830,7 +830,7 @@ class PHP extends Language {
       $body[]= new UseExpression($types, $aliases, $line);
     });
 
-    $this->body('const', function($parse, &$body, $annotations, $modifiers) {
+    $this->body('const', function($parse, &$body, $annotations, $modifiers, $holder) {
       $parse->forward();
 
       $type= null;
@@ -859,7 +859,7 @@ class PHP extends Language {
 
         $parse->expecting('=', 'const');
         $body[$name]= new Constant($modifiers, $name, $type, $this->expression($parse, 0), $line);
-        $body[$name]->holder= $parse->scope->resolve('self');
+        $body[$name]->holder= $holder;
         if (',' === $parse->token->value) {
           $parse->forward();
         }
@@ -867,11 +867,11 @@ class PHP extends Language {
       $parse->expecting(';', 'constant declaration');
     });
 
-    $this->body('@variable', function($parse, &$body, $meta, $modifiers) {
-      $this->properties($parse, $body, $meta, $modifiers, null);
+    $this->body('@variable', function($parse, &$body, $meta, $modifiers, $holder) {
+      $this->properties($parse, $body, $meta, $modifiers, null, $holder);
     });
 
-    $this->body('function', function($parse, &$body, $meta, $modifiers) {
+    $this->body('function', function($parse, &$body, $meta, $modifiers, $holder) {
       $line= $parse->token->line;
       $comment= $parse->comment;
       $parse->comment= null;
@@ -906,7 +906,7 @@ class PHP extends Language {
         $comment,
         $line
       );
-      $body[$lookup]->holder= $parse->scope->resolve('self');
+      $body[$lookup]->holder= $holder;
     });
   }
 
@@ -985,7 +985,7 @@ class PHP extends Language {
     }
   }
 
-  private function properties($parse, &$body, $meta, $modifiers, $type) {
+  private function properties($parse, &$body, $meta, $modifiers, $type, $holder) {
     $comment= $parse->comment;
     $parse->comment= null;
     $annotations= isset($meta[DETAIL_ANNOTATIONS]) ? $meta[DETAIL_ANNOTATIONS] : [];
@@ -1014,7 +1014,7 @@ class PHP extends Language {
         $expr= null;
       }
       $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line);
-      $body[$lookup]->holder= $parse->scope->resolve('self');
+      $body[$lookup]->holder= $holder;
 
       if (',' === $parse->token->value) {
         $parse->forward();
@@ -1191,7 +1191,7 @@ class PHP extends Language {
     $this->body[$id]= $func->bindTo($this, static::class);
   }
 
-  public function typeBody($parse) {
+  public function typeBody($parse, $holder) {
     static $modifier= [
       'private'   => true,
       'protected' => true,
@@ -1209,7 +1209,7 @@ class PHP extends Language {
         $modifiers[]= $parse->token->value;
         $parse->forward();
       } else if ($f= $this->body[$parse->token->value] ?? $this->body['@'.$parse->token->kind] ?? null) {
-        $f($parse, $body, $meta, $modifiers);
+        $f($parse, $body, $meta, $modifiers, $holder);
         $modifiers= [];
         $meta= [];
       } else if ('<<' === $parse->token->value) {
@@ -1219,7 +1219,7 @@ class PHP extends Language {
         $parse->forward();
         $meta= $this->meta($parse, 'member annotations');
       } else if ($type= $this->type($parse)) {
-        $this->properties($parse, $body, $meta, $modifiers, $type);
+        $this->properties($parse, $body, $meta, $modifiers, $type, $holder);
         $modifiers= [];
         $meta= [];
       } else {
@@ -1292,7 +1292,7 @@ class PHP extends Language {
     $parse->scope->annotations= [];
     $parse->scope= $parse->scope->enter($parse->scope->declare($name, $decl));
     $parse->expecting('{', 'class');
-    $decl->body= $this->typeBody($parse);
+    $decl->body= $this->typeBody($parse, $decl->name);
     $parse->expecting('}', 'class');
     $parse->scope= $parse->scope->parent;
 
