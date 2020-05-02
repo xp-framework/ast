@@ -28,7 +28,7 @@ abstract class ParseTest {
    */
   protected function assertParsed($expected, $code) {
     $actual= [];
-    foreach ($this->parse($code)->execute() as $node) {
+    foreach ($this->parse($code)->stream() as $node) {
       $actual[]= $node;
     }
     Assert::equals($expected, $actual);
