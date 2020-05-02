@@ -154,10 +154,11 @@ abstract class Language {
    * Parse given token input
    *
    * @param  lang.ast.Tokens $tokens
+   * @param  ?lang.ast.Scope $scope
    * @return lang.ast.Parse
    */
-  public function parse($tokens) {
-    return new Parse($this, $tokens);
+  public function parse($tokens, Scope $scope= null) {
+    return new Parse($this, $tokens, $scope);
   }
 
   /**
