@@ -152,5 +152,7 @@ class Parse {
    * @return lang.ast.ParseTree
    * @throws lang.ast.Errors
    */
-  public function tree() { return new ParseTree($this->execute()); }
+  public function tree() {
+    return new ParseTree($this->execute(), $this->scope, $this->file);
+  }
 }

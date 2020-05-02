@@ -1,8 +1,11 @@
 <?php namespace lang\ast;
 
+use io\streams\InputStream;
+use io\{Path, File};
 use lang\ast\nodes\{Assignment, BinaryExpression, Literal, UnaryExpression};
 use lang\ast\syntax\{Extension, TransformationApi};
 use lang\reflect\Package;
+use text\{StringTokenizer, StreamTokenizer};
 
 /**
  * Base class for input languages
@@ -148,6 +151,30 @@ abstract class Language {
     foreach (Package::forName(strtr(strtolower(static::class), '\\', '.'))->getClasses() as $class) {
       if ($class->isSubclassOf(Extension::class)) yield $class->newInstance();
     }
+  }
+
+  /**
+   * Parse given input
+   *
+   * @param  io.streams.InputStream|io.Path|io.File|string $input
+   * @param  string $file
+   */
+  public function parse($input, $file= null) {
+    if ($input instanceof InputStream) {
+      $t= new StreamTokenizer($input);
+      $file ?? $file= '(stream)';
+    } else if ($input instanceof Path) {
+      $t= new StreamTokenizer($input->asFile()->in());
+      $file ?? $file= $path->toString();
+    } else if ($input instanceof File) {
+      $t= new StreamTokenizer($input->in());
+      $file ?? $file= $input->getURI();
+    } else {
+      $t= new StringTokenizer($input);
+      $file ?? $file= '(string)';
+    }
+
+    return new Parse($this, new Tokens($t), $file);
   }
 
   /**

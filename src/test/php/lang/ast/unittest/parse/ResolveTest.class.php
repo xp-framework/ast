@@ -1,8 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\IllegalArgumentException;
-use lang\ast\{ParseTree, Scope};
-use lang\{Type, DynamicClassLoader};
+use lang\ast\Scope;
+use lang\{Type, IllegalArgumentException, DynamicClassLoader};
 use unittest\Assert;
 
 class ResolveTest extends ParseTest {
@@ -14,18 +13,20 @@ class ResolveTest extends ParseTest {
   }
 
   /**
-   * Fetches a member by a give name
+   * Fetches a property by a given name
    *
    * @param  string $type Type declaration
-   * @param  string $name Member name
-   * @return lang.ast.nodes.Member
+   * @param  string $name Property name
+   * @return lang.ast.nodes.Property
    * @throws lang.IllegalArgumentException
    */
-  private function member($type, $name) {
-    foreach ((new ParseTree($this->parse($type, $this->scope)))->query('/*/@member') as $member) {
-      if ($name === $member->name) return $member;
+  private function property($type, $name) {
+    $p= $this->parse($type, $this->scope)->tree()->scope()->type('T')->property($name);
+    if (null === $p) {
+      throw new IllegalArgumentException('No such property "'.$name.'"');
     }
-    throw new IllegalArgumentException('No such member "'.$name.'"');
+
+    return $p;
   }
 
   #[@test, @values([
@@ -37,7 +38,7 @@ class ResolveTest extends ParseTest {
   #  ['public $m= "test";', 'test'],
   #])]
   public function scalars($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
+    Assert::equals($expected, $this->property('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
   #[@test, @values([
@@ -47,7 +48,7 @@ class ResolveTest extends ParseTest {
   #  ['public $m= [1, "color" => "green"];', [1, 'color' => 'green']],
   #])]
   public function arrays($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
+    Assert::equals($expected, $this->property('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
   #[@test, @values([
@@ -55,7 +56,7 @@ class ResolveTest extends ParseTest {
   #  ['public $m= 0 ? 2 : 1;', 1],
   #])]
   public function ternary_expr($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
+    Assert::equals($expected, $this->property('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
   #[@test, @values([
@@ -65,7 +66,7 @@ class ResolveTest extends ParseTest {
   #  ['public $m= !true;', false],
   #])]
   public function unary_expr($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
+    Assert::equals($expected, $this->property('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
   #[@test, @values([
@@ -85,7 +86,7 @@ class ResolveTest extends ParseTest {
   #  ['public $m= true && false;', false],
   #])]
   public function binary_expr($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
+    Assert::equals($expected, $this->property('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
   #[@test, @values([
@@ -111,6 +112,6 @@ class ResolveTest extends ParseTest {
       class T extends Base implements Impl { use Part; %s }',
       $declaration
     );
-    Assert::equals($expected, $this->member($declaration, 'm')->resolve($this->scope));
+    Assert::equals($expected, $this->property($declaration, 'm')->resolve($this->scope));
   }
 }

@@ -9,30 +9,30 @@ use lang\ast\types\{Compiled, Reflection};
  */
 class Scope {
   private static $defaults= [
-    'string'   => 'string',
-    'int'      => 'int',
-    'float'    => 'float',
-    'double'   => 'double',
-    'bool'     => 'bool',
-    'array'    => 'array',
-    'void'     => 'void',
-    'callable' => 'callable',
-    'iterable' => 'iterable',
-    'object'   => 'object',
-    'self'     => 'self',
-    'static'   => 'static',
-    'parent'   => 'parent',
-    'mixed'    => 'mixed'
+    'string'   => true,
+    'int'      => true,
+    'float'    => true,
+    'double'   => true,
+    'bool'     => true,
+    'array'    => true,
+    'void'     => true,
+    'callable' => true,
+    'iterable' => true,
+    'object'   => true,
+    'self'     => true,
+    'static'   => true,
+    'parent'   => true,
+    'mixed'    => true
   ];
 
-  public $parent, $imports;
+  public $parent;
   public $package= null;
   public $annotations= [];
+  public $imports= [];
   private $types= [];
 
   public function __construct(self $parent= null) {
     $this->parent= $parent;
-    $this->imports= self::$defaults;
   }
 
   /**
@@ -93,6 +93,8 @@ class Scope {
     if (null === $name || '' === $name) {
       return '';
     } else if ('\\' === $name[0]) {
+      return $name;
+    } else if (isset(self::$defaults[$name])) {
       return $name;
     } else if (isset($this->imports[$name])) {
       return $this->imports[$name];

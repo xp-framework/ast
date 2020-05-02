@@ -122,16 +122,16 @@ class TypesTest extends ParseTest {
 
   #[@test, @expect(['class' => Errors::class, 'withMessage' => 'Cannot redeclare method b()'])]
   public function cannot_redeclare_method() {
-    iterator_to_array($this->parse('class A { public function b() { } public function b() { }}'));
+    $this->parse('class A { public function b() { } public function b() { }}')->tree();
   }
 
   #[@test, @expect(['class' => Errors::class, 'withMessage' => 'Cannot redeclare property $b'])]
   public function cannot_redeclare_property() {
-    iterator_to_array($this->parse('class A { public $b; private $b; }'));
+    $this->parse('class A { public $b; private $b; }')->tree();
   }
 
   #[@test, @expect(['class' => Errors::class, 'withMessage' => 'Cannot redeclare constant B'])]
   public function cannot_redeclare_constant() {
-    iterator_to_array($this->parse('class A { const B = 1; const B = 3; }'));
+    $this->parse('class A { const B = 1; const B = 3; }')->tree();
   }
 }

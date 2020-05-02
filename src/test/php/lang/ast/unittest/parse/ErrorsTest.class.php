@@ -14,7 +14,7 @@ class ErrorsTest extends ParseTest {
    */
   private function assertError($message, $parse) {
     try {
-      iterator_to_array($parse);
+      $parse->tree();
       $this->fail('No exception raised', null, Errors::class);
     } catch (Errors $expected) {
       Assert::equals($message, $expected->getMessage());
