@@ -151,13 +151,13 @@ abstract class Language {
   }
 
   /**
-   * Parse given input
+   * Parse given token input
    *
-   * @param  io.streams.InputStream|io.Path|io.File|string $input
-   * @param  string $file
+   * @param  lang.ast.Tokens $tokens
+   * @return lang.ast.Parse
    */
-  public function parse($input, $file= null) {
-    return new Parse($this, new Tokens($input, $file));
+  public function parse($tokens) {
+    return new Parse($this, $tokens);
   }
 
   /**
