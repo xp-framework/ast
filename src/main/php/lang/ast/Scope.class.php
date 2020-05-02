@@ -88,7 +88,7 @@ class Scope {
    * @return string
    */
   public function resolve($name) {
-    if (null === $name) {
+    if (null === $name || '' === $name) {
       return '';
     } else if ('\\' === $name[0]) {
       return $name;
