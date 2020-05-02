@@ -1,5 +1,6 @@
 <?php namespace lang\ast\unittest\nodes;
 
+use lang\ast\Scope;
 use lang\ast\nodes\Literal;
 
 class LiteralTest extends NodeTest {
@@ -23,6 +24,6 @@ class LiteralTest extends NodeTest {
   #  ['"test"', 'test'],
   #])]
   public function resolve($input, $expected) {
-    $this->assertEquals($expected, (new Literal($input))->resolve());
+    $this->assertEquals($expected, (new Literal($input))->resolve(new Scope()));
   }
 }

@@ -1,10 +1,8 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\Value;
 use lang\ast\{Language, Node, Parse, Tokens};
 use text\StringTokenizer;
-use unittest\Assert;
-use unittest\TestCase;
+use unittest\{Assert, TestCase};
 
 abstract class ParseTest {
   const LINE = 1;
@@ -13,10 +11,11 @@ abstract class ParseTest {
    * Parse code, returning nodes on at a time
    *
    * @param  string $code
+   * @param  ?lang.ast.Scope $scope
    * @return iterable
    */
-  protected function parse($code) {
-    return (new Parse(Language::named('PHP'), new Tokens(new StringTokenizer($code)), static::class))->execute();
+  protected function parse($code, $scope= null) {
+    return (new Parse(Language::named('PHP'), new Tokens(new StringTokenizer($code)), static::class, $scope))->execute();
   }
 
   /**

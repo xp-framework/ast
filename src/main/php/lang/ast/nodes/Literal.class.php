@@ -11,7 +11,10 @@ class Literal extends Node {
     $this->line= $line;
   }
 
-  public function resolve() {
+  public function resolve($scope) {
     return eval('return '.$this->expression.';');
   }
+
+  /** @return string */
+  public function __toString() { return $this->expression; }
 }

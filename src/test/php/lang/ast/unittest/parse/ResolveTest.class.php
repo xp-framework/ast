@@ -1,10 +1,17 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\IllegalArgumentException;
-use lang\ast\ParseTree;
+use lang\ast\{ParseTree, Scope};
+use lang\{Type, DynamicClassLoader};
 use unittest\Assert;
 
 class ResolveTest extends ParseTest {
+  private $scope;
+
+  #[@before]
+  public function scope() {
+    $this->scope= new Scope();
+  }
 
   /**
    * Fetches a member by a give name
@@ -15,7 +22,7 @@ class ResolveTest extends ParseTest {
    * @throws lang.IllegalArgumentException
    */
   private function member($type, $name) {
-    foreach ((new ParseTree($this->parse($type)))->query('/*/@member') as $member) {
+    foreach ((new ParseTree($this->parse($type, $this->scope)))->query('/*/@member') as $member) {
       if ($name === $member->name) return $member;
     }
     throw new IllegalArgumentException('No such member "'.$name.'"');
@@ -30,7 +37,7 @@ class ResolveTest extends ParseTest {
   #  ['public $m= "test";', 'test'],
   #])]
   public function scalars($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->expression->resolve());
+    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
   #[@test, @values([
@@ -40,7 +47,7 @@ class ResolveTest extends ParseTest {
   #  ['public $m= [1, "color" => "green"];', [1, 'color' => 'green']],
   #])]
   public function arrays($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->expression->resolve());
+    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
   #[@test, @values([
@@ -48,7 +55,7 @@ class ResolveTest extends ParseTest {
   #  ['public $m= 0 ? 2 : 1;', 1],
   #])]
   public function ternary_expr($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->expression->resolve());
+    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
   #[@test, @values([
@@ -58,7 +65,7 @@ class ResolveTest extends ParseTest {
   #  ['public $m= !true;', false],
   #])]
   public function unary_expr($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->expression->resolve());
+    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
   #[@test, @values([
@@ -78,19 +85,32 @@ class ResolveTest extends ParseTest {
   #  ['public $m= true && false;', false],
   #])]
   public function binary_expr($declaration, $expected) {
-    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->expression->resolve());
+    Assert::equals($expected, $this->member('class T { '.$declaration.' }', 'm')->resolve($this->scope));
   }
 
-  #[@test, @ignore('Not yet implemented'), @values([
+  #[@test, @values([
   #  ['public $m= T::class;', 'T'],
   #  ['public $m= self::class;', 'T'],
-  #  ['public $m= parent::INHERITED;', '1'],
-  #  ['const DECLARED = 2; public $m= self::DECLARED;', '2'],
+  #  ['public $m= parent::class;', 'Base'],
+  #  ['public $m= parent::INHERITED;', 1],
+  #  ['public $m= self::INHERITED;', 1],
+  #  ['public $m= self::$INCLUDED;', true],
+  #  ['public $m= self::IMPLEMENTED;', 'impl'],
+  #  ['public $m= Type::$VOID;', Type::$VOID],
+  #  ['public $m= DynamicClassLoader::DEVICE;', DynamicClassLoader::DEVICE],
+  #  ['public static $DECLARED = 2; public $m= self::$DECLARED;', 2],
+  #  ['const DECLARED = 2; public $m= self::DECLARED;', 2],
   #])]
-  public function constant_reference($declaration, $expected) {
-    Assert::equals(
-      $expected,
-      $this->member('class B { const INHERITED = 1; } class T extends B { '.$declaration.' }', 'm')->expression->resolve()
+  public function member_reference($declaration, $expected) {
+    $declaration= sprintf('
+      use lang\{Type, DynamicClassLoader};
+
+      class Base { const INHERITED= 1; }
+      trait Part { public static $INCLUDED= true; }
+      interface Impl { const IMPLEMENTED= "impl"; }
+      class T extends Base implements Impl { use Part; %s }',
+      $declaration
     );
+    Assert::equals($expected, $this->member($declaration, 'm')->resolve($this->scope));
   }
 }

@@ -2,6 +2,7 @@
 
 class Property extends Annotated implements Member {
   public $kind= 'property';
+  public $holder;
   public $name, $modifiers, $expression, $type, $annotations, $comment;
 
   public function __construct($modifiers, $name, $type, $expression= null, $annotations= [], $comment= null, $line= -1) {
@@ -26,4 +27,9 @@ class Property extends Annotated implements Member {
 
   /** @return string */
   public function lookup() { return '$'.$this->name; }
+
+
+  public function resolve($scope) {
+    return $this->expression->resolve($scope->enter($scope->type($this->holder)));
+  }
 }

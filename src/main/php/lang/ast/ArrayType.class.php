@@ -17,4 +17,5 @@ class ArrayType extends Type {
 
   /** @return string */
   public function name() { return $this->component->name().'[]'; }
+
 }

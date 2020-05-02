@@ -740,7 +740,7 @@ class PHP extends Language {
     });
 
     $this->stmt('interface', function($parse, $token) {
-      $type= $parse->scope->resolve($parse->token->value);
+      $name= $parse->scope->resolve($parse->token->value);
       $parse->forward();
       $comment= $parse->comment;
       $parse->comment= null;
@@ -761,27 +761,31 @@ class PHP extends Language {
         } while (null !== $parse->token->value);
       }
 
-      $parse->expecting('{', 'interface');
-      $body= $this->typeBody($parse);
-      $parse->expecting('}', 'interface');
-
-      $decl= new InterfaceDeclaration([], $type, $parents, $body, $parse->scope->annotations, $comment, $token->line);
+      $decl= new InterfaceDeclaration([], $name, $parents, [], $parse->scope->annotations, $comment, $token->line);
       $parse->scope->annotations= [];
+      $parse->scope= $parse->scope->enter($parse->scope->declare($name, $decl));
+      $parse->expecting('{', 'interface');
+      $decl->body= $this->typeBody($parse);
+      $parse->expecting('}', 'interface');
+      $parse->scope= $parse->scope->parent;
+
       return $decl;
     });
 
     $this->stmt('trait', function($parse, $token) {
-      $type= $parse->scope->resolve($parse->token->value);
+      $name= $parse->scope->resolve($parse->token->value);
       $parse->forward();
       $comment= $parse->comment;
       $parse->comment= null;
 
-      $parse->expecting('{', 'trait');
-      $body= $this->typeBody($parse);
-      $parse->expecting('}', 'trait');
-
-      $decl= new TraitDeclaration([], $type, $body, $parse->scope->annotations, $comment, $token->line);
+      $decl= new TraitDeclaration([], $name, null, $parse->scope->annotations, $comment, $token->line);
       $parse->scope->annotations= [];
+      $parse->scope= $parse->scope->enter($parse->scope->declare($name, $decl));
+      $parse->expecting('{', 'trait');
+      $decl->body= $this->typeBody($parse);
+      $parse->expecting('}', 'trait');
+      $parse->scope= $parse->scope->parent;
+
       return $decl;
     });
 
@@ -855,6 +859,7 @@ class PHP extends Language {
 
         $parse->expecting('=', 'const');
         $body[$name]= new Constant($modifiers, $name, $type, $this->expression($parse, 0), $line);
+        $body[$name]->holder= $parse->scope->resolve('self');
         if (',' === $parse->token->value) {
           $parse->forward();
         }
@@ -901,6 +906,7 @@ class PHP extends Language {
         $comment,
         $line
       );
+      $body[$lookup]->holder= $parse->scope->resolve('self');
     });
   }
 
@@ -1008,6 +1014,7 @@ class PHP extends Language {
         $expr= null;
       }
       $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line);
+      $body[$lookup]->holder= $parse->scope->resolve('self');
 
       if (',' === $parse->token->value) {
         $parse->forward();
@@ -1281,13 +1288,15 @@ class PHP extends Language {
       } while (null !== $parse->token->value);
     }
 
-    $parse->expecting('{', 'class');
-    $body= $this->typeBody($parse);
-    $parse->expecting('}', 'class');
-
-    $return= new ClassDeclaration($modifiers, $name, $parent, $implements, $body, $parse->scope->annotations, $comment, $line);
+    $decl= new ClassDeclaration($modifiers, $name, $parent, $implements, null, $parse->scope->annotations, $comment, $line);
     $parse->scope->annotations= [];
-    return $return;
+    $parse->scope= $parse->scope->enter($parse->scope->declare($name, $decl));
+    $parse->expecting('{', 'class');
+    $decl->body= $this->typeBody($parse);
+    $parse->expecting('}', 'class');
+    $parse->scope= $parse->scope->parent;
+
+    return $decl;
   }
 
   public function expressions($parse, $end= ')') {
