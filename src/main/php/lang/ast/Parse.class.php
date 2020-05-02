@@ -129,7 +129,7 @@ class Parse {
    * @return iterable
    * @throws lang.ast.Errors
    */
-  public function execute() {
+  public function stream() {
     $this->forward();
     try {
       while (null !== $this->token->value) {
@@ -152,6 +152,6 @@ class Parse {
    * @throws lang.ast.Errors
    */
   public function tree() {
-    return new ParseTree($this->execute(), $this->scope, $this->file);
+    return new ParseTree($this->stream(), $this->scope, $this->file);
   }
 }

@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\{Language, Node, Parse, Tokens};
+use lang\ast\{Language, Parse, Tokens};
 use text\StringTokenizer;
 use unittest\Assert;
 
