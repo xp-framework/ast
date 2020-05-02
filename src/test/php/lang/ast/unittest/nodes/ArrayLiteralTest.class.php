@@ -1,5 +1,6 @@
 <?php namespace lang\ast\unittest\nodes;
 
+use lang\ast\Scope;
 use lang\ast\nodes\{ArrayLiteral, Literal};
 
 class ArrayLiteralTest extends NodeTest {
@@ -44,6 +45,6 @@ class ArrayLiteralTest extends NodeTest {
   #  [[[new Literal('"one"'), new Literal(1)]], ['one' => 1]],
   #])]
   public function resolve($input, $expected) {
-    $this->assertEquals($expected, (new ArrayLiteral($input))->resolve());
+    $this->assertEquals($expected, (new ArrayLiteral($input))->resolve(new Scope()));
   }
 }

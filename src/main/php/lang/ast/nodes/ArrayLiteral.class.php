@@ -25,13 +25,13 @@ class ArrayLiteral extends Node {
   }
 
   /** @return var */
-  public function resolve() {
+  public function resolve($scope) {
     $r= [];
     foreach ($this->values as $pair) {
       if (null === $pair[0]) {
-        $r[]= $pair[1]->resolve();
+        $r[]= $pair[1]->resolve($scope);
       } else {
-        $r[$pair[0]->resolve()]= $pair[1]->resolve();
+        $r[$pair[0]->resolve($scope)]= $pair[1]->resolve($scope);
       }
     }
     return $r;

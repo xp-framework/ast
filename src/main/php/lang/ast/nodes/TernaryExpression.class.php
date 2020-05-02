@@ -22,7 +22,7 @@ class TernaryExpression extends Node {
     yield $this->otherwise;
   }
 
-  public function resolve() {
-    return $this->condition->resolve() ? $this->expression->resolve() : $this->otherwise->resolve();
+  public function resolve($scope) {
+    return $this->condition->resolve($scope) ? $this->expression->resolve($scope) : $this->otherwise->resolve($scope);
   }
 }

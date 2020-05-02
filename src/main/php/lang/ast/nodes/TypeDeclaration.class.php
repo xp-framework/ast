@@ -38,6 +38,28 @@ abstract class TypeDeclaration extends Annotated {
 
   public function interfaces() { return []; }
 
+  /** @return iterable */
+  public function traits() {
+    foreach ($this->body as $node) {
+      if ('use' === $node->kind) yield from $node->types;
+    }
+  }
+
+  /**
+   * Declare a given member
+   *
+   * @param  lang.ast.nodes.Member $member
+   * @return bool Whether anything was declared
+   */
+  public function declare(Member $member) {
+    $lookup= $member->lookup();
+    if (isset($this->body[$lookup])) return false;
+
+    $member->holder= $this->name;
+    $this->body[$lookup]= $member;
+    return true;
+  }
+
   /**
    * Overwrite a given member; if it is already present, replace.
    *
@@ -48,6 +70,7 @@ abstract class TypeDeclaration extends Annotated {
     $lookup= $member->lookup();
     $overwritten= isset($this->body[$lookup]);
 
+    $member->holder= $this->name;
     $this->body[$lookup]= $member;
     return $overwritten;
   }
@@ -55,21 +78,25 @@ abstract class TypeDeclaration extends Annotated {
   /**
    * Inject a given member; if it is already present, do not touch.
    *
+   * @deprecated Use declare() instead!
    * @param  lang.ast.nodes.Member $member
    * @return bool Whether anything was injected
    */
   public function inject(Member $member) {
-    $lookup= $member->lookup();
-    if (isset($this->body[$lookup])) return false;
+    return $this->declare($member);
+  }
 
-    $this->body[$lookup]= $member;
-    return true;
+  /** @return iterable */
+  public function members() {
+    foreach ($this->body as $lookup => $node) {
+      if ($node->is('@member')) yield $lookup => $node;
+    }
   }
 
   /** @return iterable */
   public function methods() {
     foreach ($this->body as $node) {
-      if ('method' === $node->kind) yield $node;
+      if ('method' === $node->kind) yield $node->name => $node;
     }
   }
 
@@ -87,7 +114,7 @@ abstract class TypeDeclaration extends Annotated {
   /** @return iterable */
   public function properties() {
     foreach ($this->body as $node) {
-      if ('property' === $node->kind) yield $node;
+      if ('property' === $node->kind) yield $node->name => $node;
     }
   }
 
@@ -105,7 +132,7 @@ abstract class TypeDeclaration extends Annotated {
   /** @return iterable */
   public function constants() {
     foreach ($this->body as $node) {
-      if ('const' === $node->kind) yield $node;
+      if ('const' === $node->kind) yield $node->name => $node;
     }
   }
 
@@ -113,7 +140,7 @@ abstract class TypeDeclaration extends Annotated {
    * Returns a constant
    *
    * @param  string $name
-   * @return lang.ast.nodes.ConstValue or NULL
+   * @return lang.ast.nodes.Constant or NULL
    */
   public function constant($name) {
     return isset($this->body[$name]) ? $this->body[$name] : null;

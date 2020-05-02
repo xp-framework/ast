@@ -20,7 +20,7 @@ class ClassTest extends TestCase {
   #[@test]
   public function methods() {
     $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => $this->method], [], null);
-    $this->assertEquals([$this->method], iterator_to_array($fixture->methods()));
+    $this->assertEquals(['toString' => $this->method], iterator_to_array($fixture->methods()));
   }
 
   #[@test]

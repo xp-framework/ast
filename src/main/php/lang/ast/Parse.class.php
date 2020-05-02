@@ -14,12 +14,13 @@ class Parse {
    * @param  lang.ast.Language $language
    * @param  lang.ast.Tokens $tokens
    * @param  string $file
+   * @param  lang.ast.Scope $scope
    */
-  public function __construct($language, $tokens, $file= null) {
+  public function __construct($language, $tokens, $file= null, $scope= null) {
     $this->language= $language;
     $this->tokens= $tokens->getIterator();
     $this->file= $file;
-    $this->scope= new Scope(null);
+    $this->scope= $scope ?? new Scope(null);
   }
 
   /**

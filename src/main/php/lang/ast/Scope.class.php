@@ -6,30 +6,31 @@
  * @test  xp://lang.unittest.ast.ScopeTest
  */
 class Scope {
-  private static $reserved= [
-    'string'   => true,
-    'int'      => true,
-    'float'    => true,
-    'double'   => true,
-    'bool'     => true,
-    'array'    => true,
-    'void'     => true,
-    'callable' => true,
-    'iterable' => true,
-    'object'   => true,
-    'self'     => true,
-    'static'   => true,
-    'parent'   => true,
-    'mixed'    => true
+  private static $defaults= [
+    'string'   => 'string',
+    'int'      => 'int',
+    'float'    => 'float',
+    'double'   => 'double',
+    'bool'     => 'bool',
+    'array'    => 'array',
+    'void'     => 'void',
+    'callable' => 'callable',
+    'iterable' => 'iterable',
+    'object'   => 'object',
+    'self'     => 'self',
+    'static'   => 'static',
+    'parent'   => 'parent',
+    'mixed'    => 'mixed'
   ];
 
-  public $parent;
+  public $parent, $imports;
   public $package= null;
-  public $imports= [];
   public $annotations= [];
+  private $types= [];
 
   public function __construct(self $parent= null) {
     $this->parent= $parent;
+    $this->imports= self::$defaults;
   }
 
   /**
@@ -53,6 +54,33 @@ class Scope {
     $this->imports[$alias ?: substr($name, strrpos($name,  '\\') + 1)]= '\\'.$name;
   }
 
+  public function declare($name, $type) {
+    $resolved= $this->resolve($name);
+    $this->types[$resolved]= $type;
+    return $type;
+  }
+
+  public function type($name) {
+    $resolved= $this->resolve($name);
+    if (isset($this->types[$resolved])) {
+      return new types\Compiled($this->types[$resolved], $this);
+    }
+
+    // TODO: Locate source?
+    // return $this->locate->type($resolved);
+    return $this->parent ? $this->parent->type($name) : new types\Reflection($resolved); // FIXME: GlobalScope
+  }
+
+  public function enter($type) {
+    $scope= new self($this);
+    $scope->imports['self']= $type->name;
+    $scope->imports['static']= $type->name;
+    if (isset($type->parent)) {
+      $scope->imports['parent']= $type->parent;
+    }
+    return $scope;
+  }
+
   /**
    * Resolves a type to a fully qualified name
    *
@@ -62,8 +90,6 @@ class Scope {
   public function resolve($name) {
     if (null === $name) {
       return '';
-    } else if (isset(self::$reserved[$name])) {
-      return $name;
     } else if ('\\' === $name[0]) {
       return $name;
     } else if (isset($this->imports[$name])) {
