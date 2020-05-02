@@ -4,7 +4,7 @@ class Compiled {
   private $type, $inherit;
 
   public function __construct($type, $scope) {
-    $this->type= is_string($type) ? $scope->type($type) : $type;
+    $this->type= $type;
 
     $this->inherit= function() use($scope) {
       $this->inherit= [];
@@ -35,8 +35,8 @@ class Compiled {
     };
 
     // FIXME
-    $this->name= $this->type->name;
-    $this->parent= $this->type->parent ?? null;
+    $this->name= $type->name;
+    $this->parent= $type->parent ?? null;
   }
 
   public function name() { return $this->backing->name(); }

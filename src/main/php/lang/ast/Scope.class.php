@@ -58,18 +58,20 @@ class Scope {
 
   public function declare($name, $type) {
     $resolved= $this->resolve($name);
-    $this->types[$resolved]= $type;
+    $this->types[$resolved]= new Compiled($type, $this);
     return $type;
   }
 
   public function type($name) {
     $resolved= $this->resolve($name);
-    if (isset($this->types[$resolved])) {
-      return new Compiled($this->types[$resolved], $this);
-    } else {
-      // TODO: Locate source?
-      // return $this->locate->type($resolved);
+    $t= $this->types[$resolved] ?? null;
+
+    if (null === $t) {
       return $this->parent ? $this->parent->type($name) : new Reflection($resolved); // FIXME: GlobalScope
+    } else if ($t instanceof Compiled) {
+      return $t;
+    } else {
+      return $this->type($t);
     }
   }
 
