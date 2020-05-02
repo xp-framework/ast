@@ -15,7 +15,7 @@ abstract class ParseTest {
    * @return lang.ast.Parse
    */
   protected function parse($code, $scope= null) {
-    return new Parse(Language::named('PHP'), new Tokens(new StringTokenizer($code)), static::class, $scope);
+    return new Parse(Language::named('PHP'), new Tokens($code, static::class), $scope);
   }
 
   /**
