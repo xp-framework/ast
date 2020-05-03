@@ -1,6 +1,9 @@
 <?php namespace lang\ast\types;
 
-class Compiled {
+use lang\Value;
+use util\Objects;
+
+class Compiled implements Value {
   private $type, $inherit;
 
   public function __construct($type, $scope) {
@@ -37,6 +40,18 @@ class Compiled {
     // FIXME
     $this->name= $type->name;
     $this->parent= $type->parent ?? null;
+  }
+
+  public function toString() {
+    return nameof($this).'@'.Objects::stringOf($this->type);
+  }
+
+  public function hashCode() {
+    return md5($this->type->name);
+  }
+
+  public function compareTo($value) {
+    return $value instanceof self ? Objects::compare($this->type, $value->type) : 1;
   }
 
   public function name() { return $this->backing->name(); }

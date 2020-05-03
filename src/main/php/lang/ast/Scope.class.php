@@ -29,7 +29,7 @@ class Scope {
   public $package= null;
   public $annotations= [];
   public $imports= [];
-  private $types= [];
+  public $types= [];
 
   public function __construct(self $parent= null) {
     $this->parent= $parent;
@@ -42,7 +42,7 @@ class Scope {
    * @return void
    */
   public function package($name) {
-    $this->package= '\\'.$name;
+    $this->package= null === $name ? '' : '\\'.$name;
   }
 
   /**
@@ -67,7 +67,9 @@ class Scope {
     $t= $this->types[$resolved] ?? null;
 
     if (null === $t) {
-      return $this->parent ? $this->parent->type($name) : new Reflection($resolved); // FIXME: GlobalScope
+      return $this->parent ? $this->parent->type($name) : (
+        class_exists($resolved) || interface_exists($resolved) || trait_exists($resolved) ? new Reflection($resolved) : null
+      );
     } else if ($t instanceof Compiled) {
       return $t;
     } else {
