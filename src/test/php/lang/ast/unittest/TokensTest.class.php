@@ -2,7 +2,6 @@
 
 use lang\FormatException;
 use lang\ast\Tokens;
-use text\StringTokenizer;
 use unittest\Assert;
 
 class TokensTest {
