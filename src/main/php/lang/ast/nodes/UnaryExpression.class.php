@@ -14,13 +14,4 @@ class UnaryExpression extends Node {
 
   /** @return iterable */
   public function children() { return [$this->expression]; }
-
-  public function resolve($scope) {
-    switch ($this->operator) {
-      case '+': return +$this->expression->resolve($scope);
-      case '-': return -$this->expression->resolve($scope);
-      case '~': return ~$this->expression->resolve($scope);
-      case '!': return !$this->expression->resolve($scope);
-    }
-  }
 }

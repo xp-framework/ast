@@ -763,11 +763,9 @@ class PHP extends Language {
 
       $decl= new InterfaceDeclaration([], $name, $parents, [], $parse->scope->annotations, $comment, $token->line);
       $parse->scope->annotations= [];
-      $parse->scope= $parse->scope->enter($parse->scope->declare($name, $decl));
       $parse->expecting('{', 'interface');
       $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'interface');
-      $parse->scope= $parse->scope->parent;
 
       return $decl;
     });
@@ -780,11 +778,9 @@ class PHP extends Language {
 
       $decl= new TraitDeclaration([], $name, null, $parse->scope->annotations, $comment, $token->line);
       $parse->scope->annotations= [];
-      $parse->scope= $parse->scope->enter($parse->scope->declare($name, $decl));
       $parse->expecting('{', 'trait');
       $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'trait');
-      $parse->scope= $parse->scope->parent;
 
       return $decl;
     });
@@ -1290,11 +1286,9 @@ class PHP extends Language {
 
     $decl= new ClassDeclaration($modifiers, $name, $parent, $implements, null, $parse->scope->annotations, $comment, $line);
     $parse->scope->annotations= [];
-    $parse->scope= $parse->scope->enter($parse->scope->declare($name, $decl));
     $parse->expecting('{', 'class');
     $decl->body= $this->typeBody($parse, $decl->name);
     $parse->expecting('}', 'class');
-    $parse->scope= $parse->scope->parent;
 
     return $decl;
   }

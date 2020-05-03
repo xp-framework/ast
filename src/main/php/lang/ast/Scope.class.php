@@ -56,35 +56,6 @@ class Scope {
     $this->imports[$alias ?: substr($name, strrpos($name,  '\\') + 1)]= '\\'.$name;
   }
 
-  public function declare($name, $type) {
-    $resolved= $this->resolve($name);
-    $this->types[$resolved]= new Compiled($type, $this);
-    return $type;
-  }
-
-  public function type($name) {
-    $resolved= $this->resolve($name);
-    $t= $this->types[$resolved] ?? null;
-
-    if (null === $t) {
-      return $this->parent ? $this->parent->type($name) : (
-        class_exists($resolved) || interface_exists($resolved) || trait_exists($resolved) ? new Reflection($resolved) : null
-      );
-    } else if ($t instanceof Compiled) {
-      return $t;
-    } else {
-      return $this->type($t);
-    }
-  }
-
-  public function enter($type) {
-    $scope= new self($this);
-    $scope->types['self']= $type;
-    $scope->types['static']= $type;
-    $scope->types['parent']= $type->parent ?? null;
-    return $scope;
-  }
-
   /**
    * Resolves a type to a fully qualified name
    *

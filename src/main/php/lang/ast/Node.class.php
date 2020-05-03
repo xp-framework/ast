@@ -20,12 +20,11 @@ abstract class Node {
   }
 
   /**
-   * Resolves this node
+   * Visits this node
    *
-   * @param  lang.ast.Scope $scope
+   * @param  lang.ast.Visitor $visitor
    * @return var
    */
-  public function resolve($scope) {
-    throw new IllegalStateException('Cannot resolve '.$this->kind);
-  }
+  public function visit($visitor) { return $visitor->{$this->kind}($this); }
+
 }

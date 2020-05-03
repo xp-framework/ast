@@ -16,33 +16,4 @@ class BinaryExpression extends Node {
   /** @return iterable */
   public function children() { return [$this->left, $this->right]; }
 
-  public function resolve($scope) {
-    switch ($this->operator) {
-      case '.': return $this->left->resolve($scope).$this->right->resolve($scope);
-      case '+': return $this->left->resolve($scope) + $this->right->resolve($scope);
-      case '-': return $this->left->resolve($scope) - $this->right->resolve($scope);
-      case '*': return $this->left->resolve($scope) * $this->right->resolve($scope);
-      case '/': return $this->left->resolve($scope) / $this->right->resolve($scope);
-      case '%': return $this->left->resolve($scope) % $this->right->resolve($scope);
-      case '^': return $this->left->resolve($scope) ^ $this->right->resolve($scope);
-      case '|': return $this->left->resolve($scope) | $this->right->resolve($scope);
-      case '&': return $this->left->resolve($scope) & $this->right->resolve($scope);
-      case '**': return $this->left->resolve($scope) ** $this->right->resolve($scope);
-      case '?:': return $this->left->resolve($scope) ?: $this->right->resolve($scope);
-      case '??': return $this->left->resolve($scope) ?? $this->right->resolve($scope);
-      case '<<': return $this->left->resolve($scope) << $this->right->resolve($scope);
-      case '>>': return $this->left->resolve($scope) >> $this->right->resolve($scope);
-      case '||': return $this->left->resolve($scope) || $this->right->resolve($scope);
-      case '&&': return $this->left->resolve($scope) && $this->right->resolve($scope);
-      case '==': return $this->left->resolve($scope) == $this->right->resolve($scope);
-      case '!=': return $this->left->resolve($scope) != $this->right->resolve($scope);
-      case '<': return $this->left->resolve($scope) < $this->right->resolve($scope);
-      case '>': return $this->left->resolve($scope) > $this->right->resolve($scope);
-      case '<=': return $this->left->resolve($scope) <= $this->right->resolve($scope);
-      case '>=': return $this->left->resolve($scope) >= $this->right->resolve($scope);
-      case '<=>': return $this->left->resolve($scope) <=> $this->right->resolve($scope);
-      case '===': return $this->left->resolve($scope) === $this->right->resolve($scope);
-      case '!==': return $this->left->resolve($scope) !== $this->right->resolve($scope);
-    }
-  }
 }

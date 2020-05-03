@@ -28,8 +28,4 @@ class Property extends Annotated implements Member {
   /** @return string */
   public function lookup() { return '$'.$this->name; }
 
-
-  public function resolve($scope) {
-    return $this->expression->resolve($scope->enter($scope->type($this->holder)));
-  }
 }

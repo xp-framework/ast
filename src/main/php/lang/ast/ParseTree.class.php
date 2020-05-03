@@ -29,17 +29,13 @@ class ParseTree {
   public function file() { return $this->file; }
 
   /**
-   * Returns a type for a given name
-   *
-   * @param  string $name
-   * @return lang.ast.types.Type
-   */
-  public function type($name) { return $this->scope->type($name); }
-
-  /**
    * Returns all types
    *
-   * @return lang.ast.types.Type[]
+   * @return iterable
    */
-  public function types() { return $this->scope->types; }
+  public function types() {
+    foreach ($this->children as $node) {
+      if ($node->is('@type')) yield $this->scope->resolve($node->name) => $node;
+    }
+  }
 }

@@ -43,7 +43,7 @@ class ParseTreeTest {
   #[@test]
   public function types_initially_empty() {
     $scope= new Scope(null);
-    Assert::equals([], (new ParseTree([], $scope))->types());
+    Assert::equals([], iterator_to_array((new ParseTree([], $scope))->types()));
   }
 
   #[@test, @values([
@@ -53,30 +53,8 @@ class ParseTreeTest {
   public function types_in($package, $expected) {
     $scope= new Scope(null);
     $scope->package($package);
-    $scope->declare('Test', new ClassDeclaration([], 'Test', null, [], []));
+    $class= new ClassDeclaration([], 'Test', null, [], []);
 
-    Assert::equals([$expected => $scope->type('Test')], (new ParseTree([], $scope))->types());
-  }
-
-  #[@test]
-  public function declared_type() {
-    $scope= new Scope(null);
-    $scope->declare('Test', new ClassDeclaration([], 'Test', null, [], []));
-
-    Assert::instance(Compiled::class, (new ParseTree([], $scope))->type('Test'));
-  }
-
-  #[@test]
-  public function core_type() {
-    $scope= new Scope(null);
-
-    Assert::instance(Reflection::class, (new ParseTree([], $scope))->type('\\lang\\Value'));
-  }
-
-  #[@test]
-  public function non_existant_type() {
-    $scope= new Scope(null);
-
-    Assert::null((new ParseTree([], $scope))->type('Unknown'));
+    Assert::equals([$expected => $class], iterator_to_array((new ParseTree([$class], $scope))->types()));
   }
 }
