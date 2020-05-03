@@ -53,7 +53,7 @@ class ParseTreeTest {
   public function types_in($package, $expected) {
     $scope= new Scope(null);
     $scope->package($package);
-    $class= new ClassDeclaration([], 'Test', null, [], []);
+    $class= new ClassDeclaration([], 'Test');
 
     Assert::equals([$expected => $class], iterator_to_array((new ParseTree([$class], $scope))->types()));
   }

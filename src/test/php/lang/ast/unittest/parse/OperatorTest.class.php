@@ -183,7 +183,7 @@ class OperatorTest extends ParseTest {
 
   #[@test]
   public function new_anonymous_extends() {
-    $declaration= new ClassDeclaration([], null, '\\T', [], [], [], null, self::LINE);
+    $declaration= new ClassDeclaration([], null, '\\T', [], [], null, self::LINE);
     $this->assertParsed(
       [new NewClassExpression($declaration, [], self::LINE)],
       'new class() extends T { };'
@@ -192,7 +192,7 @@ class OperatorTest extends ParseTest {
 
   #[@test]
   public function new_anonymous_implements() {
-    $declaration= new ClassDeclaration([], null, null, ['\\A', '\\B'], [], [], null, self::LINE);
+    $declaration= new ClassDeclaration([], null, null, ['\\A', '\\B'], [], null, self::LINE);
     $this->assertParsed(
       [new NewClassExpression($declaration, [], self::LINE)],
       'new class() implements A, B { };'

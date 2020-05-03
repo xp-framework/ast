@@ -1,7 +1,8 @@
 <?php namespace lang\ast\nodes;
 
 abstract class TypeDeclaration extends Annotated {
-  public $name, $modifiers, $body, $annotations, $comment;
+  public $name, $modifiers, $annotations, $comment;
+  public $body= [];
 
   /** @return iterable */
   public function children() { return $this->body; }
@@ -73,17 +74,6 @@ abstract class TypeDeclaration extends Annotated {
     $member->holder= $this->name;
     $this->body[$lookup]= $member;
     return $overwritten;
-  }
-
-  /**
-   * Inject a given member; if it is already present, do not touch.
-   *
-   * @deprecated Use declare() instead!
-   * @param  lang.ast.nodes.Member $member
-   * @return bool Whether anything was injected
-   */
-  public function inject(Member $member) {
-    return $this->declare($member);
   }
 
   /** @return iterable */
