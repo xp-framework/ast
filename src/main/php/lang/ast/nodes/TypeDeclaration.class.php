@@ -10,9 +10,9 @@ abstract class TypeDeclaration extends Annotated {
     $this->comment= $comment;
     $this->line= $line;
     $this->body= [];
-    foreach ($body as $node) {
+    foreach ($body as $lookup => $node) {
       $node->holder= $this->name;
-      $this->body[]= $node;
+      $this->body[$lookup]= $node;
     }
   }
 
