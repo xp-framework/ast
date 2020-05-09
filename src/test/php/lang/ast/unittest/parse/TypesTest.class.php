@@ -9,7 +9,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function empty_class() {
     $this->assertParsed(
-      [new ClassDeclaration([], '\\A', null, [], [], null, self::LINE)],
+      [new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE)],
       'class A { }'
     );
   }
@@ -17,7 +17,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function class_with_parent() {
     $this->assertParsed(
-      [new ClassDeclaration([], '\\A', '\\B', [], [], null, self::LINE)],
+      [new ClassDeclaration([], '\\A', '\\B', [], [], [], null, self::LINE)],
       'class A extends B { }'
     );
   }
@@ -25,7 +25,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function class_with_interface() {
     $this->assertParsed(
-      [new ClassDeclaration([], '\\A', null, ['\\C'], [], null, self::LINE)],
+      [new ClassDeclaration([], '\\A', null, ['\\C'], [], [], null, self::LINE)],
       'class A implements C { }'
     );
   }
@@ -33,7 +33,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function class_with_interfaces() {
     $this->assertParsed(
-      [new ClassDeclaration([], '\\A', null, ['\\C', '\\D'], [], null, self::LINE)],
+      [new ClassDeclaration([], '\\A', null, ['\\C', '\\D'], [], [], null, self::LINE)],
       'class A implements C, D { }'
     );
   }
@@ -41,7 +41,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function abstract_class() {
     $this->assertParsed(
-      [new ClassDeclaration(['abstract'], '\\A', null, [], [], null, self::LINE)],
+      [new ClassDeclaration(['abstract'], '\\A', null, [], [], [], null, self::LINE)],
       'abstract class A { }'
     );
   }
@@ -49,7 +49,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function final_class() {
     $this->assertParsed(
-      [new ClassDeclaration(['final'], '\\A', null, [], [], null, self::LINE)],
+      [new ClassDeclaration(['final'], '\\A', null, [], [], [], null, self::LINE)],
       'final class A { }'
     );
   }
@@ -57,7 +57,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function empty_interface() {
     $this->assertParsed(
-      [new InterfaceDeclaration([], '\\A', [], [], null, self::LINE)],
+      [new InterfaceDeclaration([], '\\A', [], [], [], null, self::LINE)],
       'interface A { }'
     );
   }
@@ -65,7 +65,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function interface_with_parent() {
     $this->assertParsed(
-      [new InterfaceDeclaration([], '\\A', ['\\B'], [], null, self::LINE)],
+      [new InterfaceDeclaration([], '\\A', ['\\B'], [], [], null, self::LINE)],
       'interface A extends B { }'
     );
   }
@@ -73,7 +73,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function interface_with_parents() {
     $this->assertParsed(
-      [new InterfaceDeclaration([], '\\A', ['\\B', '\\C'], [], null, self::LINE)],
+      [new InterfaceDeclaration([], '\\A', ['\\B', '\\C'], [], [], null, self::LINE)],
       'interface A extends B, C { }'
     );
   }
@@ -81,21 +81,21 @@ class TypesTest extends ParseTest {
   #[@test]
   public function empty_trait() {
     $this->assertParsed(
-      [new TraitDeclaration([], '\\A', [], null, self::LINE)],
+      [new TraitDeclaration([], '\\A', [], [], null, self::LINE)],
       'trait A { }'
     );
   }
 
   #[@test]
   public function class_with_trait() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->body[]= new UseExpression(['\\B'], [], self::LINE);
     $this->assertParsed([$class], 'class A { use B; }');
   }
 
   #[@test]
   public function class_with_multiple_traits() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->body[]= new UseExpression(['\\B'], [], self::LINE);
     $class->body[]= new UseExpression(['\\C'], [], self::LINE);
     $this->assertParsed([$class], 'class A { use B; use C; }');
@@ -103,7 +103,7 @@ class TypesTest extends ParseTest {
 
   #[@test]
   public function class_with_comma_separated_traits() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->body[]= new UseExpression(['\\B', '\\C'], [], self::LINE);
     $this->assertParsed([$class], 'class A { use B, C; }');
   }
@@ -111,7 +111,7 @@ class TypesTest extends ParseTest {
   #[@test]
   public function class_in_namespace() {
     $this->assertParsed(
-      [new NamespaceDeclaration('test', self::LINE), new ClassDeclaration([], '\\test\\A', null, [], [], null, self::LINE)],
+      [new NamespaceDeclaration('test', self::LINE), new ClassDeclaration([], '\\test\\A', null, [], [], [], null, self::LINE)],
       'namespace test; class A { }'
     );
   }

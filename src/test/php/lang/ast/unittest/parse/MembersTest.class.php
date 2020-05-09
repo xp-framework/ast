@@ -8,7 +8,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function private_instance_property() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Property(['private'], 'a', null, null, [], null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private $a; }');
@@ -16,7 +16,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function private_instance_properties() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Property(['private'], 'a', null, null, [], null, self::LINE));
     $class->declare(new Property(['private'], 'b', null, null, [], null, self::LINE));
 
@@ -25,7 +25,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function private_instance_method() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Method(['private'], 'a', new Signature([], null), [], [], null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private function a() { } }');
@@ -33,7 +33,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function private_static_method() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Method(['private', 'static'], 'a', new Signature([], null), [], [], null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private static function a() { } }');
@@ -41,7 +41,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function class_constant() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), self::LINE));
 
     $this->assertParsed([$class], 'class A { const T = 1; }');
@@ -49,7 +49,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function class_constants() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), self::LINE));
     $class->declare(new Constant([], 'S', null, new Literal('2', self::LINE), self::LINE));
 
@@ -58,7 +58,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function private_class_constant() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Constant(['private'], 'T', null, new Literal('1', self::LINE), self::LINE));
 
     $this->assertParsed([$class], 'class A { private const T = 1; }');
@@ -66,7 +66,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function method_with_return_type() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], new Type('void')), [], [], null, self::LINE));
 
     $this->assertParsed([$class], 'class A { public function a(): void { } }');
@@ -75,7 +75,7 @@ class MembersTest extends ParseTest {
   #[@test]
   public function method_with_annotation() {
     $annotations= ['test' => null];
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], null), [], $annotations, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { <<test>> public function a() { } }');
@@ -84,7 +84,7 @@ class MembersTest extends ParseTest {
   #[@test]
   public function method_with_annotations() {
     $annotations= ['test' => null, 'ignore' => new Literal('"Not implemented"', self::LINE)];
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], null), [], $annotations, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { <<test, ignore("Not implemented")>> public function a() { } }');
@@ -169,7 +169,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function typed_property() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Property(['private'], 'a', new Type('string'), null, [], null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private string $a; }');
@@ -177,7 +177,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function typed_property_with_value() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Property(['private'], 'a', new Type('string'), new Literal('"test"', self::LINE), [], null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private string $a = "test"; }');
@@ -185,7 +185,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function typed_properties() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Property(['private'], 'a', new Type('string'), null, [], null, self::LINE));
     $class->declare(new Property(['private'], 'b', new Type('string'), null, [], null, self::LINE));
     $class->declare(new Property(['private'], 'c', new Type('int'), null, [], null, self::LINE));
@@ -195,7 +195,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function typed_constant() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), self::LINE));
 
     $this->assertParsed([$class], 'class A { const int T = 1; }');
@@ -203,7 +203,7 @@ class MembersTest extends ParseTest {
 
   #[@test]
   public function typed_constants() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), self::LINE));
     $class->declare(new Constant([], 'S', new Type('int'), new Literal('2', self::LINE), self::LINE));
     $class->declare(new Constant([], 'I', new Type('string'), new Literal('"i"', self::LINE), self::LINE));

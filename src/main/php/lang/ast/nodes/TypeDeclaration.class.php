@@ -1,8 +1,20 @@
 <?php namespace lang\ast\nodes;
 
 abstract class TypeDeclaration extends Annotated {
-  public $name, $modifiers, $annotations, $comment;
-  public $body= [];
+  public $modifiers, $name, $body, $annotations, $comment;
+
+  public function __construct($modifiers, $name, $body= [], $annotations= [], $comment= null, $line= -1) {
+    $this->modifiers= $modifiers;
+    $this->name= $name;
+    $this->annotations= $annotations;
+    $this->comment= $comment;
+    $this->line= $line;
+    $this->body= [];
+    foreach ($body as $node) {
+      $node->holder= $this->name;
+      $this->body[]= $node;
+    }
+  }
 
   /** @return iterable */
   public function children() { return $this->body; }

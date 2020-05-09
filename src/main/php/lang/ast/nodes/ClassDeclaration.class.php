@@ -4,14 +4,10 @@ class ClassDeclaration extends TypeDeclaration {
   public $kind= 'class';
   public $parent, $implements;
 
-  public function __construct($modifiers, $name, $parent= null, $implements= [], $annotations= [], $comment= null, $line= -1) {
-    $this->modifiers= $modifiers;
-    $this->name= $name;
+  public function __construct($modifiers, $name, $parent= null, $implements= [], $body= [], $annotations= [], $comment= null, $line= -1) {
+    parent::__construct($modifiers, $name, $body, $annotations, $comment, $line);
     $this->parent= $parent;
     $this->implements= $implements;
-    $this->annotations= $annotations;
-    $this->comment= $comment;
-    $this->line= $line;
   }
 
   public function parent() { return $this->parent; }
