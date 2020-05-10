@@ -54,7 +54,8 @@ use lang\ast\nodes\{
   YieldExpression,
   YieldFromExpression
 };
-use lang\ast\{ArrayType, FunctionType, Language, MapType, Token, Type, UnionType};
+use lang\ast\types\{IsArray, IsFunction, IsMap, IsUnion, IsValue, IsNullable, IsGeneric, IsLiteral};
+use lang\ast\{Token, Language};
 
 /**
  * PHP language
@@ -914,15 +915,29 @@ class PHP extends Language {
         $parse->forward();
         continue;
       }
-      return 1 === sizeof($t) ? $t[0] : new UnionType($t);
+      return 1 === sizeof($t) ? $t[0] : new IsUnion($t);
     } while (true);
   }
 
   private function type0($parse, $optional) {
+    static $literal= [
+      'string'   => true,
+      'int'      => true,
+      'float'    => true,
+      'bool'     => true,
+      'mixed'    => true,
+      'array'    => true,
+      'void'     => true,
+      'resource' => true,
+      'callable' => true,
+      'iterable' => true,
+      'object'   => true,
+      'double'   => true,  // BC
+    ];
+
     if ('?' === $parse->token->value) {
       $parse->forward();
-      $type= '?'.$parse->scope->resolve($parse->token->value);
-      $parse->forward();
+      return new IsNullable($this->type($parse, false));
     } else if ('(' === $parse->token->value) {
       $parse->forward();
       $type= $this->type($parse, false);
@@ -944,7 +959,7 @@ class PHP extends Language {
       } while (null !== $parse->token->value);
       $parse->expecting(')', 'type');
       $parse->expecting(':', 'type');
-      return new FunctionType($signature, $this->type($parse, false));
+      return new IsFunction($signature, $this->type($parse, false));
     } else if ('name' === $parse->token->kind) {
       $type= $parse->scope->resolve($parse->token->value);
       $parse->forward();
@@ -972,13 +987,13 @@ class PHP extends Language {
       $parse->expecting('>', 'type');
 
       if ('array' === $type) {
-        return 1 === sizeof($components) ? new ArrayType($components[0]) : new MapType($components[0], $components[1]);
+        return 1 === sizeof($components) ? new IsArray($components[0]) : new IsMap($components[0], $components[1]);
       } else {
-        return new GenericType($type, $components);
+        return new IsGeneric($type, $components);
       }
-    } else {
-      return new Type($type);
     }
+
+    return isset($literal[$type]) ? new IsLiteral($type) : new IsValue($type);
   }
 
   private function properties($parse, &$body, $meta, $modifiers, $type, $holder) {

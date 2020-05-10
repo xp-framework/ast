@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{ArrayLiteral, BinaryExpression, FunctionDeclaration, Literal, Parameter, ReturnStatement, Signature, YieldExpression, YieldFromExpression};
-use lang\ast\{FunctionType, Type};
+use lang\ast\types\{IsFunction, IsLiteral, IsNullable};
 use unittest\Assert;
 
 class FunctionsTest extends ParseTest {
@@ -54,7 +54,7 @@ class FunctionsTest extends ParseTest {
 
   #[@test]
   public function with_typed_parameter() {
-    $params= [new Parameter('param', new Type('string'), null, false, false, null, [])];
+    $params= [new Parameter('param', new IsLiteral('string'), null, false, false, null, [])];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null), [], self::LINE)],
       'function a(string $param) { }'
@@ -63,7 +63,7 @@ class FunctionsTest extends ParseTest {
 
   #[@test]
   public function with_nullable_typed_parameter() {
-    $params= [new Parameter('param', new Type('?string'), null, false, false, null, [])];
+    $params= [new Parameter('param', new IsNullable(new IsLiteral('string')), null, false, false, null, [])];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null), [], self::LINE)],
       'function a(?string $param) { }'
@@ -99,7 +99,7 @@ class FunctionsTest extends ParseTest {
 
   #[@test]
   public function with_typed_parameter_named_function() {
-    $params= [new Parameter('function', new FunctionType([], new Type('void')), null, false, false, null, [])];
+    $params= [new Parameter('function', new IsFunction([], new IsLiteral('void')), null, false, false, null, [])];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null), [], self::LINE)],
       'function a((function(): void) $function) { }'
@@ -109,7 +109,7 @@ class FunctionsTest extends ParseTest {
   #[@test]
   public function with_return_type() {
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], new Type('void')), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], new IsLiteral('void')), [], self::LINE)],
       'function a(): void { }'
     );
   }
@@ -117,7 +117,7 @@ class FunctionsTest extends ParseTest {
   #[@test]
   public function with_nullable_return() {
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], new Type('?string')), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], new IsNullable(new IsLiteral('string'))), [], self::LINE)],
       'function a(): ?string { }'
     );
   }

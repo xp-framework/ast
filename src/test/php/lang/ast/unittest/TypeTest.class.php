@@ -1,12 +1,79 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\Type;
+use lang\ast\types\{IsLiteral, IsArray, IsMap, IsNullable, IsGeneric, IsValue};
+use lang\ast\{Language, Tokens};
+use unittest\Assert;
 
-class TypeTest extends \unittest\TestCase {
+class TypeTest {
 
-  #[@test]
-  public function can_create() {
-    new Type('string');
+  /**
+   * Parse a type
+   *
+   * @param  string $t Type literal
+   * @return lang.ast.Type
+   */
+  private function parse($t) {
+    return Language::named('PHP')
+      ->parse(new Tokens('function fixture(): '.$t.' { }'))
+      ->tree()
+      ->children()[0]
+      ->signature
+      ->returns
+    ;
+  }
+
+  #[@test, @values([
+  #  'string',
+  #  'int',
+  #  'bool',
+  #  'mixed',
+  #  'float',
+  #  'array',
+  #  'object',
+  #  'resource',
+  #  'iterable',
+  #  'callable',
+  #  'double',
+  #])]
+  public function literals($t) {
+    Assert::equals(new IsLiteral($t), $this->parse($t));
+  }
+
+  #[@test, @values(['int', 'string'])]
+  public function arrays($t) {
+    Assert::equals(new IsArray(new IsLiteral($t)), $this->parse('array<'.$t.'>'));
+  }
+
+  #[@test, @values(['int', 'string'])]
+  public function maps($t) {
+    Assert::equals(new IsMap(new IsLiteral('string'), new IsLiteral($t)), $this->parse('array<string, '.$t.'>'));
+  }
+
+  #[@test, @values(['int', 'string'])]
+  public function nullable($t) {
+    Assert::equals(new IsNullable(new IsLiteral($t)), $this->parse('?'.$t));
+  }
+
+  #[@test, @values(['int', 'string'])]
+  public function generic_list($t) {
+    Assert::equals(new IsGeneric('List', [new IsLiteral($t)]), $this->parse('List<'.$t.'>'));
+  }
+
+  #[@test, @values(['int', 'string'])]
+  public function generic_map($t) {
+    Assert::equals(new IsGeneric('Map', [new IsLiteral('string'), new IsLiteral($t)]), $this->parse('Map<string, '.$t.'>'));
+  }
+
+  #[@test, @values([
+  #  'self',
+  #  'static',
+  #  'parent',
+  #  'Value',
+  #  '\\lang\\Value',
+  #])]
+  public function values($t) {
+    Assert::equals(new IsValue($t), $this->parse($t));
   }
 
   #[@test, @values([
@@ -21,7 +88,7 @@ class TypeTest extends \unittest\TestCase {
   #  '?\\lang\\Value',
   #])]
   public function literal($literal) {
-    $this->assertEquals($literal, (new Type($literal))->literal());
+    Assert::equals($literal, (new Type($literal))->literal());
   }
 
   #[@test, @values([
@@ -36,6 +103,6 @@ class TypeTest extends \unittest\TestCase {
   #  ['?\\lang\\Value', '?lang.Value'],
   #])]
   public function name($literal, $name) {
-    $this->assertEquals($name, (new Type($literal))->name());
+    Assert::equals($name, (new Type($literal))->name());
   }
 }

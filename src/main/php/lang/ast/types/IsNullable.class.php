@@ -1,22 +1,24 @@
-<?php namespace lang\ast;
+<?php namespace lang\ast\types;
 
-class VariadicType extends Type {
+use lang\ast\Type;
+
+class IsNullable extends Type {
   public $element;
 
   /**
    * Creates a new element
    *
-   * @param  $element
+   * @param  parent $element
    */
   public function __construct(Type $element) {
     $this->element= $element;
   }
 
   /** @return string */
-  public function literal() { $this->element->literal().'...'; }
+  public function literal() { return '?'.$this->element->literal(); }
 
   /** @return string */
-  public function name() { return $this->element->name().'...'; }
+  public function name() { return '?'.$this->element->name(); }
 
   /**
    * Compare

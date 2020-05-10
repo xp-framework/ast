@@ -12,17 +12,18 @@ class Scope {
     'string'   => true,
     'int'      => true,
     'float'    => true,
-    'double'   => true,
     'bool'     => true,
+    'mixed'    => true,
     'array'    => true,
     'void'     => true,
+    'resource' => true,
     'callable' => true,
     'iterable' => true,
     'object'   => true,
     'self'     => true,
     'static'   => true,
     'parent'   => true,
-    'mixed'    => true
+    'double'   => true,  // BC
   ];
 
   public $parent;

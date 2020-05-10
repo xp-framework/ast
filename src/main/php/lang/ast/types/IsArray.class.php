@@ -1,6 +1,8 @@
-<?php namespace lang\ast;
+<?php namespace lang\ast\types;
 
-class ArrayType extends Type {
+use lang\ast\Type;
+
+class IsArray extends Type {
   public $component;
 
   /**
