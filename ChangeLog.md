@@ -3,6 +3,19 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 5.0.0 / ????-??-??
+
+* Merged PR #1: Integrate parser
+  - Migrate tokenizer, parser and language from xp-framework/compiler
+  - Added enclosing type to constants, properties and methods
+  - Added `lang.ast.Node::is()` method to check for node kind
+  - Added `lang.ast.nodes.TypeDeclaration::declare()` in favor of `inject`.
+  - Added new parse tree API
+  - Added new visitor API
+  - Refactored types API to dedicated package `lang.ast.types`
+  - Added dedicated classes for nullable, literal and value types
+  (@thekid)
+
 ## 4.0.0 / 2019-11-30
 
 * Dropped support for PHP 5.6, see xp-framework/rfc#334 - @thekid
