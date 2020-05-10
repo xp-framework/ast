@@ -813,11 +813,18 @@ class PHP extends Language {
             $method= $parse->scope->resolve($method).'::'.$parse->token->value;
             $parse->forward();
           }
-          $parse->expecting('as', 'use');
-          $alias= $parse->token->value;
+
+          if ('as' === $parse->token->value ) {
+            $parse->forward();
+            $aliases[$method]= ['as' => $parse->token->value];
+          } else if ('insteadof' === $parse->token->value) {
+            $parse->forward();
+            $aliases[$method]= ['insteadof' => $parse->scope->resolve($parse->token->value)];
+          } else {
+            $parse->expecting('as or insteadof', 'use');
+          }
           $parse->forward();
           $parse->expecting(';', 'use');
-          $aliases[$method]= $alias;
         }
         $parse->expecting('}', 'use');
       } else {

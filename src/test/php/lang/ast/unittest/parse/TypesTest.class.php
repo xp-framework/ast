@@ -109,6 +109,21 @@ class TypesTest extends ParseTest {
   }
 
   #[@test]
+  public function class_with_trait_and_aliases() {
+    $aliases= ['a' => ['as' => 'first'], '\\B::b' => ['as' => 'second'], '\\C::c' => ['insteadof' => '\\B']];
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $class->body[]= new UseExpression(['\\B', '\\C'], $aliases, self::LINE + 1);
+
+    $this->assertParsed([$class], 'class A {
+      use B, C {
+        a as first;
+        B::b as second;
+        C::c insteadof B;
+      }
+    }');
+  }
+
+  #[@test]
   public function class_in_namespace() {
     $this->assertParsed(
       [new NamespaceDeclaration('test', self::LINE), new ClassDeclaration([], '\\test\\A', null, [], [], [], null, self::LINE)],
