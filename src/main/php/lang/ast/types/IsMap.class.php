@@ -1,13 +1,15 @@
-<?php namespace lang\ast;
+<?php namespace lang\ast\types;
 
-class MapType extends Type {
+use lang\ast\Type;
+
+class IsMap extends Type {
   public $key, $value;
 
   /**
    * Creates a new type
    *
-   * @param  self $key
-   * @param  self $value
+   * @param  parent $key
+   * @param  parent $value
    */
   public function __construct($key, $value) {
     $this->key= $key;

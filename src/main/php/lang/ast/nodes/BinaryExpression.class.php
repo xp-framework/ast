@@ -15,4 +15,5 @@ class BinaryExpression extends Node {
 
   /** @return iterable */
   public function children() { return [$this->left, $this->right]; }
+
 }

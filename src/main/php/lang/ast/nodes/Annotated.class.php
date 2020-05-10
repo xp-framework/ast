@@ -18,4 +18,14 @@ abstract class Annotated extends Node {
       : null
     ;
   }
+
+  /**
+   * Checks whether this node is of a given kind
+   *
+   * @param  string $kind
+   * @return bool
+   */
+  public function is($kind) {
+    return '@annotated' === $kind;
+  }
 }

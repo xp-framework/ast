@@ -14,4 +14,5 @@ class ScopeExpression extends Node {
 
   /** @return iterable */
   public function children() { return [$this->member]; }
+
 }

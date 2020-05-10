@@ -21,7 +21,7 @@ use lang\ast\Code;
 Transformations::register('class', function($codegen, $class) {
   if ($class->annotation('getters')) {
     foreach ($class->properties() as $property) {
-      $class->inject(new Method(
+      $class->declare(new Method(
         ['public'],
         $property->name,
         new Signature([], $property->type),

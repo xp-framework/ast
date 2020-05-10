@@ -1,9 +1,77 @@
 <?php namespace lang\ast\nodes;
 
 abstract class TypeDeclaration extends Annotated {
+  public $modifiers, $name, $body, $annotations, $comment;
+
+  public function __construct($modifiers, $name, $body= [], $annotations= [], $comment= null, $line= -1) {
+    $this->modifiers= $modifiers;
+    $this->name= $name;
+    $this->annotations= $annotations;
+    $this->comment= $comment;
+    $this->line= $line;
+    $this->body= [];
+    foreach ($body as $lookup => $node) {
+      $node->holder= $this->name;
+      $this->body[$lookup]= $node;
+    }
+  }
 
   /** @return iterable */
   public function children() { return $this->body; }
+
+  /**
+   * Checks whether this node is of a given kind
+   *
+   * @param  string $kind
+   * @return bool
+   */
+  public function is($kind) {
+    return $this->kind === $kind || '@type' === $kind || parent::is($kind);
+  }
+
+  /**
+   * Returns class name (excluding the leading backslash)
+   *
+   * @return string
+   */
+  public function name() {
+    return substr($this->name, 1);
+  }
+
+  /**
+   * Returns class declaration
+   *
+   * @return string
+   */
+  public function declaration() {
+    return substr($this->name, strrpos($this->name, '\\') + 1);
+  }
+
+  public function parent() { return null; }
+
+  public function interfaces() { return []; }
+
+  /** @return iterable */
+  public function traits() {
+    foreach ($this->body as $node) {
+      if ('use' === $node->kind) yield from $node->types;
+    }
+  }
+
+  /**
+   * Declare a given member
+   *
+   * @param  lang.ast.nodes.Member $member
+   * @return bool Whether anything was declared
+   */
+  public function declare(Member $member) {
+    $lookup= $member->lookup();
+    if (isset($this->body[$lookup])) return false;
+
+    $member->holder= $this->name;
+    $this->body[$lookup]= $member;
+    return true;
+  }
 
   /**
    * Overwrite a given member; if it is already present, replace.
@@ -15,28 +83,22 @@ abstract class TypeDeclaration extends Annotated {
     $lookup= $member->lookup();
     $overwritten= isset($this->body[$lookup]);
 
+    $member->holder= $this->name;
     $this->body[$lookup]= $member;
     return $overwritten;
   }
 
-  /**
-   * Inject a given member; if it is already present, do not touch.
-   *
-   * @param  lang.ast.nodes.Member $member
-   * @return bool Whether anything was injected
-   */
-  public function inject(Member $member) {
-    $lookup= $member->lookup();
-    if (isset($this->body[$lookup])) return false;
-
-    $this->body[$lookup]= $member;
-    return true;
+  /** @return iterable */
+  public function members() {
+    foreach ($this->body as $lookup => $node) {
+      if ($node->is('@member')) yield $lookup => $node;
+    }
   }
 
   /** @return iterable */
   public function methods() {
     foreach ($this->body as $node) {
-      if ('method' === $node->kind) yield $node;
+      if ('method' === $node->kind) yield $node->name => $node;
     }
   }
 
@@ -54,7 +116,7 @@ abstract class TypeDeclaration extends Annotated {
   /** @return iterable */
   public function properties() {
     foreach ($this->body as $node) {
-      if ('property' === $node->kind) yield $node;
+      if ('property' === $node->kind) yield $node->name => $node;
     }
   }
 
@@ -72,7 +134,7 @@ abstract class TypeDeclaration extends Annotated {
   /** @return iterable */
   public function constants() {
     foreach ($this->body as $node) {
-      if ('const' === $node->kind) yield $node;
+      if ('const' === $node->kind) yield $node->name => $node;
     }
   }
 
@@ -80,7 +142,7 @@ abstract class TypeDeclaration extends Annotated {
    * Returns a constant
    *
    * @param  string $name
-   * @return lang.ast.nodes.ConstValue or NULL
+   * @return lang.ast.nodes.Constant or NULL
    */
   public function constant($name) {
     return isset($this->body[$name]) ? $this->body[$name] : null;

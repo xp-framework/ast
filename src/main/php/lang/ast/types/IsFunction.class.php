@@ -1,6 +1,8 @@
-<?php namespace lang\ast;
+<?php namespace lang\ast\types;
 
-class FunctionType extends Type {
+use lang\ast\Type;
+
+class IsFunction extends Type {
   public $signature, $returns;
 
   /**

@@ -10,4 +10,7 @@ class Literal extends Node {
     $this->expression= $expression;
     $this->line= $line;
   }
+
+  /** @return string */
+  public function __toString() { return $this->expression; }
 }

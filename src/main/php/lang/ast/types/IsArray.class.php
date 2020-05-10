@@ -1,6 +1,8 @@
-<?php namespace lang\ast;
+<?php namespace lang\ast\types;
 
-class ArrayType extends Type {
+use lang\ast\Type;
+
+class IsArray extends Type {
   public $component;
 
   /**
@@ -17,4 +19,5 @@ class ArrayType extends Type {
 
   /** @return string */
   public function name() { return $this->component->name().'[]'; }
+
 }

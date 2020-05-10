@@ -1,12 +1,14 @@
-<?php namespace lang\ast;
+<?php namespace lang\ast\types;
 
-class UnionType extends Type {
+use lang\ast\Type;
+
+class IsUnion extends Type {
   public $components;
 
   /**
    * Creates a new type
    *
-   * @param  self[] $components
+   * @param  parent[] $components
    */
   public function __construct($components= []) {
     $this->components= $components;

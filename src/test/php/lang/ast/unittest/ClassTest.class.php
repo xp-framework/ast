@@ -1,43 +1,51 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\nodes\{ClassDeclaration, Method, Signature};
-use unittest\TestCase;
+use unittest\Assert;
 
-class ClassTest extends TestCase {
+class ClassTest {
   private $method;
 
-  /** @return void */
-  public function setUp() {
+  #[@before]
+  public function initialize() {
     $this->method= new Method([], 'toString', new Signature([], null), [], [], null);
   }
 
   #[@test]
   public function method() {
-    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => $this->method], [], null);
-    $this->assertEquals($this->method, $fixture->method('toString'));
+    $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
+    $fixture->declare($this->method);
+
+    Assert::equals($this->method, $fixture->method('toString'));
   }
 
   #[@test]
   public function methods() {
-    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => $this->method], [], null);
-    $this->assertEquals([$this->method], iterator_to_array($fixture->methods()));
+    $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
+    $fixture->declare($this->method);
+    
+    Assert::equals(['toString' => $this->method], iterator_to_array($fixture->methods()));
   }
 
   #[@test]
   public function overwrite() {
     $overwritten= new Method([], 'toString', new Signature([], null), [], [], 'Overwritten');
 
-    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => $this->method], [], null);
+    $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
+    $fixture->declare($this->method);
     $fixture->overwrite($overwritten);
-    $this->assertEquals($overwritten, $fixture->method('toString'));
+
+    Assert::equals($overwritten, $fixture->method('toString'));
   }
 
   #[@test]
-  public function inject() {
+  public function declare() {
     $overwritten= new Method([], 'toString', new Signature([], null), [], [], 'Overwritten');
 
-    $fixture= new ClassDeclaration([], 'Test', null, [], ['toString()' => $this->method], [], null);
-    $fixture->inject($overwritten);
-    $this->assertEquals($this->method, $fixture->method('toString'));
+    $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
+    $fixture->declare($this->method);
+    $fixture->declare($overwritten);
+
+    Assert::equals($this->method, $fixture->method('toString'));
   }
 }

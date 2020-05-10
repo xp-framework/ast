@@ -1,13 +1,15 @@
-<?php namespace lang\ast;
+<?php namespace lang\ast\types;
 
-class GenericType extends Type {
+use lang\ast\Type;
+
+class IsGeneric extends Type {
   public $base, $components;
 
   /**
    * Creates a new type
    *
    * @param  string $base
-   * @param  self[] $components
+   * @param  parent[] $components
    */
   public function __construct($base, $components= []) {
     $this->base= $base;
