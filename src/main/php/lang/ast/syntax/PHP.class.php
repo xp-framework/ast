@@ -426,6 +426,10 @@ class PHP extends Language {
       return new GotoStatement($label, $token->line);
     });
 
+    $this->prefix('throw', 0, function($parse, $token) {
+      return new ThrowExpression($this->expression($parse, 0), $token->line);
+    });
+
     $this->prefix('(variable)', 0, function($parse, $token) {
       return new Variable($token->value, $token->line);
     });

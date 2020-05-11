@@ -5,6 +5,7 @@ XP AST ChangeLog
 
 ## 5.0.0 / ????-??-??
 
+* Integrated `throw` expressions, see xp-framework/compiler#85 - @thekid
 * Fixed missing support for `insteadof` trait keyword - @thekid
 * Merged PR #1: Integrate parser
   - Migrate tokenizer, parser and language from xp-framework/compiler
