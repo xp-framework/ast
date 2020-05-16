@@ -726,9 +726,11 @@ class PHP extends Language {
     });
 
     $this->stmt('<<', function($parse, $token) {
-      $parse->scope->annotations= $this->annotations($parse, 'annotations');
-
-      return new Annotations($parse->scope->annotations, $token->line);
+      $annotations= $this->annotations($parse, 'annotations');
+      foreach ($annotations as $name => $value) {
+        $parse->scope->annotations[$name]= $value;
+      }
+      return new Annotations($annotations, $token->line);
     });
 
     $this->stmt('#[', function($parse, $token) {
