@@ -56,6 +56,14 @@ class AttributesTest extends ParseTest {
     );
   }
 
+  #[@test, @ignore('Not yet implemented')]
+  public function on_constant() {
+    $this->assertAnnotated(
+      ['service' => null],
+      $this->type('class T { @@test const FIXTURE = 1; }')->constant('FIXTURE')
+    );
+  }
+
   #[@test]
   public function on_property() {
     $this->assertAnnotated(
