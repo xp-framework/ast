@@ -33,6 +33,14 @@ class AttributesTest extends ParseTest {
   }
 
   #[@test]
+  public function on_anonymous_class() {
+    $this->assertAnnotated(
+      ['service' => null],
+      $this->parse('$object= new @@service class() { };')->tree()->children()[0]->expression->definition
+    );
+  }
+
+  #[@test]
   public function on_property() {
     $this->assertAnnotated(
       ['test' => null], 
