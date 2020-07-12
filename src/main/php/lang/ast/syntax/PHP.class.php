@@ -300,8 +300,8 @@ class PHP extends Language {
         $parse->forward();
       } else if ('@@' === $parse->token->value) {
         $parse->forward();
-        $this->attribute($parse, $parse->scope->annotations, 'new type annotations');
-        $parse->expecting('class', 'annotated anonymous class');
+        $this->attribute($parse, $parse->scope->annotations, 'anonymous class annotations');
+        $parse->expecting('class', 'anonymous class annotations');
         $type= null;
       } else {
         $type= $parse->scope->resolve($parse->token->value);
