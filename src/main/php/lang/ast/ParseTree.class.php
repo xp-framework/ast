@@ -29,6 +29,19 @@ class ParseTree {
   public function file() { return $this->file; }
 
   /**
+   * Returns a type by its name
+   *
+   * @param  string $name
+   * @return ?lang.ast.TypeDeclaration
+   */
+  public function type($name) {
+    foreach ($this->children as $node) {
+      if ($node->is('@type') && $name === $node->name()) return $node;
+    }
+    return null;
+  }
+
+  /**
    * Returns all types
    *
    * @return iterable
