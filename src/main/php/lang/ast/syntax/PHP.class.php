@@ -1181,12 +1181,12 @@ class PHP extends Language {
 
     $parameters= [];
     while (')' !== $parse->token->value) {
-      if ('<<' === $parse->token->value) {
-        $parse->forward();
-        $annotations= $this->annotations($parse, 'parameter annotation');
-      } else if ('@@' === $parse->token->value) {
+      if ('@@' === $parse->token->value) {
         $parse->forward();
         $this->attribute($parse, $annotations, 'parameter annotations');
+      } else if ('<<' === $parse->token->value) {
+        $parse->forward();
+        $annotations= $this->annotations($parse, 'parameter annotation');
       } else {
         $annotations= [];
       }
@@ -1267,12 +1267,12 @@ class PHP extends Language {
         $f($parse, $body, $meta, $modifiers, $holder);
         $modifiers= [];
         $meta= [];
-      } else if ('<<' === $parse->token->value) {
-        $parse->forward();
-        $meta= [DETAIL_ANNOTATIONS => $this->annotations($parse, 'member annotations')];
       } else if ('@@' === $parse->token->value) {
         $parse->forward();
         $this->attribute($parse, $meta[DETAIL_ANNOTATIONS], 'member annotations');
+      } else if ('<<' === $parse->token->value) {
+        $parse->forward();
+        $meta= [DETAIL_ANNOTATIONS => $this->annotations($parse, 'member annotations')];
       } else if ('#[' === $parse->token->value) {
         $parse->forward();
         $meta= $this->meta($parse, 'member annotations');
