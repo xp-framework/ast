@@ -109,6 +109,15 @@ class AttributesTest extends ParseTest {
     );
   }
 
+  #[@test]
+  public function name_resolved_to_import_alias() {
+    $this->assertAnnotated(
+      ['unittest\\TestAttribute' => []],
+      $this->parse('use unittest\TestAttribute as Test; @@Test class T { }')->tree()->type('T')
+    );
+  }
+
+
   #[@test, @values('attributes')]
   public function on_function($attributes, $expected) {
     $tree= $this->parse($attributes.' function fixture() { }')->tree();
