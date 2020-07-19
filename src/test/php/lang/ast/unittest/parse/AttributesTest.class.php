@@ -40,20 +40,14 @@ class AttributesTest extends ParseTest {
     );
   }
 
-  #[@test, @ignore('Not yet implemented')]
-  public function on_function() {
-    $this->assertAnnotated(
-      ['service' => []],
-      $this->parse('$apply= @@service function() { };')->tree()->children()[0]->expression
-    );
-  }
-
-  #[@test, @ignore('Not yet implemented')]
-  public function on_lambda() {
-    $this->assertAnnotated(
-      ['service' => []],
-      $this->parse('$apply= @@service fn() => true;')->tree()->children()[0]->expression
-    );
+  #[@test, @values([
+  #  ['@@service function() { }', ['service' => []]],
+  #  ['@@service fn() => true', ['service' => []]],
+  #  ['@@service @@version(1) function() { }', ['service' => [], 'version' => [new Literal('1', self::LINE)]]],
+  #  ['@@service @@version(1) fn() => true', ['service' => [], 'version' => [new Literal('1', self::LINE)]]],
+  #])]
+  public function on_function($declaration, $expected) {
+    $this->assertAnnotated($expected, $this->parse('$apply= '.$declaration.';')->tree()->children()[0]->expression);
   }
 
   #[@test, @ignore('Not yet implemented')]
