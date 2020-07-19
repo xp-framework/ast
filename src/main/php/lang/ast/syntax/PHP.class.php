@@ -892,7 +892,7 @@ class PHP extends Language {
           $name,
           $type,
           $this->expression($parse, 0),
-          isset($meta[DETAIL_ANNOTATIONS]) ? $meta[DETAIL_ANNOTATIONS] : [],
+          $meta[DETAIL_ANNOTATIONS] ?? [],
           $line
         );
         $body[$name]->holder= $holder;
@@ -938,7 +938,7 @@ class PHP extends Language {
         $name,
         $signature,
         $statements,
-        isset($meta[DETAIL_ANNOTATIONS]) ? $meta[DETAIL_ANNOTATIONS] : [],
+        $meta[DETAIL_ANNOTATIONS] ?? [],
         $comment,
         $line
       );
@@ -1038,7 +1038,7 @@ class PHP extends Language {
   private function properties($parse, &$body, $meta, $modifiers, $type, $holder) {
     $comment= $parse->comment;
     $parse->comment= null;
-    $annotations= isset($meta[DETAIL_ANNOTATIONS]) ? $meta[DETAIL_ANNOTATIONS] : [];
+    $annotations= $meta[DETAIL_ANNOTATIONS] ?? [];
 
     while (';' !== $parse->token->value) {
       $line= $parse->token->line;
