@@ -469,14 +469,14 @@ class PHP extends Language {
         if ('default' === $parse->token->value) {
           $parse->forward();
           $parse->expecting('=>', 'match');
-          $default= [$this->expression($parse, 0)];
+          $default= $this->expression($parse, 0);
         } else {
           $match= [];
           do {
             $match[]= $this->expression($parse, 0);
           } while (',' === $parse->token->value && $parse->forward() | true);
           $parse->expecting('=>', 'match');
-          $cases[]= new MatchCondition($match, [$this->expression($parse, 0)], $parse->token->line);
+          $cases[]= new MatchCondition($match, $this->expression($parse, 0), $parse->token->line);
         }
 
         if (',' === $parse->token->value) {

@@ -96,7 +96,7 @@ class ConditionalTest extends ParseTest {
   #[@test]
   public function match_with_trailing_comma() {
     $cases= [
-      new MatchCondition([new Literal('1', self::LINE)], $this->blocks[1], self::LINE),
+      new MatchCondition([new Literal('1', self::LINE)], $this->blocks[1][0], self::LINE),
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('condition', self::LINE), $cases, null, self::LINE)],
@@ -107,8 +107,8 @@ class ConditionalTest extends ParseTest {
   #[@test]
   public function match_with_two_cases() {
     $cases= [
-      new MatchCondition([new Literal('1', self::LINE)], $this->blocks[1], self::LINE),
-      new MatchCondition([new Literal('2', self::LINE)], $this->blocks[2], self::LINE)
+      new MatchCondition([new Literal('1', self::LINE)], $this->blocks[1][0], self::LINE),
+      new MatchCondition([new Literal('2', self::LINE)], $this->blocks[2][0], self::LINE)
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('condition', self::LINE), $cases, null, self::LINE)],
@@ -119,10 +119,10 @@ class ConditionalTest extends ParseTest {
   #[@test]
   public function match_with_multi_expression_case_and_default() {
     $cases= [
-      new MatchCondition([new Literal('1', self::LINE), new Literal('2', self::LINE)], $this->blocks[1], self::LINE),
+      new MatchCondition([new Literal('1', self::LINE), new Literal('2', self::LINE)], $this->blocks[1][0], self::LINE),
     ];
     $this->assertParsed(
-      [new MatchExpression(new Variable('condition', self::LINE), $cases, $this->blocks[2], self::LINE)],
+      [new MatchExpression(new Variable('condition', self::LINE), $cases, $this->blocks[2][0], self::LINE)],
       'match ($condition) { 1, 2 => action1(), default => action2() };'
     );
   }
