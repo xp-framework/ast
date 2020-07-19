@@ -3,10 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
-* Merged PR #7: PHP8 attributes support - @thekid
-
 ## 5.0.0 / ????-??-??
 
+* Added builtin support for null-safe instance operator `?->`, see
+  https://wiki.php.net/rfc/nullsafe_operator
+  (@thekid)
+* Merged PR #7: PHP8 attributes support - @thekid
 * Integrated `throw` expressions, see xp-framework/compiler#85 - @thekid
 * Fixed missing support for `insteadof` trait keyword - @thekid
 * Merged PR #1: Integrate parser

@@ -137,6 +137,21 @@ class PHP extends Language {
       return new InstanceExpression($left, $expr, $token->line);
     });
 
+    $this->infix('?->', 100, function($parse, $node, $left) {
+      if ('{' === $parse->token->value) {
+        $parse->forward();
+        $expr= $this->expression($parse, 0);
+        $parse->expecting('}', 'dynamic member');
+      } else {
+        $expr= new Literal($parse->token->value);
+        $parse->forward();
+      }
+
+      $value= new InstanceExpression($left, $expr, $node->line);
+      $value->kind= 'nullsafeinstance';
+      return $value;
+    });
+
     $this->infix('::', 120, function($parse, $token, $left) {
       $scope= $left instanceof Literal ? $parse->scope->resolve($left->expression) : $left;
 
