@@ -1077,7 +1077,7 @@ class PHP extends Language {
   public function attributes($parse, $context) {
     $annotations= [];
     do {
-      $name= $parse->token->value;
+      $name= ltrim($parse->scope->resolve($parse->token->value), '\\');
       $parse->forward();
 
       if ('(' === $parse->token->value) {

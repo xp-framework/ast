@@ -21,8 +21,8 @@ class AttributesTest extends ParseTest {
    * @return iterable
    */
   private function attributes() {
-    yield ['@@service', ['service' => []]];
-    yield ['@@service @@version(1)', ['service' => [], 'version' => [new Literal('1', self::LINE)]]];
+    yield ['@@Service', ['Service' => []]];
+    yield ['@@Service @@Version(1)', ['Service' => [], 'Version' => [new Literal('1', self::LINE)]]];
   }
 
   /**
@@ -39,14 +39,17 @@ class AttributesTest extends ParseTest {
 
   #[@test]
   public function without_arguments() {
-    $this->assertAnnotated(['service' => []], $this->type('@@service() class T { }'));
+    $this->assertAnnotated(
+      ['Service' => []],
+      $this->type('@@Service() class T { }')
+    );
   }
 
   #[@test, @values(['"test"', '1', '1.5', 'true', 'false', 'null'])]
   public function with_literal_argument($value) {
     $this->assertAnnotated(
-      ['service' => [new Literal($value, self::LINE)]],
-      $this->type('@@service('.$value.') class T { }')
+      ['Service' => [new Literal($value, self::LINE)]],
+      $this->type('@@Service('.$value.') class T { }')
     );
   }
 
@@ -57,8 +60,8 @@ class AttributesTest extends ParseTest {
       [null, new Literal('2', self::LINE)],
     ];
     $this->assertAnnotated(
-      ['service' => [new ArrayLiteral($elements, self::LINE)]],
-      $this->type('@@service([1, 2]) class T { }')
+      ['Service' => [new ArrayLiteral($elements, self::LINE)]],
+      $this->type('@@Service([1, 2]) class T { }')
     );
   }
 
@@ -69,16 +72,16 @@ class AttributesTest extends ParseTest {
       [new Literal('"two"', self::LINE), new Literal('2', self::LINE)],
     ];
     $this->assertAnnotated(
-      ['service' => [new ArrayLiteral($elements, self::LINE)]],
-      $this->type('@@service(["one" => 1, "two" => 2]) class T { }')
+      ['Service' => [new ArrayLiteral($elements, self::LINE)]],
+      $this->type('@@Service(["one" => 1, "two" => 2]) class T { }')
     );
   }
 
   #[@test]
   public function with_two_arguments() {
     $this->assertAnnotated(
-      ['service' => [new Literal('1', self::LINE), new Literal('2', self::LINE)]],
-      $this->type('@@service(1, 2) class T { }')
+      ['Service' => [new Literal('1', self::LINE), new Literal('2', self::LINE)]],
+      $this->type('@@Service(1, 2) class T { }')
     );
   }
 
@@ -87,6 +90,22 @@ class AttributesTest extends ParseTest {
     $this->assertAnnotated(
       ['Author' => [new Literal('"Test"', self::LINE)], 'Version' => [new Literal('2', self::LINE)]],
       $this->type('@@Author("Test") @@Version(2) class T { }')
+    );
+  }
+
+  #[@test]
+  public function name_resolved_to_namespace() {
+    $this->assertAnnotated(
+      ['example\\Test' => []],
+      $this->parse('namespace example; @@Test class T { }')->tree()->type('example\\T')
+    );
+  }
+
+  #[@test]
+  public function name_resolved_to_import() {
+    $this->assertAnnotated(
+      ['unittest\\Test' => []],
+      $this->parse('namespace example; use unittest\Test; @@Test class T { }')->tree()->type('example\\T')
     );
   }
 
