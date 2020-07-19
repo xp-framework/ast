@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #7: PHP8 attributes support - @thekid
+
 ## 5.0.0 / ????-??-??
 
 * Integrated `throw` expressions, see xp-framework/compiler#85 - @thekid

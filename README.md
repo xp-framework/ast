@@ -17,9 +17,10 @@ Register transformations to be used by the [XP Compiler](https://github.com/xp-f
 use lang\ast\transform\Transformations;
 use lang\ast\nodes\{Method, Signature};
 use lang\ast\Code;
+use codegen\Getters;
 
 Transformations::register('class', function($codegen, $class) {
-  if ($class->annotation('getters')) {
+  if ($class->annotation(Getters::class)) {
     foreach ($class->properties() as $property) {
       $class->declare(new Method(
         ['public'],
@@ -38,7 +39,9 @@ When compiling the following sourcecode, getters for the `id` and `name` members
 ```php
 <?php
 
-<<getters>>
+use codegen\Getters;
+
+@@Getters
 class Person {
   private int $id;
   private string $name;
