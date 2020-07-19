@@ -42,6 +42,7 @@ use lang\ast\nodes\{
   SwitchStatement,
   TernaryExpression,
   MatchExpression,
+  MatchCondition,
   ThrowExpression,
   ThrowStatement,
   TraitDeclaration,
@@ -475,7 +476,7 @@ class PHP extends Language {
             $match[]= $this->expression($parse, 0);
           } while (',' === $parse->token->value && $parse->forward() | true);
           $parse->expecting('=>', 'match');
-          $cases[]= new CaseLabel($match, [$this->expression($parse, 0)], $parse->token->line);
+          $cases[]= new MatchCondition($match, [$this->expression($parse, 0)], $parse->token->line);
         }
 
         if (',' === $parse->token->value) {
