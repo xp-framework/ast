@@ -41,6 +41,7 @@ use lang\ast\nodes\{
   StaticLocals,
   SwitchStatement,
   TernaryExpression,
+  MatchExpression,
   ThrowExpression,
   ThrowStatement,
   TraitDeclaration,
@@ -453,6 +454,36 @@ class PHP extends Language {
       $label= $parse->token->value;
       $parse->forward();
       return new GotoStatement($label, $token->line);
+    });
+
+    $this->prefix('match', 0, function($parse, $token) {
+      $parse->expecting('(', 'match');
+      $condition= $this->expression($parse, 0);
+      $parse->expecting(')', 'match');
+
+      $cases= [];
+      $parse->expecting('{', 'match');
+      while ('}' !== $parse->token->value) {
+        $match= [];
+        do {
+          if ('default' === $parse->token->value) {
+            $parse->forward();
+            $match[]= null;
+          } else {
+            $match[]= $this->expression($parse, 0);
+          }
+        } while (',' === $parse->token->value && $parse->forward() | true);
+
+        $parse->expecting('=>', 'match');
+        $cases[]= new CaseLabel($match, [$this->expression($parse, 0)], $parse->token->line);
+
+        if (',' === $parse->token->value) {
+          $parse->forward();
+        }
+      }
+      $parse->expecting('}', 'match');
+
+      return new MatchExpression($condition, $cases, $token->line);
     });
 
     $this->prefix('throw', 0, function($parse, $token) {
