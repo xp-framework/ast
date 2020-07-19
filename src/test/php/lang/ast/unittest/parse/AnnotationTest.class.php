@@ -14,19 +14,19 @@ class AnnotationTest extends ParseTest {
    * @return void
    */
   private function assertAnnotations($expected, $code) {
-    $tree= $this->parse($code)->tree();
-    Assert::equals($expected, cast($tree->children()[1], Annotated::class)->annotations);
+    $children= $this->parse($code)->tree()->children();
+    Assert::equals($expected, cast($children[sizeof($children) - 1], Annotated::class)->annotations);
   }
 
   #[@test]
   public function without_value() {
-    $this->assertAnnotations(['service' => null], '<<service>> class T { }');
+    $this->assertAnnotations(['service' => []], '<<service>> class T { }');
   }
 
   #[@test, @values(['"test"', '1', '1.5', 'true', 'false', 'null'])]
   public function with_literal($value) {
     $this->assertAnnotations(
-      ['service' => new Literal($value, self::LINE)],
+      ['service' => [new Literal($value, self::LINE)]],
       '<<service('.$value.')>> class T { }'
     );
   }
@@ -38,7 +38,7 @@ class AnnotationTest extends ParseTest {
       [null, new Literal('2', self::LINE)],
     ];
     $this->assertAnnotations(
-      ['service' => new ArrayLiteral($elements, self::LINE)],
+      ['service' => [new ArrayLiteral($elements, self::LINE)]],
       '<<service([1, 2])>> class T { }'
     );
   }
@@ -50,7 +50,7 @@ class AnnotationTest extends ParseTest {
       [new Literal('"two"', self::LINE), new Literal('2', self::LINE)],
     ];
     $this->assertAnnotations(
-      ['service' => new ArrayLiteral($elements, self::LINE)],
+      ['service' => [new ArrayLiteral($elements, self::LINE)]],
       '<<service(["one" => 1, "two" => 2])>> class T { }'
     );
   }
@@ -58,8 +58,18 @@ class AnnotationTest extends ParseTest {
   #[@test]
   public function annotations_separated_by_commas() {
     $this->assertAnnotations(
-      ['service' => null, 'path' => new Literal('"/"', self::LINE)],
+      ['service' => [], 'path' => [new Literal('"/"', self::LINE)]],
       '<<service, path("/")>> class T { }'
+    );
+  }
+
+  #[@test]
+  public function two_annotations() {
+    $this->assertAnnotations(
+      ['Author' => [new Literal('"Test"', self::LINE + 1)], 'Version' => [new Literal('2', self::LINE + 2)]], '
+      <<Author("Test")>>
+      <<Version(2)>>
+      class T { }'
     );
   }
 }

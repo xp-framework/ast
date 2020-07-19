@@ -1,8 +1,6 @@
 <?php namespace lang\ast\nodes;
 
-use lang\ast\Node;
-
-class FunctionDeclaration extends Node {
+class FunctionDeclaration extends Annotated {
   public $kind= 'function';
   public $name, $signature, $body;
 

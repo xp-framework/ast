@@ -28,7 +28,6 @@ class Scope {
 
   public $parent;
   public $package= null;
-  public $annotations= [];
   public $imports= [];
   public $types= [];
 

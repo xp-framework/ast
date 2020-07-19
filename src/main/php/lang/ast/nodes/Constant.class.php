@@ -1,17 +1,16 @@
 <?php namespace lang\ast\nodes;
 
-use lang\ast\Node;
-
-class Constant extends Node implements Member {
+class Constant extends Annotated implements Member {
   public $kind= 'const';
   public $holder;
   public $name, $modifiers, $expression, $type;
 
-  public function __construct($modifiers, $name, $type, $expression, $line= -1) {
+  public function __construct($modifiers, $name, $type, $expression, $annotations= [], $line= -1) {
     $this->modifiers= $modifiers;
     $this->name= $name;
     $this->type= $type;
     $this->expression= $expression;
+    $this->annotations= $annotations;
     $this->line= $line;
   }
 
