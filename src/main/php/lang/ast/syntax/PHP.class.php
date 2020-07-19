@@ -461,21 +461,22 @@ class PHP extends Language {
       $condition= $this->expression($parse, 0);
       $parse->expecting(')', 'match');
 
+      $default= null;
       $cases= [];
       $parse->expecting('{', 'match');
       while ('}' !== $parse->token->value) {
         if ('default' === $parse->token->value) {
           $parse->forward();
-          $match= [null];
+          $parse->expecting('=>', 'match');
+          $default= [$this->expression($parse, 0)];
         } else {
           $match= [];
           do {
             $match[]= $this->expression($parse, 0);
           } while (',' === $parse->token->value && $parse->forward() | true);
+          $parse->expecting('=>', 'match');
+          $cases[]= new CaseLabel($match, [$this->expression($parse, 0)], $parse->token->line);
         }
-
-        $parse->expecting('=>', 'match');
-        $cases[]= new CaseLabel($match, [$this->expression($parse, 0)], $parse->token->line);
 
         if (',' === $parse->token->value) {
           $parse->forward();
@@ -483,7 +484,7 @@ class PHP extends Language {
       }
       $parse->expecting('}', 'match');
 
-      return new MatchExpression($condition, $cases, $token->line);
+      return new MatchExpression($condition, $cases, $default, $token->line);
     });
 
     $this->prefix('throw', 0, function($parse, $token) {

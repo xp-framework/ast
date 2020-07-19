@@ -88,7 +88,7 @@ class ConditionalTest extends ParseTest {
   #[@test]
   public function empty_match() {
     $this->assertParsed(
-      [new MatchExpression(new Variable('condition', self::LINE), [], self::LINE)],
+      [new MatchExpression(new Variable('condition', self::LINE), [], null, self::LINE)],
       'match ($condition) { };'
     );
   }
@@ -99,7 +99,7 @@ class ConditionalTest extends ParseTest {
       new CaseLabel([new Literal('1', self::LINE)], $this->blocks[1], self::LINE),
     ];
     $this->assertParsed(
-      [new MatchExpression(new Variable('condition', self::LINE), $cases, self::LINE)],
+      [new MatchExpression(new Variable('condition', self::LINE), $cases, null, self::LINE)],
       'match ($condition) { 1 => action1(), };'
     );
   }
@@ -111,7 +111,7 @@ class ConditionalTest extends ParseTest {
       new CaseLabel([new Literal('2', self::LINE)], $this->blocks[2], self::LINE)
     ];
     $this->assertParsed(
-      [new MatchExpression(new Variable('condition', self::LINE), $cases, self::LINE)],
+      [new MatchExpression(new Variable('condition', self::LINE), $cases, null, self::LINE)],
       'match ($condition) { 1 => action1(), 2 => action2() };'
     );
   }
@@ -120,10 +120,9 @@ class ConditionalTest extends ParseTest {
   public function match_with_multi_expression_case_and_default() {
     $cases= [
       new CaseLabel([new Literal('1', self::LINE), new Literal('2', self::LINE)], $this->blocks[1], self::LINE),
-      new CaseLabel([null], $this->blocks[2], self::LINE)
     ];
     $this->assertParsed(
-      [new MatchExpression(new Variable('condition', self::LINE), $cases, self::LINE)],
+      [new MatchExpression(new Variable('condition', self::LINE), $cases, $this->blocks[2], self::LINE)],
       'match ($condition) { 1, 2 => action1(), default => action2() };'
     );
   }

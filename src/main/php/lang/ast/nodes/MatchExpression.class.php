@@ -10,11 +10,12 @@ use lang\ast\Node;
  */
 class MatchExpression extends Node {
   public $kind= 'match';
-  public $expression, $cases;
+  public $expression, $cases, $default;
 
-  public function __construct($expression, $cases, $line= -1) {
+  public function __construct($expression, $cases, $default, $line= -1) {
     $this->expression= $expression;
     $this->cases= $cases;
+    $this->default= $default;
     $this->line= $line;
   }
 
