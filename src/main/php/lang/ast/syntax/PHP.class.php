@@ -859,7 +859,7 @@ class PHP extends Language {
       $body[]= new UseExpression($types, $aliases, $line);
     });
 
-    $this->body('const', function($parse, &$body, $annotations, $modifiers, $holder) {
+    $this->body('const', function($parse, &$body, $meta, $modifiers, $holder) {
       $parse->forward();
 
       $type= null;
@@ -887,7 +887,14 @@ class PHP extends Language {
         }
 
         $parse->expecting('=', 'const');
-        $body[$name]= new Constant($modifiers, $name, $type, $this->expression($parse, 0), $line);
+        $body[$name]= new Constant(
+          $modifiers,
+          $name,
+          $type,
+          $this->expression($parse, 0),
+          isset($meta[DETAIL_ANNOTATIONS]) ? $meta[DETAIL_ANNOTATIONS] : [],
+          $line
+        );
         $body[$name]->holder= $holder;
         if (',' === $parse->token->value) {
           $parse->forward();

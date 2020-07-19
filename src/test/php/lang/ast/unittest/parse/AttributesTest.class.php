@@ -50,10 +50,10 @@ class AttributesTest extends ParseTest {
     $this->assertAnnotated($expected, $this->parse('$apply= '.$declaration.';')->tree()->children()[0]->expression);
   }
 
-  #[@test, @ignore('Not yet implemented')]
+  #[@test]
   public function on_constant() {
     $this->assertAnnotated(
-      ['service' => []],
+      ['test' => []],
       $this->type('class T { @@test const FIXTURE = 1; }')->constant('FIXTURE')
     );
   }

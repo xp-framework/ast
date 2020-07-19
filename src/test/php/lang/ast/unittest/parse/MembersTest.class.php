@@ -42,7 +42,7 @@ class MembersTest extends ParseTest {
   #[@test]
   public function class_constant() {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), self::LINE));
+    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), [], self::LINE));
 
     $this->assertParsed([$class], 'class A { const T = 1; }');
   }
@@ -50,8 +50,8 @@ class MembersTest extends ParseTest {
   #[@test]
   public function class_constants() {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), self::LINE));
-    $class->declare(new Constant([], 'S', null, new Literal('2', self::LINE), self::LINE));
+    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), [], self::LINE));
+    $class->declare(new Constant([], 'S', null, new Literal('2', self::LINE), [], self::LINE));
 
     $this->assertParsed([$class], 'class A { const T = 1, S = 2; }');
   }
@@ -59,7 +59,7 @@ class MembersTest extends ParseTest {
   #[@test]
   public function private_class_constant() {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant(['private'], 'T', null, new Literal('1', self::LINE), self::LINE));
+    $class->declare(new Constant(['private'], 'T', null, new Literal('1', self::LINE), [], self::LINE));
 
     $this->assertParsed([$class], 'class A { private const T = 1; }');
   }
@@ -196,7 +196,7 @@ class MembersTest extends ParseTest {
   #[@test]
   public function typed_constant() {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), self::LINE));
+    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), [], self::LINE));
 
     $this->assertParsed([$class], 'class A { const int T = 1; }');
   }
@@ -204,9 +204,9 @@ class MembersTest extends ParseTest {
   #[@test]
   public function typed_constants() {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), self::LINE));
-    $class->declare(new Constant([], 'S', new Type('int'), new Literal('2', self::LINE), self::LINE));
-    $class->declare(new Constant([], 'I', new Type('string'), new Literal('"i"', self::LINE), self::LINE));
+    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), [], self::LINE));
+    $class->declare(new Constant([], 'S', new Type('int'), new Literal('2', self::LINE), [], self::LINE));
+    $class->declare(new Constant([], 'I', new Type('string'), new Literal('"i"', self::LINE), [], self::LINE));
 
     $this->assertParsed([$class], 'class A { const int T = 1, S = 2, string I = "i"; }');
   }
