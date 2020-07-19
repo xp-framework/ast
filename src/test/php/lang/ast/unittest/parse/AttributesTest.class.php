@@ -16,6 +16,16 @@ class AttributesTest extends ParseTest {
   }
 
   /**
+   * Yield various attribute declarations and their expected values
+   *
+   * @return iterable
+   */
+  private function attributes() {
+    yield ['@@service', ['service' => []]];
+    yield ['@@service @@version(1)', ['service' => [], 'version' => [new Literal('1', self::LINE)]]];
+  }
+
+  /**
    * Assertion helper
    *
    * @param  var $expected
@@ -25,61 +35,6 @@ class AttributesTest extends ParseTest {
    */
   private function assertAnnotated($expected, $node) {
     Assert::equals($expected, cast($node, Annotated::class)->annotations);
-  }
-
-  #[@test]
-  public function on_class() {
-    $this->assertAnnotated(['service' => []], $this->type('@@service class T { }'));
-  }
-
-  #[@test]
-  public function on_anonymous_class() {
-    $this->assertAnnotated(
-      ['service' => []],
-      $this->parse('$object= new @@service class() { };')->tree()->children()[0]->expression->definition
-    );
-  }
-
-  #[@test, @values([
-  #  ['@@service function() { }', ['service' => []]],
-  #  ['@@service fn() => true', ['service' => []]],
-  #  ['@@service @@version(1) function() { }', ['service' => [], 'version' => [new Literal('1', self::LINE)]]],
-  #  ['@@service @@version(1) fn() => true', ['service' => [], 'version' => [new Literal('1', self::LINE)]]],
-  #])]
-  public function on_function($declaration, $expected) {
-    $this->assertAnnotated($expected, $this->parse('$apply= '.$declaration.';')->tree()->children()[0]->expression);
-  }
-
-  #[@test]
-  public function on_constant() {
-    $this->assertAnnotated(
-      ['test' => []],
-      $this->type('class T { @@test const FIXTURE = 1; }')->constant('FIXTURE')
-    );
-  }
-
-  #[@test]
-  public function on_property() {
-    $this->assertAnnotated(
-      ['test' => []], 
-      $this->type('class T { @@test public $fixture; }')->property('fixture')
-    );
-  }
-
-  #[@test]
-  public function on_method() {
-    $this->assertAnnotated(
-      ['test' => []], 
-      $this->type('class T { @@test public function fixture() { } }')->method('fixture')
-    );
-  }
-
-  #[@test]
-  public function on_parameter() {
-    $this->assertAnnotated(
-      ['test' => []], 
-      $this->type('class T { public function fixture(@@test $p) { } }')->method('fixture')->signature->parameters[0]
-    );
   }
 
   #[@test]
@@ -133,5 +88,62 @@ class AttributesTest extends ParseTest {
       ['Author' => [new Literal('"Test"', self::LINE)], 'Version' => [new Literal('2', self::LINE)]],
       $this->type('@@Author("Test") @@Version(2) class T { }')
     );
+  }
+
+  #[@test, @values('attributes')]
+  public function on_anonymous_class($attributes, $expected) {
+    $tree= $this->parse('new '.$attributes.' class() { };')->tree();
+    $this->assertAnnotated($expected, $tree->children()[0]->definition);
+  }
+
+  #[@test, @values('attributes')]
+  public function on_closure($attributes, $expected) {
+    $tree= $this->parse($attributes.' function() { };')->tree();
+    $this->assertAnnotated($expected, $tree->children()[0]);
+  }
+
+  #[@test, @values('attributes')]
+  public function on_lambda($attributes, $expected) {
+    $tree= $this->parse($attributes.' fn() => true;')->tree();
+    $this->assertAnnotated($expected, $tree->children()[0]);
+  }
+
+  #[@test, @values('attributes')]
+  public function on_class($attributes, $expected) {
+    $this->assertAnnotated($expected, $this->type($attributes.' class T { }'));
+  }
+
+  #[@test, @values('attributes')]
+  public function on_trait($attributes, $expected) {
+    $this->assertAnnotated($expected, $this->type($attributes.' trait T { }'));
+  }
+
+  #[@test, @values('attributes')]
+  public function on_interface($attributes, $expected) {
+    $this->assertAnnotated($expected, $this->type($attributes.' interface T { }'));
+  }
+
+  #[@test, @values('attributes')]
+  public function on_constant($attributes, $expected) {
+    $type= $this->type('class T { '.$attributes.' const FIXTURE = 1; }');
+    $this->assertAnnotated($expected, $type->constant('FIXTURE'));
+  }
+
+  #[@test, @values('attributes')]
+  public function on_property($attributes, $expected) {
+    $type= $this->type('class T { '.$attributes.' public $fixture; }');
+    $this->assertAnnotated($expected, $type->property('fixture'));
+  }
+
+  #[@test, @values('attributes')]
+  public function on_method($attributes, $expected) {
+    $type= $this->type('class T { '.$attributes.' public function fixture() { } }');
+    $this->assertAnnotated($expected, $type->method('fixture'));
+  }
+
+  #[@test, @values('attributes')]
+  public function on_parameter($attributes, $expected) {
+    $type= $this->type('class T { public function fixture('.$attributes.' $p) { } }');
+    $this->assertAnnotated($expected, $type->method('fixture')->signature->parameters[0]);
   }
 }
