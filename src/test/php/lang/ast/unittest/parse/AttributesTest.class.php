@@ -29,13 +29,13 @@ class AttributesTest extends ParseTest {
 
   #[@test]
   public function on_class() {
-    $this->assertAnnotated(['service' => null], $this->type('@@service class T { }'));
+    $this->assertAnnotated(['service' => []], $this->type('@@service class T { }'));
   }
 
   #[@test]
   public function on_anonymous_class() {
     $this->assertAnnotated(
-      ['service' => null],
+      ['service' => []],
       $this->parse('$object= new @@service class() { };')->tree()->children()[0]->expression->definition
     );
   }
@@ -43,7 +43,7 @@ class AttributesTest extends ParseTest {
   #[@test, @ignore('Not yet implemented')]
   public function on_function() {
     $this->assertAnnotated(
-      ['service' => null],
+      ['service' => []],
       $this->parse('$apply= @@service function() { };')->tree()->children()[0]->expression
     );
   }
@@ -51,7 +51,7 @@ class AttributesTest extends ParseTest {
   #[@test, @ignore('Not yet implemented')]
   public function on_lambda() {
     $this->assertAnnotated(
-      ['service' => null],
+      ['service' => []],
       $this->parse('$apply= @@service fn() => true;')->tree()->children()[0]->expression
     );
   }
@@ -59,7 +59,7 @@ class AttributesTest extends ParseTest {
   #[@test, @ignore('Not yet implemented')]
   public function on_constant() {
     $this->assertAnnotated(
-      ['service' => null],
+      ['service' => []],
       $this->type('class T { @@test const FIXTURE = 1; }')->constant('FIXTURE')
     );
   }
@@ -67,7 +67,7 @@ class AttributesTest extends ParseTest {
   #[@test]
   public function on_property() {
     $this->assertAnnotated(
-      ['test' => null], 
+      ['test' => []], 
       $this->type('class T { @@test public $fixture; }')->property('fixture')
     );
   }
@@ -75,7 +75,7 @@ class AttributesTest extends ParseTest {
   #[@test]
   public function on_method() {
     $this->assertAnnotated(
-      ['test' => null], 
+      ['test' => []], 
       $this->type('class T { @@test public function fixture() { } }')->method('fixture')
     );
   }
@@ -83,20 +83,20 @@ class AttributesTest extends ParseTest {
   #[@test]
   public function on_parameter() {
     $this->assertAnnotated(
-      ['test' => null], 
+      ['test' => []], 
       $this->type('class T { public function fixture(@@test $p) { } }')->method('fixture')->signature->parameters[0]
     );
   }
 
   #[@test]
   public function without_value() {
-    $this->assertAnnotated(['service' => null], $this->type('@@service() class T { }'));
+    $this->assertAnnotated(['service' => []], $this->type('@@service() class T { }'));
   }
 
   #[@test, @values(['"test"', '1', '1.5', 'true', 'false', 'null'])]
   public function with_literal($value) {
     $this->assertAnnotated(
-      ['service' => new Literal($value, self::LINE)],
+      ['service' => [new Literal($value, self::LINE)]],
       $this->type('@@service('.$value.') class T { }')
     );
   }
@@ -108,7 +108,7 @@ class AttributesTest extends ParseTest {
       [null, new Literal('2', self::LINE)],
     ];
     $this->assertAnnotated(
-      ['service' => new ArrayLiteral($elements, self::LINE)],
+      ['service' => [new ArrayLiteral($elements, self::LINE)]],
       $this->type('@@service([1, 2]) class T { }')
     );
   }
@@ -120,7 +120,7 @@ class AttributesTest extends ParseTest {
       [new Literal('"two"', self::LINE), new Literal('2', self::LINE)],
     ];
     $this->assertAnnotated(
-      ['service' => new ArrayLiteral($elements, self::LINE)],
+      ['service' => [new ArrayLiteral($elements, self::LINE)]],
       $this->type('@@service(["one" => 1, "two" => 2]) class T { }')
     );
   }
@@ -128,7 +128,7 @@ class AttributesTest extends ParseTest {
   #[@test]
   public function two_annotations() {
     $this->assertAnnotated(
-      ['Author' => new Literal('"Test"', self::LINE), 'Version' => new Literal('2', self::LINE)],
+      ['Author' => [new Literal('"Test"', self::LINE)], 'Version' => [new Literal('2', self::LINE)]],
       $this->type('@@Author("Test") @@Version(2) class T { }')
     );
   }

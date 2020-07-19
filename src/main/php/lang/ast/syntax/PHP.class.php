@@ -1064,19 +1064,12 @@ class PHP extends Language {
     if ('(' === $parse->token->value) {
       $parse->expecting('(', 'annotations');
       $arguments= $this->expressions($parse);
-      if (empty($arguments)) {
-        $value= null;
-      } else if (1 === sizeof($arguments)) {
-        $value= $arguments[0];
-      } else {
-        $value= $arguments;
-      }
       $parse->expecting(')', 'annotations');
     } else {
-      $value= null;
+      $arguments= [];
     }
 
-    $annotations[$name]= $value;
+    $annotations[$name]= $arguments;
     return $name;
   }
 
@@ -1089,10 +1082,10 @@ class PHP extends Language {
 
       if ('(' === $parse->token->value) {
         $parse->expecting('(', $context);
-        $annotations[$name]= $this->expression($parse, 0);
+        $annotations[$name]= [$this->expression($parse, 0)];
         $parse->expecting(')', $context);
       } else {
-        $annotations[$name]= null;
+        $annotations[$name]= [];
       }
 
       if (',' === $parse->token->value) {
