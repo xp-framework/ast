@@ -1,7 +1,6 @@
 <?php namespace lang\ast\syntax;
 
 use lang\ast\nodes\{
-  Annotations,
   ArrayLiteral,
   Block,
   Braced,
@@ -296,11 +295,12 @@ class PHP extends Language {
         $type= '$'.$parse->token->value;
         $parse->forward();
       } else if ('class' === $parse->token->value) {
+        $annotations= [];
         $type= null;
         $parse->forward();
       } else if ('@@' === $parse->token->value) {
         $parse->forward();
-        $parse->scope->annotations= $this->attributes($parse, 'anonymous class annotations');
+        $annotations= $this->attributes($parse, 'anonymous class annotations');
         $parse->expecting('class', 'anonymous class annotations');
         $type= null;
       } else {
@@ -313,7 +313,9 @@ class PHP extends Language {
       $parse->expecting(')', 'new arguments');
 
       if (null === $type) {
-        return new NewClassExpression($this->clazz($parse, null), $arguments, $token->line);
+        $class= $this->clazz($parse, null);
+        $class->annotations= $annotations;
+        return new NewClassExpression($class, $arguments, $token->line);
       } else {
         return new NewExpression($type, $arguments, $token->line);
       }
@@ -739,23 +741,23 @@ class PHP extends Language {
 
     $this->stmt('<<', function($parse, $token) {
       $annotations= $this->annotations($parse, 'annotations');
-      foreach ($annotations as $name => $value) {
-        $parse->scope->annotations[$name]= $value;
-      }
-      return new Annotations($annotations, $token->line);
+      $type= $this->statement($parse);
+      $type->annotations= $annotations;
+      return $type;
     });
 
     $this->stmt('@@', function($parse, $token) {
       $annotations= $this->attributes($parse, 'annotations');
-      foreach ($annotations as $name => $value) {
-        $parse->scope->annotations[$name]= $value;
-      }
-      return new Annotations($annotations, $token->line);
+      $type= $this->statement($parse);
+      $type->annotations= $annotations;
+      return $type;
     });
 
     $this->stmt('#[', function($parse, $token) {
-      $parse->scope->annotations= $this->meta($parse, 'annotations')[DETAIL_ANNOTATIONS];
-      return new Annotations($parse->scope->annotations, $token->line);
+      $annotations= $this->meta($parse, 'annotations')[DETAIL_ANNOTATIONS];
+      $type= $this->statement($parse);
+      $type->annotations= $annotations;
+      return $type;
     });
 
     $this->stmt('class', function($parse, $token) {
@@ -787,8 +789,7 @@ class PHP extends Language {
         } while (null !== $parse->token->value);
       }
 
-      $decl= new InterfaceDeclaration([], $name, $parents, [], $parse->scope->annotations, $comment, $token->line);
-      $parse->scope->annotations= [];
+      $decl= new InterfaceDeclaration([], $name, $parents, [], [], $comment, $token->line);
       $parse->expecting('{', 'interface');
       $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'interface');
@@ -802,8 +803,7 @@ class PHP extends Language {
       $comment= $parse->comment;
       $parse->comment= null;
 
-      $decl= new TraitDeclaration([], $name, [], $parse->scope->annotations, $comment, $token->line);
-      $parse->scope->annotations= [];
+      $decl= new TraitDeclaration([], $name, [], [], $comment, $token->line);
       $parse->expecting('{', 'trait');
       $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'trait');
@@ -1112,13 +1112,18 @@ class PHP extends Language {
         $parse->forward();
         continue;
       } else if ('>>' === $parse->token->value) {
+        $parse->forward();
+        if ('<<' === $parse->token->value) {
+          $parse->forward();
+          continue;
+        }
         break;
       } else {
         $parse->expecting(', or >>', $context);
+        break;
       }
     } while (null !== $parse->token->value);
 
-    $parse->expecting('>>', $context);
     return $annotations;
   }
 
@@ -1364,8 +1369,7 @@ class PHP extends Language {
       } while (null !== $parse->token->value);
     }
 
-    $decl= new ClassDeclaration($modifiers, $name, $parent, $implements, [], $parse->scope->annotations, $comment, $line);
-    $parse->scope->annotations= [];
+    $decl= new ClassDeclaration($modifiers, $name, $parent, $implements, [], [], $comment, $line);
     $parse->expecting('{', 'class');
     $decl->body= $this->typeBody($parse, $decl->name);
     $parse->expecting('}', 'class');
