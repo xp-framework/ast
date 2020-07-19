@@ -1148,16 +1148,16 @@ class PHP extends Language {
               }
               break;
             } while (null !== $parse->token->value); 
-            $a[$name]= new ArrayLiteral($values, $line);
+            $a[$name]= [new ArrayLiteral($values, $line)];
           } else {
-            $a[$name]= $this->expression($parse, 0);
+            $a[$name]= [$this->expression($parse, 0)];
           }
         } else {
-          $a[$name]= $this->expression($parse, 0);
+          $a[$name]= [$this->expression($parse, 0)];
         }
         $parse->expecting(')', $context);
       } else {
-        $a[$name]= null;
+        $a[$name]= [];
       }
 
       if (',' === $parse->token->value) {
