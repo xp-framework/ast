@@ -91,6 +91,12 @@ class AttributesTest extends ParseTest {
   }
 
   #[@test, @values('attributes')]
+  public function on_function($attributes, $expected) {
+    $tree= $this->parse($attributes.' function fixture() { }')->tree();
+    $this->assertAnnotated($expected, $tree->children()[0]);
+  }
+
+  #[@test, @values('attributes')]
   public function on_anonymous_class($attributes, $expected) {
     $tree= $this->parse('new '.$attributes.' class() { };')->tree();
     $this->assertAnnotated($expected, $tree->children()[0]->definition);
