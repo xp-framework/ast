@@ -6,7 +6,7 @@ XP AST ChangeLog
 ## 5.0.0 / ????-??-??
 
 * Added builtin support for null-safe instance operator `?->`, see
-  https://wiki.php.net/rfc/nullsafe_operator
+  https://wiki.php.net/rfc/nullsafe_operator & xp-framework/compiler#9
   (@thekid)
 * Merged PR #7: PHP8 attributes support - @thekid
 * Integrated `throw` expressions, see xp-framework/compiler#85 - @thekid
