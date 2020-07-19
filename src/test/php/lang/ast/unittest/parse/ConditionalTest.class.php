@@ -117,22 +117,14 @@ class ConditionalTest extends ParseTest {
   }
 
   #[@test]
-  public function match_with_multi_expression_case() {
+  public function match_with_multi_expression_case_and_default() {
     $cases= [
       new CaseLabel([new Literal('1', self::LINE), new Literal('2', self::LINE)], $this->blocks[1], self::LINE),
+      new CaseLabel([null], $this->blocks[2], self::LINE)
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('condition', self::LINE), $cases, self::LINE)],
-      'match ($condition) { 1, 2 => action1() };'
-    );
-  }
-
-  #[@test]
-  public function match_with_default() {
-    $cases= [new CaseLabel([null], $this->blocks[1], self::LINE)];
-    $this->assertParsed(
-      [new MatchExpression(new Variable('condition', self::LINE), $cases, self::LINE)],
-      'match ($condition) { default => action1() };'
+      'match ($condition) { 1, 2 => action1(), default => action2() };'
     );
   }
 }

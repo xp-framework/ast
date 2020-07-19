@@ -464,15 +464,15 @@ class PHP extends Language {
       $cases= [];
       $parse->expecting('{', 'match');
       while ('}' !== $parse->token->value) {
-        $match= [];
-        do {
-          if ('default' === $parse->token->value) {
-            $parse->forward();
-            $match[]= null;
-          } else {
+        if ('default' === $parse->token->value) {
+          $parse->forward();
+          $match= [null];
+        } else {
+          $match= [];
+          do {
             $match[]= $this->expression($parse, 0);
-          }
-        } while (',' === $parse->token->value && $parse->forward() | true);
+          } while (',' === $parse->token->value && $parse->forward() | true);
+        }
 
         $parse->expecting('=>', 'match');
         $cases[]= new CaseLabel($match, [$this->expression($parse, 0)], $parse->token->line);
