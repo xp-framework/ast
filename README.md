@@ -37,8 +37,6 @@ Transformations::register('class', function($codegen, $class) {
 When compiling the following sourcecode, getters for the `id` and `name` members will automatically be added.
 
 ```php
-<?php
-
 use codegen\Getters;
 
 @@Getters
