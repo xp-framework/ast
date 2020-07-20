@@ -5,6 +5,7 @@ XP AST ChangeLog
 
 ## 5.0.0 / ????-??-??
 
+* Merged PR #8: Add support for match expression - @thekid
 * Added builtin support for null-safe instance operator `?->`, see
   https://wiki.php.net/rfc/nullsafe_operator & xp-framework/compiler#9
   (@thekid)
