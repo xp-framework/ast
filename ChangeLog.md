@@ -3,7 +3,7 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 5.0.0 / ????-??-??
+## 5.0.0 / 2020-07-20
 
 * Merged PR #8: Add support for match expression - @thekid
 * Added builtin support for null-safe instance operator `?->`, see
