@@ -3,6 +3,11 @@
 use lang\ast\nodes\{Annotated, Literal, ArrayLiteral};
 use unittest\Assert;
 
+/**
+ * Tests `<<...>>` style annotations
+ *
+ * @deprecated
+ */
 class AnnotationTest extends ParseTest {
 
   /**
@@ -15,6 +20,7 @@ class AnnotationTest extends ParseTest {
    */
   private function assertAnnotations($expected, $code) {
     $children= $this->parse($code)->tree()->children();
+    \xp::gc();
     Assert::equals($expected, cast($children[sizeof($children) - 1], Annotated::class)->annotations);
   }
 
