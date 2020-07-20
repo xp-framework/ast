@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{CaseLabel, IfStatement, InvokeExpression, Literal, SwitchStatement, Variable};
+use lang\ast\nodes\{CaseLabel, IfStatement, InvokeExpression, Literal, SwitchStatement, MatchExpression, MatchCondition, Variable};
 use unittest\Assert;
 
 class ConditionalTest extends ParseTest {
@@ -82,6 +82,48 @@ class ConditionalTest extends ParseTest {
     $this->assertParsed(
       [new SwitchStatement(new Variable('condition', self::LINE), $cases, self::LINE)],
       'switch ($condition) { default: action1(); }'
+    );
+  }
+
+  #[@test]
+  public function empty_match() {
+    $this->assertParsed(
+      [new MatchExpression(new Variable('condition', self::LINE), [], null, self::LINE)],
+      'match ($condition) { };'
+    );
+  }
+
+  #[@test]
+  public function match_with_trailing_comma() {
+    $cases= [
+      new MatchCondition([new Literal('1', self::LINE)], $this->blocks[1][0], self::LINE),
+    ];
+    $this->assertParsed(
+      [new MatchExpression(new Variable('condition', self::LINE), $cases, null, self::LINE)],
+      'match ($condition) { 1 => action1(), };'
+    );
+  }
+
+  #[@test]
+  public function match_with_two_cases() {
+    $cases= [
+      new MatchCondition([new Literal('1', self::LINE)], $this->blocks[1][0], self::LINE),
+      new MatchCondition([new Literal('2', self::LINE)], $this->blocks[2][0], self::LINE)
+    ];
+    $this->assertParsed(
+      [new MatchExpression(new Variable('condition', self::LINE), $cases, null, self::LINE)],
+      'match ($condition) { 1 => action1(), 2 => action2() };'
+    );
+  }
+
+  #[@test]
+  public function match_with_multi_expression_case_and_default() {
+    $cases= [
+      new MatchCondition([new Literal('1', self::LINE), new Literal('2', self::LINE)], $this->blocks[1][0], self::LINE),
+    ];
+    $this->assertParsed(
+      [new MatchExpression(new Variable('condition', self::LINE), $cases, $this->blocks[2][0], self::LINE)],
+      'match ($condition) { 1, 2 => action1(), default => action2() };'
     );
   }
 }
