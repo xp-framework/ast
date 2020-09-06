@@ -103,16 +103,17 @@ class Tokens implements \IteratorAggregate {
         } else if ('/' === $token) {
           $next= $this->tokens->nextToken();
           if ('/' === $next) {
-            $this->tokens->nextToken("\r\n");
+            yield 'comment' => [trim($this->tokens->nextToken("\r\n"), ' '), $line];
             continue;
           } else if ('*' === $next) {
             $comment= '';
             do {
               $t= $this->tokens->nextToken('/');
               $comment.= $t;
-            } while ('*' !== $t[strlen($t)- 1] && $this->tokens->hasMoreTokens());
+            } while ('*' !== $t[strlen($t) - 1] && $this->tokens->hasMoreTokens());
             $comment.= $this->tokens->nextToken('/');
-            yield 'comment' => [trim(preg_replace('/\n\s+\* ?/', "\n", substr($comment, 1, -2))), $line];
+            $kind= '*' === $comment[0] ? 'apidoc' : 'comment';
+            yield $kind => [trim(preg_replace('/\n\s+\* ?/', "\n", substr($comment, 1, -2))), $line];
             $line+= substr_count($comment, "\n");
             continue;
           }
@@ -136,6 +137,8 @@ class Tokens implements \IteratorAggregate {
           } else if ('[' === $comment[0]) {
             $this->tokens->pushBack(substr($comment, 1));
             yield 'operator' => ['#[', $line];
+          } else {
+            yield 'comment' => [trim($comment, ' '), $line];
           }
           continue;
         }

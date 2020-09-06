@@ -48,16 +48,16 @@ class LineNumberTest {
   #[@test]
   public function after_regular_comment() {
     $this->assertPositions(
-      [['HERE' => 2]],
+      [['Comment' => 1], ['HERE' => 2]],
       new Tokens("// Comment\nHERE")
     );
   }
 
   #[@test]
-  public function apidoc_comment() {
+  public function after_apidoc_comment() {
     $this->assertPositions(
-      [['COMMENT' => 1], ['HERE' => 2]],
-      new Tokens("/** COMMENT */\nHERE")
+      [['Apidoc' => 1], ['HERE' => 2]],
+      new Tokens("/** Apidoc */\nHERE")
     );
   }
 
