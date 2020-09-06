@@ -315,7 +315,7 @@ class PHP extends Language {
         $annotations= [];
         $type= null;
         $parse->forward();
-      } else if ('@@' === $parse->token->value) {
+      } else if ('#[' === $parse->token->value) {
         $parse->forward();
         $annotations= $this->attributes($parse, 'anonymous class annotations');
         $parse->expecting('class', 'anonymous class annotations');
@@ -359,7 +359,7 @@ class PHP extends Language {
       return new UnpackExpression($this->expression($parse, 0), $token->line);
     });
 
-    $this->prefix('@@', 0, function($parse, $token) {
+    $this->prefix('#[', 0, function($parse, $token) {
       $annotations= $this->attributes($parse, 'annotations');
       $expression= $this->expression($parse, 0);
       $expression->annotations= $annotations;
@@ -794,14 +794,14 @@ class PHP extends Language {
       return $type;
     });
 
-    $this->stmt('@@', function($parse, $token) {
+    $this->stmt('#[', function($parse, $token) {
       $annotations= $this->attributes($parse, 'annotations');
       $type= $this->statement($parse);
       $type->annotations= $annotations;
       return $type;
     });
 
-    $this->stmt('#[', function($parse, $token) {
+    $this->stmt('#[@', function($parse, $token) {
       $annotations= $this->meta($parse, 'annotations')[DETAIL_ANNOTATIONS];
       $type= $this->statement($parse);
       $type->annotations= $annotations;
@@ -979,6 +979,7 @@ class PHP extends Language {
         $parse->expecting(';', 'method declaration');
       } else {
         $parse->expecting('{ or ;', 'method declaration');
+        return;
       }
 
       $body[$lookup]= new Method(
@@ -1121,26 +1122,6 @@ class PHP extends Language {
     $parse->expecting(';', 'field declaration');
   }
 
-  /** Parses PHP8-style attributes (@@test) */
-  public function attributes($parse, $context) {
-    $annotations= [];
-    do {
-      $name= ltrim($parse->scope->resolve($parse->token->value), '\\');
-      $parse->forward();
-
-      if ('(' === $parse->token->value) {
-        $parse->expecting('(', 'annotations');
-        $arguments= $this->expressions($parse);
-        $parse->expecting(')', 'annotations');
-      } else {
-        $arguments= [];
-      }
-      $annotations[$name]= $arguments;
-    } while ('@@' === $parse->token->value && $parse->forward() | true);
-
-    return $annotations;
-  }
-
   /** Parses Hacklang-style annotations (<<test>>) */
   private function annotations($parse, $context) {
     $annotations= [];
@@ -1173,6 +1154,37 @@ class PHP extends Language {
     } while (null !== $parse->token->value);
 
     return $annotations;
+  }
+
+  /** Parses PHP 8 attributes (#[Test]) */
+  private function attributes($parse, $context) {
+    $attributes= [];
+
+    do {
+      $name= ltrim($parse->scope->resolve($parse->token->value), '\\');
+      $parse->forward();
+
+      if ('(' === $parse->token->value) {
+        $parse->expecting('(', $context);
+        $attributes[$name]= $this->expressions($parse);
+        $parse->expecting(')', $context);
+      } else {
+        $attributes[$name]= [];
+      }
+
+      if (',' === $parse->token->value) {
+        $parse->forward();
+        continue;
+      } else if (']' === $parse->token->value) {
+        $parse->forward();
+        break;
+      } else {
+        $parse->expecting(', or ]', $context);
+        break;
+      }
+    } while (null !== $parse->token->value);
+
+    return $attributes;
   }
 
   /** Parses XP-style annotations (#[@test]) */
@@ -1252,7 +1264,7 @@ class PHP extends Language {
 
     $parameters= [];
     while (')' !== $parse->token->value) {
-      if ('@@' === $parse->token->value) {
+      if ('#[' === $parse->token->value) {
         $parse->forward();
         $annotations= $this->attributes($parse, 'parameter annotations');
       } else if ('<<' === $parse->token->value) {
@@ -1338,15 +1350,15 @@ class PHP extends Language {
         $f($parse, $body, $meta, $modifiers, $holder);
         $modifiers= [];
         $meta= [];
-      } else if ('@@' === $parse->token->value) {
+      } else if ('#[' === $parse->token->value) {
         $parse->forward();
         $meta= [DETAIL_ANNOTATIONS => $this->attributes($parse, 'member annotations')];
+      } else if ('#[@' === $parse->token->value) {
+        $parse->forward();
+        $meta= $this->meta($parse, 'member annotations');
       } else if ('<<' === $parse->token->value) {
         $parse->forward();
         $meta= [DETAIL_ANNOTATIONS => $this->annotations($parse, 'member annotations')];
-      } else if ('#[' === $parse->token->value) {
-        $parse->forward();
-        $meta= $this->meta($parse, 'member annotations');
       } else if ($type= $this->type($parse)) {
         $this->properties($parse, $body, $meta, $modifiers, $type, $holder);
         $modifiers= [];

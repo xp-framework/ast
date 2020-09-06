@@ -3,7 +3,7 @@
 use lang\ast\nodes\{Annotated, Literal, ArrayLiteral};
 use unittest\Assert;
 
-class AnnotationTest extends ParseTest {
+class HackAnnotationsTest extends ParseTest {
 
   /**
    * Assertion helper
