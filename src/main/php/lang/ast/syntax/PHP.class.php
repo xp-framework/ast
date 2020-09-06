@@ -979,6 +979,7 @@ class PHP extends Language {
         $parse->expecting(';', 'method declaration');
       } else {
         $parse->expecting('{ or ;', 'method declaration');
+        return;
       }
 
       $body[$lookup]= new Method(

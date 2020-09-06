@@ -118,25 +118,24 @@ class Tokens implements \IteratorAggregate {
           }
           $this->tokens->pushBack($next);
         } else if ('#' === $token) {
-          $comment= $this->tokens->nextToken("\r\n").$this->tokens->nextToken("\r\n");
-          $next= '#';
-          do {
-            $s= strspn($next, ' ');
-            if ('#' !== $next[$s]) break;
-            $comment.= substr($next, $s + 1);
-            $next= $this->tokens->nextToken("\r\n").$this->tokens->nextToken("\r\n");
-          } while ($this->tokens->hasMoreTokens());
+          $comment= $this->tokens->nextToken("\r\n");
 
-          // XP annotations vs. PHP 8 attributes
+          // XP Annotations: Consume all consecutive lines, uncommenting them
           if (0 === strncmp($comment, '[@', 2)) {
+            $comment.= $this->tokens->nextToken("\r\n");
+            $next= '#';
+            do {
+              $s= strspn($next, ' ');
+              if ('#' !== $next[$s]) break;
+              $comment.= substr($next, $s + 1);
+              $next= $this->tokens->nextToken("\r\n").$this->tokens->nextToken("\r\n");
+            } while ($this->tokens->hasMoreTokens());
+
             $this->tokens->pushBack(substr($comment, 1).$next);
             yield 'operator' => ['#[@', $line];
           } else if ('[' === $comment[0]) {
-            $this->tokens->pushBack(substr($comment, 1).$next);
+            $this->tokens->pushBack(substr($comment, 1));
             yield 'operator' => ['#[', $line];
-          } else {
-            $line+= substr_count($comment, "\n");
-            $this->tokens->pushBack($next);
           }
           continue;
         }

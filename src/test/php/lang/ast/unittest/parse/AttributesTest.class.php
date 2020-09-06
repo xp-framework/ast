@@ -102,6 +102,15 @@ class AttributesTest extends ParseTest {
   }
 
   #[@test]
+  public function after_oneline_comment() {
+    $this->assertAnnotated(['Service' => []], $this->type('
+      # Comment
+      #[Service]
+      class T { }
+    '));
+  }
+
+  #[@test]
   public function with_two_arguments() {
     $this->assertAnnotated(
       ['Service' => [new Literal('1', self::LINE), new Literal('2', self::LINE)]],

@@ -31,7 +31,8 @@ class XpAnnotationsTest extends ParseTest {
   #[@test]
   public function without_arguments() {
     $this->assertAnnotated(['service' => []], $this->type('
-      #[@service] class T { }
+      #[@service]
+      class T { }
     '));
   }
 
