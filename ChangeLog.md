@@ -3,6 +3,7 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #11: Yield comments from tokenizer - @thekid
 * Merged PR #10: Fix PHP 8 native syntax - @thekid
 
 ## 5.0.0 / 2020-07-20
