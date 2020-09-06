@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #10: Fix PHP 8 native syntax - @thekid
+
 ## 5.0.0 / 2020-07-20
 
 * Merged PR #8: Add support for match expression - @thekid
