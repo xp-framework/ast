@@ -25,7 +25,6 @@ class Tokens implements \IteratorAggregate {
     '?' => ['?:', '??', '?->', '??='],
     '.' => ['.=', '...'],
     ':' => ['::'],
-    "\303" => ["\303\227"]
   ]; 
 
   private $tokens;
