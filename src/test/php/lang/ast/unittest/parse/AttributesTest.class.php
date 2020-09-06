@@ -87,6 +87,21 @@ class AttributesTest extends ParseTest {
   }
 
   #[@test]
+  public function multiline() {
+    $elements= [
+      [new Literal('"one"', self::LINE + 2), new Literal('1', self::LINE + 2)],
+      [new Literal('"two"', self::LINE + 3), new Literal('2', self::LINE + 3)],
+    ];
+    $this->assertAnnotated(['Values' => [new ArrayLiteral($elements, self::LINE + 1)]], $this->type('
+      #[Values([
+        "one" => 1,
+        "two" => 2,
+      ])]
+      class T { }
+    '));
+  }
+
+  #[@test]
   public function with_two_arguments() {
     $this->assertAnnotated(
       ['Service' => [new Literal('1', self::LINE), new Literal('2', self::LINE)]],
