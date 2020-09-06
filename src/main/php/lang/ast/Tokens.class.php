@@ -123,14 +123,19 @@ class Tokens implements \IteratorAggregate {
           do {
             $s= strspn($next, ' ');
             if ('#' !== $next[$s]) break;
-            $line++;
             $comment.= substr($next, $s + 1);
             $next= $this->tokens->nextToken("\r\n").$this->tokens->nextToken("\r\n");
           } while ($this->tokens->hasMoreTokens());
+
+          // XP annotations vs. PHP 8 attributes
           if (0 === strncmp($comment, '[@', 2)) {
+            $this->tokens->pushBack(substr($comment, 1).$next);
+            yield 'operator' => ['#[@', $line];
+          } else if ('[' === $comment[0]) {
             $this->tokens->pushBack(substr($comment, 1).$next);
             yield 'operator' => ['#[', $line];
           } else {
+            $line+= substr_count($comment, "\n");
             $this->tokens->pushBack($next);
           }
           continue;
