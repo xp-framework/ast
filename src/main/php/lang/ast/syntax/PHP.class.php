@@ -317,8 +317,8 @@ class PHP extends Language {
         $parse->forward();
       } else if ('#[' === $parse->token->value) {
         $parse->forward();
-        $annotations= $this->attributes($parse, 'anonymous class annotations');
-        $parse->expecting('class', 'anonymous class annotations');
+        $annotations= $this->attributes($parse, 'anonymous class attributes');
+        $parse->expecting('class', 'anonymous class attributes');
         $type= null;
       } else {
         $type= $parse->scope->resolve($parse->token->value);
@@ -360,7 +360,7 @@ class PHP extends Language {
     });
 
     $this->prefix('#[', 0, function($parse, $token) {
-      $annotations= $this->attributes($parse, 'annotations');
+      $annotations= $this->attributes($parse, 'attributes');
       $expression= $this->expression($parse, 0);
       $expression->annotations= $annotations;
       return $expression;
@@ -795,7 +795,7 @@ class PHP extends Language {
     });
 
     $this->stmt('#[', function($parse, $token) {
-      $annotations= $this->attributes($parse, 'annotations');
+      $annotations= $this->attributes($parse, 'attributes');
       $type= $this->statement($parse);
       $type->annotations= $annotations;
       return $type;
@@ -1266,7 +1266,7 @@ class PHP extends Language {
     while (')' !== $parse->token->value) {
       if ('#[' === $parse->token->value) {
         $parse->forward();
-        $annotations= $this->attributes($parse, 'parameter annotations');
+        $annotations= $this->attributes($parse, 'parameter attributes');
       } else if ('<<' === $parse->token->value) {
         $parse->forward();
         $annotations= $this->annotations($parse, 'parameter annotation');
@@ -1352,7 +1352,7 @@ class PHP extends Language {
         $meta= [];
       } else if ('#[' === $parse->token->value) {
         $parse->forward();
-        $meta= [DETAIL_ANNOTATIONS => $this->attributes($parse, 'member annotations')];
+        $meta= [DETAIL_ANNOTATIONS => $this->attributes($parse, 'member attributes')];
       } else if ('#[@' === $parse->token->value) {
         $parse->forward();
         $meta= $this->meta($parse, 'member annotations');
