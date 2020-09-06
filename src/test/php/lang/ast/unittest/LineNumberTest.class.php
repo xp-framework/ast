@@ -48,40 +48,32 @@ class LineNumberTest {
   #[@test]
   public function after_regular_comment() {
     $this->assertPositions(
-      [['HERE' => 2]],
+      [['// Comment' => 1], ['HERE' => 2]],
       new Tokens("// Comment\nHERE")
     );
   }
 
   #[@test]
-  public function apidoc_comment() {
+  public function after_apidoc_comment() {
     $this->assertPositions(
-      [['COMMENT' => 1], ['HERE' => 2]],
-      new Tokens("/** COMMENT */\nHERE")
+      [['/** Apidoc */' => 1], ['HERE' => 2]],
+      new Tokens("/** Apidoc */\nHERE")
     );
   }
 
   #[@test]
   public function multi_line_apidoc_comment() {
     $this->assertPositions(
-      [["LINE1\nLINE2" => 1], ['HERE' => 3]],
+      [["/** LINE1\nLINE2 */" => 1], ['HERE' => 3]],
       new Tokens("/** LINE1\nLINE2 */\nHERE")
     );
   }
 
   #[@test]
-  public function multi_line_apidoc_comment_is_trimmed() {
+  public function multi_line_apidoc_comment_is_not_trimmed() {
     $this->assertPositions(
-      [['COMMENT' => 1], ['HERE' => 3]],
-      new Tokens("/** COMMENT\n */\nHERE")
-    );
-  }
-
-  #[@test]
-  public function multi_line_apidoc_comment_leading_stars_removed() {
-    $this->assertPositions(
-      [["LINE1\nLINE2" => 1], ['HERE' => 3]],
-      new Tokens("/** LINE1\n * LINE2 */\nHERE")
+      [["/** Apidoc\n */" => 1], ['HERE' => 3]],
+      new Tokens("/** Apidoc\n */\nHERE")
     );
   }
 

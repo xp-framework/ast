@@ -77,7 +77,7 @@ class Parse {
         $t= new Token($this->language->symbol('(variable)'));
         $t->kind= 'variable';
       } else if ('comment' === $type) {
-        $this->comment= $value;
+        if ('/' === $value[0] && '*' === $value[2] ?? null) $this->comment= $value;
         continue;
       } else {
         throw new Error('Unexpected token '.$value, $this->file, $line);

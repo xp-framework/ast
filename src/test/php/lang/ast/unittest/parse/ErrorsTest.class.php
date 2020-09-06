@@ -73,8 +73,8 @@ class ErrorsTest extends ParseTest {
   #[@test]
   public function unclosed_annotation() {
     $this->assertError(
-      'Expected ", or >>", have "(end)" in annotations',
-      $this->parse('<<annotation')
+      'Expected ", or ]", have "(end)" in attributes',
+      $this->parse('#[Annotation')
     );
     \xp::gc();
   }

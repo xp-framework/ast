@@ -8,7 +8,7 @@ use unittest\Assert;
  *
  * @deprecated
  */
-class AnnotationTest extends ParseTest {
+class HackAnnotationsTest extends ParseTest {
 
   /**
    * Assertion helper

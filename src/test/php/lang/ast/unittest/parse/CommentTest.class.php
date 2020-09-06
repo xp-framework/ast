@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\Literal;
+use lang\ast\nodes\{Literal, ClassDeclaration};
 use unittest\Assert;
 
 class CommentTest extends ParseTest {
@@ -82,6 +82,14 @@ class CommentTest extends ParseTest {
        * spanning multiple lines.
        */
       "test";
+    ');
+  }
+
+  #[@test]
+  public function apidoc_comment_attached_to_next_node() {
+    $this->assertParsed([new ClassDeclaration([], '\\T', null, [], [], [], '/** @see http://example.org/ */', 3)], '
+      /** @see http://example.org/ */
+      class T { }
     ');
   }
 }

@@ -103,35 +103,41 @@ class Tokens implements \IteratorAggregate {
         } else if ('/' === $token) {
           $next= $this->tokens->nextToken();
           if ('/' === $next) {
-            $this->tokens->nextToken("\r\n");
+            yield 'comment' => ['//'.$this->tokens->nextToken("\r\n"), $line];
             continue;
           } else if ('*' === $next) {
             $comment= '';
             do {
               $t= $this->tokens->nextToken('/');
               $comment.= $t;
-            } while ('*' !== $t[strlen($t)- 1] && $this->tokens->hasMoreTokens());
+            } while ('*' !== $t[strlen($t) - 1] && $this->tokens->hasMoreTokens());
             $comment.= $this->tokens->nextToken('/');
-            yield 'comment' => [trim(preg_replace('/\n\s+\* ?/', "\n", substr($comment, 1, -2))), $line];
+            yield 'comment' => ['/*'.$comment, $line];
             $line+= substr_count($comment, "\n");
             continue;
           }
           $this->tokens->pushBack($next);
         } else if ('#' === $token) {
-          $comment= $this->tokens->nextToken("\r\n").$this->tokens->nextToken("\r\n");
-          $next= '#';
-          do {
-            $s= strspn($next, ' ');
-            if ('#' !== $next[$s]) break;
-            $line++;
-            $comment.= substr($next, $s + 1);
-            $next= $this->tokens->nextToken("\r\n").$this->tokens->nextToken("\r\n");
-          } while ($this->tokens->hasMoreTokens());
+          $comment= $this->tokens->nextToken("\r\n");
+
+          // XP Annotations: Consume all consecutive lines, uncommenting them
           if (0 === strncmp($comment, '[@', 2)) {
+            $comment.= $this->tokens->nextToken("\r\n");
+            $next= '#';
+            do {
+              $s= strspn($next, ' ');
+              if ('#' !== $next[$s]) break;
+              $comment.= substr($next, $s + 1);
+              $next= $this->tokens->nextToken("\r\n").$this->tokens->nextToken("\r\n");
+            } while ($this->tokens->hasMoreTokens());
+
             $this->tokens->pushBack(substr($comment, 1).$next);
+            yield 'operator' => ['#[@', $line];
+          } else if ('[' === $comment[0]) {
+            $this->tokens->pushBack(substr($comment, 1));
             yield 'operator' => ['#[', $line];
           } else {
-            $this->tokens->pushBack($next);
+            yield 'comment' => [$token.$comment, $line];
           }
           continue;
         }

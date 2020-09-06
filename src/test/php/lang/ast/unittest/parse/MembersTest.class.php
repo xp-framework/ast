@@ -78,7 +78,7 @@ class MembersTest extends ParseTest {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], null), [], $annotations, null, self::LINE));
 
-    $this->assertParsed([$class], 'class A { @@Test public function a() { } }');
+    $this->assertParsed([$class], 'class A { #[Test] public function a() { } }');
   }
 
   #[@test]
@@ -87,7 +87,7 @@ class MembersTest extends ParseTest {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], null), [], $annotations, null, self::LINE));
 
-    $this->assertParsed([$class], 'class A { @@Test @@Ignore("Not implemented") public function a() { } }');
+    $this->assertParsed([$class], 'class A { #[Test, Ignore("Not implemented")] public function a() { } }');
   }
 
   #[@test]
