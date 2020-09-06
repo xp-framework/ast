@@ -87,7 +87,7 @@ class CommentTest extends ParseTest {
 
   #[@test]
   public function apidoc_comment_attached_to_next_node() {
-    $this->assertParsed([new ClassDeclaration([], '\\T', null, [], [], [], '@see http://example.org/', 3)], '
+    $this->assertParsed([new ClassDeclaration([], '\\T', null, [], [], [], '/** @see http://example.org/ */', 3)], '
       /** @see http://example.org/ */
       class T { }
     ');
