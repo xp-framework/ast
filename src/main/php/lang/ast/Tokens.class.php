@@ -112,8 +112,7 @@ class Tokens implements \IteratorAggregate {
               $comment.= $t;
             } while ('*' !== $t[strlen($t) - 1] && $this->tokens->hasMoreTokens());
             $comment.= $this->tokens->nextToken('/');
-            $kind= '*' === $comment[0] ? 'apidoc' : 'comment';
-            yield $kind => ['/*'.$comment, $line];
+            yield 'comment' => ['/*'.$comment, $line];
             $line+= substr_count($comment, "\n");
             continue;
           }
