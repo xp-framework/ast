@@ -92,11 +92,21 @@ class TokensTest {
 
   #[@test]
   public function regular_comment() {
-    $this->assertTokens([], new Tokens('// Comment'));
+    $this->assertTokens([['comment' => '// Comment']], new Tokens('// Comment'));
+  }
+
+  #[@test]
+  public function oneline_comment() {
+    $this->assertTokens([['comment' => '# Comment']], new Tokens('# Comment'));
+  }
+
+  #[@test]
+  public function inline_comment() {
+    $this->assertTokens([['comment' => '/* Comment */']], new Tokens('/* Comment */'));
   }
 
   #[@test]
   public function apidoc_comment() {
-    $this->assertTokens([['comment' => 'Test']], new Tokens('/** Test */'));
+    $this->assertTokens([['apidoc' => '/** Test */']], new Tokens('/** Test */'));
   }
 }
