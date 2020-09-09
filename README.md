@@ -39,7 +39,7 @@ When compiling the following sourcecode, getters for the `id` and `name` members
 ```php
 use codegen\Getters;
 
-@@Getters
+#[Getters]
 class Person {
   private int $id;
   private string $name;
