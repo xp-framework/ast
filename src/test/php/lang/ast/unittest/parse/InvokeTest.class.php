@@ -53,4 +53,13 @@ class InvokeTest extends ParseTest {
       'test(1, 2, );'
     );
   }
+
+  #[@test]
+  public function invoke_function_with_positional_and_named_arguments() {
+    $arguments= [0 => new Literal('1', self::LINE), 'named' => new Literal('2', self::LINE)];
+    $this->assertParsed(
+      [new InvokeExpression(new Literal('test', self::LINE), $arguments, self::LINE)],
+      'test(1, named: 2);'
+    );
+  }
 }
