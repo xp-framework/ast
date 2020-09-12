@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 5.2.0 / 2020-09-12
+
+* Merged PR #13: Add syntactic support for named arguments (PHP 8), see
+  https://wiki.php.net/rfc/named_params
+  (@thekid)
+
 ## 5.1.0 / 2020-09-09
 
 * Merged PR #12: Improve tokenizer performance - @thekid
