@@ -169,7 +169,7 @@ class PHP extends Language {
       $parse->forward();
       if ('(' === $parse->token->value) {
         $parse->expecting('(', 'invoke expression');
-        $arguments= $this->expressions($parse);
+        $arguments= $this->arguments($parse);
         $parse->expecting(')', 'invoke expression');
         $expr= new InvokeExpression($expr, $arguments, $token->line);
       }
@@ -178,7 +178,7 @@ class PHP extends Language {
     });
 
     $this->infix('(', 100, function($parse, $token, $left) {
-      $arguments= $this->expressions($parse);
+      $arguments= $this->arguments($parse);
       $parse->expecting(')', 'invoke expression');
       return new InvokeExpression($left, $arguments, $token->line);
     });
@@ -326,7 +326,7 @@ class PHP extends Language {
       }
 
       $parse->expecting('(', 'new arguments');
-      $arguments= $this->expressions($parse);
+      $arguments= $this->arguments($parse);
       $parse->expecting(')', 'new arguments');
 
       if (null === $type) {
@@ -1166,7 +1166,7 @@ class PHP extends Language {
 
       if ('(' === $parse->token->value) {
         $parse->expecting('(', $context);
-        $attributes[$name]= $this->expressions($parse);
+        $attributes[$name]= $this->arguments($parse);
         $parse->expecting(')', $context);
       } else {
         $attributes[$name]= [];
@@ -1437,10 +1437,35 @@ class PHP extends Language {
     return $decl;
   }
 
-  public function expressions($parse, $end= ')') {
+  public function arguments($parse) {
     $arguments= [];
+    while (')' !== $parse->token->value) {
+
+      // Named arguments (name: <argument>) vs. positional arguments
+      $expr= $this->expression($parse, 0);
+      if (':' === $parse->token->value) {
+        $parse->forward();
+        $arguments[$expr->expression]= $this->expression($parse, 0);
+      } else {
+        $arguments[]= $expr;
+      }
+
+      if (',' === $parse->token->value) {
+        $parse->forward();
+      } else if (')' === $parse->token->value) {
+        break;
+      } else {
+        $parse->expecting(') or ,', 'argument list');
+        break;
+      }
+    }
+    return $arguments;
+  }
+
+  public function expressions($parse, $end) {
+    $expressions= [];
     while ($end !== $parse->token->value) {
-      $arguments[]= $this->expression($parse, 0);
+      $expressions[]= $this->expression($parse, 0);
       if (',' === $parse->token->value) {
         $parse->forward();
       } else if ($end === $parse->token->value) {
@@ -1450,6 +1475,6 @@ class PHP extends Language {
         break;
       }
     }
-    return $arguments;
+    return $expressions;
   }
 }
