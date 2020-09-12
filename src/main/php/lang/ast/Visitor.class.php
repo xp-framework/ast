@@ -35,6 +35,22 @@ abstract class Visitor {
   public function binary($self) { }
 
   /**
+   * Visits unary prefix operators (e.g. `++$i`)
+   *
+   * @param  lang.ast.Node $self
+   * @return var
+   */
+  public function prefix($self) { }
+
+  /**
+   * Visits unary suffix operators (e.g. `$i++`)
+   *
+   * @param  lang.ast.Node $self
+   * @return var
+   */
+  public function suffix($self) { }
+
+  /**
    * Visits blocks
    *
    * @param  lang.ast.Node $self

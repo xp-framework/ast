@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed visitor API for unary prefix (e.g. `++$i`) and unary suffix
+  (e.g. `$i++`) operators
+  (@thekid)
+
 ## 5.2.0 / 2020-09-12
 
 * Merged PR #13: Add syntactic support for named arguments (PHP 8), see
