@@ -200,10 +200,34 @@ class OperatorTest extends ParseTest {
   }
 
   #[@test]
-  public function scope_resolution_operator() {
+  public function scope_resolution_operator_with_constant() {
     $this->assertParsed(
       [new ScopeExpression('\\Objects', new Literal('ID', self::LINE), self::LINE)],
       'Objects::ID;'
+    );
+  }
+
+  #[@test]
+  public function scope_resolution_operator_with_property() {
+    $this->assertParsed(
+      [new ScopeExpression('\\Objects', new Variable('ID', self::LINE), self::LINE)],
+      'Objects::$ID;'
+    );
+  }
+
+  #[@test]
+  public function scope_resolution_operator_with_method() {
+    $this->assertParsed(
+      [new ScopeExpression(
+        '\\Objects',
+        new InvokeExpression(
+          new Literal('hashOf', self::LINE),
+          [new Variable('value', self::LINE)],
+          self::LINE
+        ),
+        self::LINE
+      )],
+      'Objects::hashOf($value);'
     );
   }
 
