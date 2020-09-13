@@ -23,6 +23,7 @@ class AttributesTest extends ParseTest {
    */
   private function attributes() {
     yield ['#[Service]', ['Service' => []]];
+    yield ['#[Test(version: 1)]', ['Test' => ['version' => new Literal('1', self::LINE)]]];
     yield ['#[Service, Version(1)]', ['Service' => [], 'Version' => [new Literal('1', self::LINE)]]];
   }
 
