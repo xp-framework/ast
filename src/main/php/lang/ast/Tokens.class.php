@@ -137,6 +137,8 @@ class Tokens implements \IteratorAggregate {
             $offset-= strlen($t);
             yield 'operator' => ['#[', $line];
           }
+        } else if ('$' === $t) {
+          yield 'operator' => ['#$', $line];
         } else {
           yield 'comment' => ['#'.$t.$next("\r\n"), $line];
         }

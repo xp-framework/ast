@@ -3,7 +3,7 @@
 use lang\ast\Node;
 
 abstract class Annotated extends Node {
-  public $annotations;
+  public $annotations, $values;
 
   /**
    * Returns an annotation for a given name, or NULL if no annotation

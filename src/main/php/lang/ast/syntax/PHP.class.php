@@ -66,6 +66,10 @@ use lang\ast\{Token, Language};
 class PHP extends Language {
   private $body= [];
 
+  static function __static() {
+    define('DETAIL_VALUES', 0x100);
+  }
+
   /** Setup language parser */
   public function __construct() {
     $this->symbol(':');
@@ -808,6 +812,16 @@ class PHP extends Language {
       return $type;
     });
 
+    $this->stmt('#$', function($parse, $token) {
+      $name= $parse->token->value;
+      $parse->forward();
+      $parse->expecting(':', 'value');
+      $value= $this->expression($parse, 0);
+      $type= $this->statement($parse);
+      $type->values[$name]= $value;
+      return $type;
+    });
+
     $this->stmt('class', function($parse, $token) {
       $type= $parse->scope->resolve($parse->token->value);
       $parse->forward();
@@ -944,6 +958,7 @@ class PHP extends Language {
           $line
         );
         $body[$name]->holder= $holder;
+        $body[$name]->values= $meta[DETAIL_VALUES] ?? null;
         if (',' === $parse->token->value) {
           $parse->forward();
         }
@@ -992,6 +1007,7 @@ class PHP extends Language {
         $line
       );
       $body[$lookup]->holder= $holder;
+      $body[$lookup]->values= $meta[DETAIL_VALUES] ?? null;
     });
   }
 
@@ -1114,6 +1130,7 @@ class PHP extends Language {
       }
       $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line);
       $body[$lookup]->holder= $holder;
+      $body[$lookup]->values= $meta[DETAIL_VALUES] ?? null;
 
       if (',' === $parse->token->value) {
         $parse->forward();
@@ -1353,6 +1370,13 @@ class PHP extends Language {
       } else if ('#[' === $parse->token->value) {
         $parse->forward();
         $meta= [DETAIL_ANNOTATIONS => $this->attributes($parse, 'member attributes')];
+      } else if ('#$' === $parse->token->value) {
+        $parse->forward();
+        $name= $parse->token->value;
+        $parse->forward();
+        $parse->expecting(':', 'value');
+        $value= $this->expression($parse, 0);
+        $meta[DETAIL_VALUES][$name]= $value;
       } else if ('#[@' === $parse->token->value) {
         $parse->forward();
         $meta= $this->meta($parse, 'member annotations');
