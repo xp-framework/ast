@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Changed tokens to yield variables including the leading `$` sign
+  (@thekid)
 * Fixed visitor API for unary prefix (e.g. `++$i`) and unary suffix
   (e.g. `$i++`) operators
   (@thekid)

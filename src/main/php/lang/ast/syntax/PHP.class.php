@@ -158,7 +158,7 @@ class PHP extends Language {
       $scope= $left instanceof Literal ? $parse->scope->resolve($left->expression) : $left;
 
       if ('variable' === $parse->token->kind) {
-        $expr= new Variable($parse->token->value, $parse->token->line);
+        $expr= new Variable(substr($parse->token->value, 1), $parse->token->line);
       } else if ('name' === $parse->token->kind) {
         $expr= new Literal($parse->token->value, $parse->token->line);
       } else {
@@ -309,7 +309,7 @@ class PHP extends Language {
         $type= $this->expression($parse, 0);
         $parse->expecting(')', 'new type');
       } else if ('variable' === $parse->token->kind) {
-        $type= '$'.$parse->token->value;
+        $type= $parse->token->value;
         $parse->forward();
       } else if ('class' === $parse->token->value) {
         $annotations= [];
@@ -395,9 +395,9 @@ class PHP extends Language {
           while (')' !== $parse->token->value) {
             if ('&' === $parse->token->value) {
               $parse->forward();
-              $use[]= '&$'.$parse->token->value;
+              $use[]= '&'.$parse->token->value;
             } else {
-              $use[]= '$'.$parse->token->value;
+              $use[]= $parse->token->value;
             }
             $parse->forward();
             if (')' === $parse->token->value) break;
@@ -432,7 +432,7 @@ class PHP extends Language {
       if ('variable' === $parse->token->kind) {
         $init= [];
         while (';' !== $parse->token->value) {
-          $variable= $parse->token->value;
+          $variable= substr($parse->token->value, 1);
           $parse->forward();
 
           if ('=' === $parse->token->value) {
@@ -493,7 +493,7 @@ class PHP extends Language {
     });
 
     $this->prefix('(variable)', 0, function($parse, $token) {
-      return new Variable($token->value, $token->line);
+      return new Variable(substr($token->value, 1), $token->line);
     });
 
     $this->prefix('(literal)', 0, function($parse, $token) {
@@ -747,7 +747,7 @@ class PHP extends Language {
         $parse->expecting(')', 'catch');
 
         $parse->expecting('{', 'catch');
-        $catches[]= new CatchStatement($types, $variable->value, $this->statements($parse), $parse->token->line);
+        $catches[]= new CatchStatement($types, substr($variable->value, 1), $this->statements($parse), $parse->token->line);
         $parse->expecting('}', 'catch');
       }
 
@@ -1100,9 +1100,8 @@ class PHP extends Language {
         $name= $parse->token->value;
       }
 
-      $lookup= '$'.$name;
-      if (isset($body[$lookup])) {
-        $parse->raise('Cannot redeclare property '.$lookup);
+      if (isset($body[$name])) {
+        $parse->raise('Cannot redeclare property '.$name);
       }
 
       $parse->forward();
@@ -1112,8 +1111,8 @@ class PHP extends Language {
       } else {
         $expr= null;
       }
-      $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line);
-      $body[$lookup]->holder= $holder;
+      $body[$name]= new Property($modifiers, substr($name, 1), $type, $expr, $annotations, $comment, $line);
+      $body[$name]->holder= $holder;
 
       if (',' === $parse->token->value) {
         $parse->forward();
@@ -1310,7 +1309,7 @@ class PHP extends Language {
         $parse->forward();
         $default= $this->expression($parse, 0);
       }
-      $parameters[]= new Parameter($name, $type, $default, $byref, $variadic, $promote, $annotations);
+      $parameters[]= new Parameter(substr($name, 1), $type, $default, $byref, $variadic, $promote, $annotations);
 
       if (')' === $parse->token->value) {
         break;
@@ -1442,12 +1441,19 @@ class PHP extends Language {
     while (')' !== $parse->token->value) {
 
       // Named arguments (name: <argument>) vs. positional arguments
-      $expr= $this->expression($parse, 0);
-      if (':' === $parse->token->value) {
+      if ('name' === $parse->token->kind) {
+        $token= $parse->token;
         $parse->forward();
-        $arguments[$expr->expression]= $this->expression($parse, 0);
+        if (':' === $parse->token->value) {
+          $parse->forward();
+          $arguments[$token->value]= $this->expression($parse, 0);
+        } else {
+          $parse->queue[]= $parse->token;
+          $parse->token= $token;
+          $arguments[]= $this->expression($parse, 0);
+        }
       } else {
-        $arguments[]= $expr;
+        $arguments[]= $this->expression($parse, 0);
       }
 
       if (',' === $parse->token->value) {

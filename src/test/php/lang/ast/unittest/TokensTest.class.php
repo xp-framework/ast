@@ -67,7 +67,7 @@ class TokensTest {
   #  '$input'
   #])]
   public function variables($input) {
-    $this->assertTokens([['variable' => substr($input, 1)]], new Tokens($input));
+    $this->assertTokens([['variable' => $input]], new Tokens($input));
   }
 
   #[@test, @values([

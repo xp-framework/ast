@@ -28,6 +28,12 @@ class NamedArgumentsTest extends ParseTest {
   }
 
   #[@test]
+  public function keyword_used_as_name() {
+    $node= $this->parse('func(class: T::class);')->tree()->children()[0];
+    $this->assertNamed(['class'], $node->arguments);
+  }
+
+  #[@test]
   public function named_and_positional() {
     $node= $this->parse('func(1, 2, a: 3, b: 4);')->tree()->children()[0];
     $this->assertNamed([0, 1, 'a', 'b'], $node->arguments);

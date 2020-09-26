@@ -113,7 +113,7 @@ class Tokens implements \IteratorAggregate {
         yield 'string' => [$string, $line];
         $line+= substr_count($string, "\n");
       } else if ('$' === $token) {
-        yield 'variable' => [$next(self::DELIMITERS), $line];
+        yield 'variable' => ['$'.$next(self::DELIMITERS), $line];
       } else if ('#' === $token) {
         $t= $next(self::DELIMITERS);
         if ('[' === $t) {

@@ -88,6 +88,14 @@ class AttributesTest extends ParseTest {
   }
 
   #[@test]
+  public function with_named_arguments() {
+    $this->assertAnnotated(
+      ['Impl' => ['class' => new Literal('"T"', self::LINE), 'version' => new Literal('1', self::LINE)]],
+      $this->type('#[Impl(class: "T", version: 1)] class T { }')
+    );
+  }
+
+  #[@test]
   public function multiline() {
     $elements= [
       [new Literal('"one"', self::LINE + 2), new Literal('1', self::LINE + 2)],
