@@ -3,6 +3,9 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 5.3.0 / 2020-09-27
+
+* Fixed named arguments using keywords - @thekid
 * Changed tokens to yield variables including the leading `$` sign
   (@thekid)
 * Fixed visitor API for unary prefix (e.g. `++$i`) and unary suffix
