@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 5.4.0 / 2020-09-29
+
+* Merged PR #9: Deprecate hacklang-style annotations in favor PHP 8
+  attributes. This is step 2 of xp-framework/compiler#86
+  (@thekid)
+
 ## 5.3.0 / 2020-09-27
 
 * Fixed named arguments using keywords - @thekid
