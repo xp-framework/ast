@@ -1123,6 +1123,7 @@ class PHP extends Language {
 
   /** Parses Hacklang-style annotations (<<test>>) */
   private function annotations($parse, $context) {
+    $parse->warn('Deprecated Hacklang-style annotations used');
     $annotations= [];
     do {
       $name= $parse->token->value;
