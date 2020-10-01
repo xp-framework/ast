@@ -2,11 +2,11 @@
 
 use lang\ast\nodes\{ArrayLiteral, BinaryExpression, FunctionDeclaration, Literal, Parameter, ReturnStatement, Signature, YieldExpression, YieldFromExpression};
 use lang\ast\types\{IsFunction, IsLiteral, IsNullable};
-use unittest\Assert;
+use unittest\{Assert, Test, Values};
 
 class FunctionsTest extends ParseTest {
 
-  #[@test]
+  #[Test]
   public function empty_function_without_parameters() {
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], null), [], self::LINE)],
@@ -14,7 +14,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function two_functions() {
     $this->assertParsed(
       [
@@ -25,7 +25,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test, @values(['param', 'protected'])]
+  #[Test, Values(['param', 'protected'])]
   public function with_parameter($name) {
     $params= [new Parameter($name, null, null, false, false, null, [])];
     $this->assertParsed(
@@ -34,7 +34,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_reference_parameter() {
     $params= [new Parameter('param', null, null, true, false, null, [])];
     $this->assertParsed(
@@ -43,7 +43,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function dangling_comma_in_parameter_lists() {
     $params= [new Parameter('param', null, null, false, false, null, [])];
     $this->assertParsed(
@@ -52,7 +52,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_typed_parameter() {
     $params= [new Parameter('param', new IsLiteral('string'), null, false, false, null, [])];
     $this->assertParsed(
@@ -61,7 +61,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_nullable_typed_parameter() {
     $params= [new Parameter('param', new IsNullable(new IsLiteral('string')), null, false, false, null, [])];
     $this->assertParsed(
@@ -70,7 +70,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_variadic_parameter() {
     $params= [new Parameter('param', null, null, false, true, null, [])];
     $this->assertParsed(
@@ -79,7 +79,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_optional_parameter() {
     $params= [new Parameter('param', null, new Literal('null', self::LINE), false, false, null, [])];
     $this->assertParsed(
@@ -88,7 +88,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_parameter_named_function() {
     $params= [new Parameter('function', null, null, false, false, null, [])];
     $this->assertParsed(
@@ -97,7 +97,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_typed_parameter_named_function() {
     $params= [new Parameter('function', new IsFunction([], new IsLiteral('void')), null, false, false, null, [])];
     $this->assertParsed(
@@ -106,7 +106,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_return_type() {
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], new IsLiteral('void')), [], self::LINE)],
@@ -114,7 +114,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_nullable_return() {
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], new IsNullable(new IsLiteral('string'))), [], self::LINE)],
@@ -122,7 +122,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function generator() {
     $yield= new YieldExpression(null, null, self::LINE);
     $this->assertParsed(
@@ -131,7 +131,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function generator_with_value() {
     $yield= new YieldExpression(null, new Literal('1', self::LINE), self::LINE);
     $this->assertParsed(
@@ -140,7 +140,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function generator_with_key_and_value() {
     $yield= new YieldExpression(new Literal('"number"', self::LINE), new Literal('1', self::LINE), self::LINE);
     $this->assertParsed(
@@ -149,7 +149,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function generator_delegation() {
     $yield= new YieldFromExpression(new ArrayLiteral([], self::LINE), self::LINE);
     $this->assertParsed(

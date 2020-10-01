@@ -1,16 +1,16 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\nodes\{Annotation, ClassDeclaration};
-use unittest\Assert;
+use unittest\{Assert, Test};
 
 class AnnotationsTest {
 
-  #[@test]
+  #[Test]
   public function no_annotation() {
     Assert::null((new ClassDeclaration([], 'Test', null, [], [], []))->annotation('value'));
   }
 
-  #[@test]
+  #[Test]
   public function annotation_without_value() {
     Assert::equals(
       new Annotation('value', null),

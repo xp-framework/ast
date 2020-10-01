@@ -1,6 +1,7 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\{CaseLabel, Literal, SwitchStatement, Variable};
+use unittest\Test;
 
 class SwitchStatementTest extends NodeTest {
   private $expression;
@@ -10,22 +11,22 @@ class SwitchStatementTest extends NodeTest {
     $this->expression= new Variable('expression');
   }
 
-  #[@test]
+  #[Test]
   public function can_create() {
     new SwitchStatement($this->expression, []);
   }
 
-  #[@test]
+  #[Test]
   public function expression() {
     $this->assertEquals($this->expression, (new SwitchStatement($this->expression, []))->expression);
   }
 
-  #[@test]
+  #[Test]
   public function empty_cases() {
     $this->assertEquals([], (new SwitchStatement($this->expression, []))->cases);
   }
 
-  #[@test]
+  #[Test]
   public function cases() {
     $cases= [
       new CaseLabel(new Literal(0), [$this->returns('"no"')]),
@@ -35,7 +36,7 @@ class SwitchStatementTest extends NodeTest {
     $this->assertEquals($cases, (new SwitchStatement($this->expression, $cases))->cases);
   }
 
-  #[@test]
+  #[Test]
   public function children() {
     $cases= [
       new CaseLabel(new Literal(0), [$this->returns('"no"')]),

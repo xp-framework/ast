@@ -1,6 +1,7 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\{CaseLabel, Literal};
+use unittest\Test;
 
 class CaseLabelTest extends NodeTest {
   private $expression;
@@ -10,22 +11,22 @@ class CaseLabelTest extends NodeTest {
     $this->expression= new Literal(0);
   }
 
-  #[@test]
+  #[Test]
   public function can_create() {
     new CaseLabel($this->expression, []);
   }
 
-  #[@test]
+  #[Test]
   public function normal_label_has_expression() {
     $this->assertEquals($this->expression, (new CaseLabel($this->expression, []))->expression);
   }
 
-  #[@test]
+  #[Test]
   public function default_has_no_expression() {
     $this->assertNull((new CaseLabel(null, []))->expression);
   }
 
-  #[@test]
+  #[Test]
   public function normal_label_children() {
     $body= [$this->returns('"no"')];
     $this->assertEquals(
@@ -34,7 +35,7 @@ class CaseLabelTest extends NodeTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function default_children() {
     $body= [$this->returns('"no"')];
     $this->assertEquals(

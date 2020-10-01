@@ -1,11 +1,11 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{Literal, OffsetExpression, StaticLocals, Variable};
-use unittest\Assert;
+use unittest\{Assert, Test, Values};
 
 class VariablesTest extends ParseTest {
 
-  #[@test, @values(['v', 'key', 'this', 'class', 'protected'])]
+  #[Test, Values(['v', 'key', 'this', 'class', 'protected'])]
   public function variable($name) {
     $this->assertParsed(
       [new Variable($name, self::LINE)],
@@ -13,7 +13,7 @@ class VariablesTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function static_variable() {
     $this->assertParsed(
       [new StaticLocals(['v' => null], self::LINE)],
@@ -21,7 +21,7 @@ class VariablesTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function static_variable_with_initialization() {
     $this->assertParsed(
       [new StaticLocals(['id' => new Literal('0', self::LINE)], self::LINE)],
@@ -29,7 +29,7 @@ class VariablesTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function array_offset() {
     $this->assertParsed(
       [new OffsetExpression(new Variable('a', self::LINE), new Literal('0', self::LINE), self::LINE)],
@@ -38,7 +38,7 @@ class VariablesTest extends ParseTest {
   }
 
   /** @deprecated */
-  #[@test]
+  #[Test]
   public function string_offset() {
     $this->assertParsed(
       [new OffsetExpression(new Variable('a', self::LINE), new Literal('0', self::LINE), self::LINE)],

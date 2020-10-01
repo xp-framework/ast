@@ -1,18 +1,18 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{Assignment, BinaryExpression, BreakStatement, ContinueStatement, DoLoop, ForLoop, ForeachLoop, GotoStatement, InvokeExpression, Label, Literal, UnaryExpression, Variable, WhileLoop};
-use unittest\Assert;
+use unittest\{Assert, Before, Test};
 
 class LoopsTest extends ParseTest {
   private $loop;
 
   /** @return void */
-  #[@before]
+  #[Before]
   public function setUp() {
     $this->loop= new InvokeExpression(new Literal('loop', self::LINE), [], self::LINE);
   }
 
-  #[@test]
+  #[Test]
   public function foreach_value() {
     $this->assertParsed(
       [new ForeachLoop(
@@ -26,7 +26,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function foreach_key_value() {
     $this->assertParsed(
       [new ForeachLoop(
@@ -40,7 +40,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function foreach_value_without_curly_braces() {
     $this->assertParsed(
       [new ForeachLoop(
@@ -54,7 +54,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function for_loop() {
     $this->assertParsed(
       [new ForLoop(
@@ -68,7 +68,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function while_loop() {
     $this->assertParsed(
       [new WhileLoop(
@@ -80,7 +80,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function while_loop_without_curly_braces() {
     $this->assertParsed(
       [new WhileLoop(
@@ -92,7 +92,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function do_loop() {
     $this->assertParsed(
       [new DoLoop(
@@ -104,7 +104,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function do_loop_without_curly_braces() {
     $this->assertParsed(
       [new DoLoop(
@@ -116,7 +116,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function break_statement() {
     $this->assertParsed(
       [new BreakStatement(null, self::LINE)],
@@ -124,7 +124,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function break_statement_with_level() {
     $this->assertParsed(
       [new BreakStatement(new Literal('2', self::LINE), self::LINE)],
@@ -132,7 +132,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function continue_statement() {
     $this->assertParsed(
       [new ContinueStatement(null, self::LINE)],
@@ -140,7 +140,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function continue_statement_with_level() {
     $this->assertParsed(
       [new ContinueStatement(new Literal('2', self::LINE), self::LINE)],
@@ -148,7 +148,7 @@ class LoopsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function goto_statement() {
     $this->assertParsed(
       [new Label('start', self::LINE), $this->loop, new GotoStatement('start', self::LINE)],

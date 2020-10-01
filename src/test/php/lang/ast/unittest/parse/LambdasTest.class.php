@@ -1,18 +1,18 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{BinaryExpression, InvokeExpression, LambdaExpression, Literal, Parameter, ReturnStatement, Signature, Variable};
-use unittest\Assert;
+use unittest\{Assert, Before, Test};
 
 class LambdasTest extends ParseTest {
   private $expression;
 
   /** @return void */
-  #[@before]
+  #[Before]
   public function setUp() {
     $this->expression= new BinaryExpression(new Variable('a', self::LINE), '+', new Literal('1', self::LINE), self::LINE);
   }
 
-  #[@test]
+  #[Test]
   public function short_closure() {
     $this->assertParsed(
       [new LambdaExpression(new Signature([new Parameter('a', null)], null), $this->expression, self::LINE)],
@@ -21,7 +21,7 @@ class LambdasTest extends ParseTest {
     \xp::gc();
   }
 
-  #[@test]
+  #[Test]
   public function short_closure_as_arg() {
     $this->assertParsed(
       [new InvokeExpression(
@@ -34,7 +34,7 @@ class LambdasTest extends ParseTest {
     \xp::gc();
   }
 
-  #[@test]
+  #[Test]
   public function short_closure_with_braces() {
     $this->assertParsed(
       [new LambdaExpression(new Signature([new Parameter('a', null)], null), [new ReturnStatement($this->expression, self::LINE)], self::LINE)],

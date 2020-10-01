@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\transform\Transformations;
-use unittest\TestCase;
+use unittest\{Test, TestCase};
 
 class TransformationsTest extends TestCase {
   private $remove= [];
@@ -36,12 +36,12 @@ class TransformationsTest extends TestCase {
     Transformations::remove(...$this->remove);
   }
 
-  #[@test]
+  #[Test]
   public function registered_initially_empty() {
     $this->assertRegistered([]);
   }
 
-  #[@test]
+  #[Test]
   public function register_function() {
     $function= function($codegen, $class) { return $class; };
 
@@ -49,7 +49,7 @@ class TransformationsTest extends TestCase {
     $this->assertRegistered([['class' => $function]]);
   }
 
-  #[@test]
+  #[Test]
   public function register_two_functions() {
     $first= function($codegen, $class) { return $class; };
     $second= function($codegen, $class) { $class->annotations['author']= 'Test'; return $class; };

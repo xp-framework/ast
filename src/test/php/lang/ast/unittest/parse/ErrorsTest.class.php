@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Errors;
-use unittest\Assert;
+use unittest\{Assert, Test};
 
 class ErrorsTest extends ParseTest {
 
@@ -21,7 +21,7 @@ class ErrorsTest extends ParseTest {
     }
   }
 
-  #[@test]
+  #[Test]
   public function missing_semicolon() {
     $this->assertError(
       'Missing semicolon after assignment statement',
@@ -29,7 +29,7 @@ class ErrorsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function unclosed_brace_in_arguments() {
     $this->assertError(
       'Expected ") or ,", have "(end)" in argument list',
@@ -37,7 +37,7 @@ class ErrorsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function unclosed_brace_in_parameters() {
     $this->assertError(
       'Expected ",", have "(end)" in parameter list',
@@ -45,7 +45,7 @@ class ErrorsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function unclosed_type() {
     $this->assertError(
       'Expected a type, modifier, property, annotation, method or "}", have "-"',
@@ -53,7 +53,7 @@ class ErrorsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function missing_comma_in_implements() {
     $this->assertError(
       'Expected ", or {", have "B" in interfaces list',
@@ -61,7 +61,7 @@ class ErrorsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function missing_comma_in_interface_parents() {
     $this->assertError(
       'Expected ", or {", have "B" in interface parents',
@@ -69,7 +69,7 @@ class ErrorsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function unclosed_annotation() {
     $this->assertError(
       'Expected ", or ]", have "(end)" in attributes',
@@ -77,7 +77,7 @@ class ErrorsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function unclosed_offset() {
     $this->assertError(
       'Expected "]", have ";" in offset access',

@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{Annotated, Literal, ArrayLiteral};
-use unittest\Assert;
+use lang\ast\nodes\{Annotated, ArrayLiteral, Literal};
+use unittest\{Assert, Test, Values};
 
 /**
  * Tests `<<...>>` style annotations
@@ -24,12 +24,12 @@ class HackAnnotationsTest extends ParseTest {
     Assert::equals($expected, cast($children[sizeof($children) - 1], Annotated::class)->annotations);
   }
 
-  #[@test]
+  #[Test]
   public function without_value() {
     $this->assertAnnotations(['service' => []], '<<service>> class T { }');
   }
 
-  #[@test, @values(['"test"', '1', '1.5', 'true', 'false', 'null'])]
+  #[Test, Values(['"test"', '1', '1.5', 'true', 'false', 'null'])]
   public function with_literal($value) {
     $this->assertAnnotations(
       ['service' => [new Literal($value, self::LINE)]],
@@ -37,7 +37,7 @@ class HackAnnotationsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_array() {
     $elements= [
       [null, new Literal('1', self::LINE)],
@@ -49,7 +49,7 @@ class HackAnnotationsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_map() {
     $elements= [
       [new Literal('"one"', self::LINE), new Literal('1', self::LINE)],
@@ -61,7 +61,7 @@ class HackAnnotationsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function annotations_separated_by_commas() {
     $this->assertAnnotations(
       ['service' => [], 'path' => [new Literal('"/"', self::LINE)]],
@@ -69,7 +69,7 @@ class HackAnnotationsTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function two_annotations() {
     $this->assertAnnotations(
       ['Author' => [new Literal('"Test"', self::LINE + 1)], 'Version' => [new Literal('2', self::LINE + 2)]], '

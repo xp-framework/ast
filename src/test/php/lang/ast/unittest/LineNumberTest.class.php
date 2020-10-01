@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\Tokens;
-use unittest\Assert;
+use unittest\{Assert, Test};
 
 class LineNumberTest {
 
@@ -21,7 +21,7 @@ class LineNumberTest {
     Assert::equals($expected, $actual);
   }
 
-  #[@test]
+  #[Test]
   public function starts_with_line_number_one() {
     $this->assertPositions(
       [['HERE' => 1]],
@@ -29,7 +29,7 @@ class LineNumberTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function unix_lines() {
     $this->assertPositions(
       [['LINE1' => 1], ['LINE2' => 2]],
@@ -37,7 +37,7 @@ class LineNumberTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function windows_lines() {
     $this->assertPositions(
       [['LINE1' => 1], ['LINE2' => 2]],
@@ -45,7 +45,7 @@ class LineNumberTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function after_regular_comment() {
     $this->assertPositions(
       [['// Comment' => 1], ['HERE' => 2]],
@@ -53,7 +53,7 @@ class LineNumberTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function after_apidoc_comment() {
     $this->assertPositions(
       [['/** Apidoc */' => 1], ['HERE' => 2]],
@@ -61,7 +61,7 @@ class LineNumberTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function multi_line_apidoc_comment() {
     $this->assertPositions(
       [["/** LINE1\nLINE2 */" => 1], ['HERE' => 3]],
@@ -69,7 +69,7 @@ class LineNumberTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function multi_line_apidoc_comment_is_not_trimmed() {
     $this->assertPositions(
       [["/** Apidoc\n */" => 1], ['HERE' => 3]],
@@ -77,7 +77,7 @@ class LineNumberTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function multi_line_string() {
     $this->assertPositions(
       [["'STRING\n'" => 1], ['HERE' => 3]],

@@ -1,11 +1,11 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{NamespaceDeclaration, UseStatement};
-use unittest\Assert;
+use unittest\{Assert, Test};
 
 class NamespacesTest extends ParseTest {
 
-  #[@test]
+  #[Test]
   public function simple_namespace() {
     $this->assertParsed(
       [new NamespaceDeclaration('test', self::LINE)],
@@ -13,7 +13,7 @@ class NamespacesTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function compound_namespace() {
     $this->assertParsed(
       [new NamespaceDeclaration('lang\\ast', self::LINE)],
@@ -21,7 +21,7 @@ class NamespacesTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function use_statement() {
     $this->assertParsed(
       [new UseStatement(null, ['lang\ast\Parse' => null], self::LINE)],
@@ -29,7 +29,7 @@ class NamespacesTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function use_with_alias() {
     $this->assertParsed(
       [new UseStatement(null, ['lang\ast\Parse' => 'P'], self::LINE)],
@@ -37,7 +37,7 @@ class NamespacesTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function grouped_use_statement() {
     $this->assertParsed(
       [new UseStatement(null, ['lang\\ast\\Parse' => null, 'lang\\ast\\Emitter' => null], self::LINE)],
@@ -45,7 +45,7 @@ class NamespacesTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function grouped_use_with_alias() {
     $this->assertParsed(
       [new UseStatement(null, ['lang\\ast\\Parse' => 'P'], self::LINE)],

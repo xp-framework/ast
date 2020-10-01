@@ -2,13 +2,13 @@
 
 use lang\ast\nodes\{BinaryExpression, ClosureExpression, Literal, Parameter, ReturnStatement, Signature, Variable};
 use lang\ast\{FunctionType, Type};
-use unittest\Assert;
+use unittest\{Assert, Before, Test};
 
 class ClosuresTest extends ParseTest {
   private $returns;
 
   /** @return void */
-  #[@before]
+  #[Before]
   public function setUp() {
     $this->returns= new ReturnStatement(
       new BinaryExpression(
@@ -21,7 +21,7 @@ class ClosuresTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_body() {
     $this->assertParsed(
       [new ClosureExpression(new Signature([], null), null, [$this->returns], self::LINE)],
@@ -29,7 +29,7 @@ class ClosuresTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_param() {
     $params= [new Parameter('a', null, null, false, false, null, [])];
     $this->assertParsed(
@@ -38,7 +38,7 @@ class ClosuresTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_use_by_value() {
     $this->assertParsed(
       [new ClosureExpression(new Signature([], null), ['$a', '$b'], [$this->returns], self::LINE)],
@@ -46,7 +46,7 @@ class ClosuresTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_use_by_reference() {
     $this->assertParsed(
       [new ClosureExpression(new Signature([], null), ['$a', '&$b'], [$this->returns], self::LINE)],
@@ -54,7 +54,7 @@ class ClosuresTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_return_type() {
     $this->assertParsed(
       [new ClosureExpression(new Signature([], new Type('int')), null, [$this->returns], self::LINE)],
@@ -62,7 +62,7 @@ class ClosuresTest extends ParseTest {
     );
   }
 
-  #[@test]
+  #[Test]
   public function with_nullable_return_type() {
     $this->assertParsed(
       [new ClosureExpression(new Signature([], new Type('?int')), null, [$this->returns], self::LINE)],

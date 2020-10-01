@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{Annotated, Literal, ArrayLiteral};
-use unittest\Assert;
+use lang\ast\nodes\{Annotated, ArrayLiteral, Literal};
+use unittest\{Assert, Test, Values};
 
 /** @see https://github.com/xp-framework/rfc/issues/16 */
 class XpAnnotationsTest extends ParseTest {
@@ -28,7 +28,7 @@ class XpAnnotationsTest extends ParseTest {
     Assert::equals($expected, cast($node, Annotated::class)->annotations);
   }
 
-  #[@test]
+  #[Test]
   public function without_arguments() {
     $this->assertAnnotated(['service' => []], $this->type('
       #[@service]
@@ -36,7 +36,7 @@ class XpAnnotationsTest extends ParseTest {
     '));
   }
 
-  #[@test, @values(['"test"', '1', '1.5', 'true', 'false', 'null'])]
+  #[Test, Values(['"test"', '1', '1.5', 'true', 'false', 'null'])]
   public function with_literal_argument($value) {
     $this->assertAnnotated(['service' => [new Literal($value, self::LINE)]], $this->type('
       #[@service('.$value.')]
@@ -44,7 +44,7 @@ class XpAnnotationsTest extends ParseTest {
     '));
   }
 
-  #[@test]
+  #[Test]
   public function with_array_argument() {
     $elements= [
       [null, new Literal('1', self::LINE)],
@@ -56,7 +56,7 @@ class XpAnnotationsTest extends ParseTest {
     '));
   }
 
-  #[@test]
+  #[Test]
   public function with_map_argument() {
     $elements= [
       [new Literal('"one"', self::LINE), new Literal('1', self::LINE)],
@@ -68,7 +68,7 @@ class XpAnnotationsTest extends ParseTest {
     ));
   }
 
-  #[@test]
+  #[Test]
   public function multiline() {
     $elements= [
       [new Literal('"one"', self::LINE + 1), new Literal('1', self::LINE + 1)],
@@ -83,7 +83,7 @@ class XpAnnotationsTest extends ParseTest {
     '));
   }
 
-  #[@test]
+  #[Test]
   public function two_annotations() {
     $this->assertAnnotated(['service' => [], 'version' => [new Literal('2', self::LINE)]], $this->type('
       #[@service, @version(2)]
@@ -91,7 +91,7 @@ class XpAnnotationsTest extends ParseTest {
     '));
   }
 
-  #[@test]
+  #[Test]
   public function on_class() {
     $this->assertAnnotated(['service' => []], $this->type('
       #[@service]
@@ -99,7 +99,7 @@ class XpAnnotationsTest extends ParseTest {
     '));
   }
 
-  #[@test]
+  #[Test]
   public function on_trait() {
     $this->assertAnnotated(['service' => []], $this->type(
       '#[@service]
@@ -107,7 +107,7 @@ class XpAnnotationsTest extends ParseTest {
     '));
   }
 
-  #[@test]
+  #[Test]
   public function on_interface() {
     $this->assertAnnotated(['service' => []], $this->type(
       '#[@service]
@@ -115,7 +115,7 @@ class XpAnnotationsTest extends ParseTest {
     '));
   }
 
-  #[@test]
+  #[Test]
   public function on_property() {
     $type= $this->type('class T {
       #[@service]
@@ -124,7 +124,7 @@ class XpAnnotationsTest extends ParseTest {
     $this->assertAnnotated(['service' => []], $type->property('fixture'));
   }
 
-  #[@test]
+  #[Test]
   public function on_method() {
     $type= $this->type('class T {
       #[@service]
@@ -133,7 +133,7 @@ class XpAnnotationsTest extends ParseTest {
     $this->assertAnnotated(['service' => []], $type->method('fixture'));
   }
 
-  #[@test]
+  #[Test]
   public function on_parameter() {
     $type= $this->type('class T {
       #[@$arg: service]

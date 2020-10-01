@@ -1,6 +1,7 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\{IfStatement, Variable};
+use unittest\Test;
 
 class IfStatementTest extends NodeTest {
   private $condition;
@@ -10,29 +11,29 @@ class IfStatementTest extends NodeTest {
     $this->condition= new Variable('condition');
   }
 
-  #[@test]
+  #[Test]
   public function can_create() {
     new IfStatement($this->condition, [], null);
   }
 
-  #[@test]
+  #[Test]
   public function expression() {
     $this->assertEquals($this->condition, (new IfStatement($this->condition, [], null))->expression);
   }
 
-  #[@test]
+  #[Test]
   public function body() {
     $body= [$this->returns('true')];
     $this->assertEquals($body, (new IfStatement($this->condition, $body, null))->body);
   }
 
-  #[@test]
+  #[Test]
   public function otherwise() {
     $otherwise= [$this->returns('true')];
     $this->assertEquals($otherwise, (new IfStatement($this->condition, [], $otherwise))->otherwise);
   }
 
-  #[@test]
+  #[Test]
   public function children() {
     $body= [$this->returns('true')];
     $otherwise= [$this->returns('false')];
