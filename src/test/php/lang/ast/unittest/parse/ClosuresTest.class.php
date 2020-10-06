@@ -7,9 +7,8 @@ use unittest\{Assert, Before, Test};
 class ClosuresTest extends ParseTest {
   private $returns;
 
-  /** @return void */
   #[Before]
-  public function setUp() {
+  public function returns() {
     $this->returns= new ReturnStatement(
       new BinaryExpression(
         new Variable('a', self::LINE),

@@ -1,9 +1,8 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\{Literal, ReturnStatement};
-use unittest\TestCase;
 
-abstract class NodeTest extends TestCase {
+abstract class NodeTest {
 
   protected function childrenOf($node) {
     $result= [];

@@ -1,21 +1,9 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\transform\Transformations;
-use unittest\{Test, TestCase};
+use unittest\{Assert, Test};
 
-class TransformationsTest extends TestCase {
-  private $remove= [];
-
-  /**
-   * Registers a transformation; registering it for removal a test shutdown
-   *
-   * @param  string $kind
-   * @param  function(lang.ast.Node): lang.ast.Node|iterable $function
-   * @return void
-   */
-  private function register($kind, $function) {
-    $this->remove[]= Transformations::register($kind, $function);
-  }
+class TransformationsTest {
 
   /**
    * Assertion helper
@@ -28,12 +16,7 @@ class TransformationsTest extends TestCase {
     foreach (Transformations::registered() as $kind => $transformation) {
       $actual[]= [$kind => $transformation];
     }
-    $this->assertEquals($expected, $actual);
-  }
-
-  /** @return void */
-  public function tearDown() {
-    Transformations::remove(...$this->remove);
+    Assert::equals($expected, $actual);
   }
 
   #[Test]
@@ -45,8 +28,12 @@ class TransformationsTest extends TestCase {
   public function register_function() {
     $function= function($codegen, $class) { return $class; };
 
-    $this->register('class', $function);
-    $this->assertRegistered([['class' => $function]]);
+    $remove= Transformations::register('class', $function);
+    try {
+      $this->assertRegistered([['class' => $function]]);
+    } finally {
+      Transformations::remove($remove);
+    }
   }
 
   #[Test]
@@ -54,8 +41,11 @@ class TransformationsTest extends TestCase {
     $first= function($codegen, $class) { return $class; };
     $second= function($codegen, $class) { $class->annotations['author']= 'Test'; return $class; };
 
-    $this->register('class', $first);
-    $this->register('class', $second);
-    $this->assertRegistered([['class' => $first], ['class' => $second]]);
+    $remove= [Transformations::register('class', $first), Transformations::register('class', $second)];
+    try {
+      $this->assertRegistered([['class' => $first], ['class' => $second]]);
+    } finally {
+      Transformations::remove(...$remove);
+    }
   }
 }

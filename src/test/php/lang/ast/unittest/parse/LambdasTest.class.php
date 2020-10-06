@@ -6,9 +6,8 @@ use unittest\{Assert, Before, Test};
 class LambdasTest extends ParseTest {
   private $expression;
 
-  /** @return void */
   #[Before]
-  public function setUp() {
+  public function expression() {
     $this->expression= new BinaryExpression(new Variable('a', self::LINE), '+', new Literal('1', self::LINE), self::LINE);
   }
 
