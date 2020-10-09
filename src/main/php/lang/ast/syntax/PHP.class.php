@@ -37,7 +37,6 @@ use lang\ast\nodes\{
   ReturnStatement,
   ScopeExpression,
   Signature,
-  Start,
   StaticLocals,
   SwitchStatement,
   TernaryExpression,
