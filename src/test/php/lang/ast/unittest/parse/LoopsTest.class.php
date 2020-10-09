@@ -6,9 +6,8 @@ use unittest\{Assert, Before, Test};
 class LoopsTest extends ParseTest {
   private $loop;
 
-  /** @return void */
   #[Before]
-  public function setUp() {
+  public function expression() {
     $this->loop= new InvokeExpression(new Literal('loop', self::LINE), [], self::LINE);
   }
 

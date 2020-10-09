@@ -1,12 +1,13 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\{CaseLabel, Literal, SwitchStatement, Variable};
-use unittest\Test;
+use unittest\{Assert, Test};
 
 class SwitchStatementTest extends NodeTest {
   private $expression;
 
   /** @return void */
+  #[Before]
   public function setUp() {
     $this->expression= new Variable('expression');
   }
@@ -18,12 +19,12 @@ class SwitchStatementTest extends NodeTest {
 
   #[Test]
   public function expression() {
-    $this->assertEquals($this->expression, (new SwitchStatement($this->expression, []))->expression);
+    Assert::equals($this->expression, (new SwitchStatement($this->expression, []))->expression);
   }
 
   #[Test]
   public function empty_cases() {
-    $this->assertEquals([], (new SwitchStatement($this->expression, []))->cases);
+    Assert::equals([], (new SwitchStatement($this->expression, []))->cases);
   }
 
   #[Test]
@@ -33,7 +34,7 @@ class SwitchStatementTest extends NodeTest {
       new CaseLabel(new Literal(1), [$this->returns('"one"')]),
       new CaseLabel(null, [$this->returns('"more"')])
     ];
-    $this->assertEquals($cases, (new SwitchStatement($this->expression, $cases))->cases);
+    Assert::equals($cases, (new SwitchStatement($this->expression, $cases))->cases);
   }
 
   #[Test]
@@ -43,7 +44,7 @@ class SwitchStatementTest extends NodeTest {
       new CaseLabel(new Literal(1), [$this->returns('"one"')]),
       new CaseLabel(null, [$this->returns('"more"')])
     ];
-    $this->assertEquals(
+    Assert::equals(
       array_merge([$this->expression], $cases),
       $this->childrenOf(new SwitchStatement($this->expression, $cases))
     );

@@ -6,9 +6,8 @@ use unittest\{Assert, Before, Test};
 class ConditionalTest extends ParseTest {
   private $blocks;
 
-  /** @return void */
   #[Before]
-  public function setUp() {
+  public function blocks() {
     $this->blocks= [
       1 => [new InvokeExpression(new Literal('action1', self::LINE), [], self::LINE)],
       2 => [new InvokeExpression(new Literal('action2', self::LINE), [], self::LINE)]

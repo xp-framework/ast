@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\Literal;
-use unittest\Test;
+use unittest\{Assert, Test};
 
 class LiteralTest extends NodeTest {
 
@@ -12,6 +12,6 @@ class LiteralTest extends NodeTest {
 
   #[Test]
   public function expression() {
-    $this->assertEquals('true', (new Literal('true'))->expression);
+    Assert::equals('true', (new Literal('true'))->expression);
   }
 }

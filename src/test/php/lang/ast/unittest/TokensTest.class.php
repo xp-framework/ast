@@ -32,7 +32,7 @@ class TokensTest {
     $this->assertTokens([['string' => $input]], new Tokens($input));
   }
 
-  #[Test, Expect(['class' => FormatException::class, 'withMessage' => '/Unclosed string literal/']), Values(['"', "'", '"Test', "'Test"])]
+  #[Test, Expect(class: FormatException::class, withMessage: '/Unclosed string literal/'), Values(['"', "'", '"Test', "'Test"])]
   public function unclosed_string_literals($input) {
     $t= (new Tokens($input))->getIterator(); 
     $t->current();
@@ -61,8 +61,8 @@ class TokensTest {
   #[Test]
   public function annotation() {
     $this->assertTokens(
-      [['operator' => '<<'], ['name' => 'test'], ['operator' => '>>']],
-      new Tokens('<<test>>')
+      [['operator' => '#['], ['name' => 'Test'], ['operator' => ']']],
+      new Tokens('#[Test]')
     );
   }
 

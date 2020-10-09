@@ -1,13 +1,13 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\{IfStatement, Variable};
-use unittest\Test;
+use unittest\{Assert, Before, Test};
 
 class IfStatementTest extends NodeTest {
   private $condition;
 
-  /** @return void */
-  public function setUp() {
+  #[Before]
+  public function condition() {
     $this->condition= new Variable('condition');
   }
 
@@ -18,19 +18,19 @@ class IfStatementTest extends NodeTest {
 
   #[Test]
   public function expression() {
-    $this->assertEquals($this->condition, (new IfStatement($this->condition, [], null))->expression);
+    Assert::equals($this->condition, (new IfStatement($this->condition, [], null))->expression);
   }
 
   #[Test]
   public function body() {
     $body= [$this->returns('true')];
-    $this->assertEquals($body, (new IfStatement($this->condition, $body, null))->body);
+    Assert::equals($body, (new IfStatement($this->condition, $body, null))->body);
   }
 
   #[Test]
   public function otherwise() {
     $otherwise= [$this->returns('true')];
-    $this->assertEquals($otherwise, (new IfStatement($this->condition, [], $otherwise))->otherwise);
+    Assert::equals($otherwise, (new IfStatement($this->condition, [], $otherwise))->otherwise);
   }
 
   #[Test]
@@ -38,7 +38,7 @@ class IfStatementTest extends NodeTest {
     $body= [$this->returns('true')];
     $otherwise= [$this->returns('false')];
 
-    $this->assertEquals(
+    Assert::equals(
       array_merge([$this->condition], $body, $otherwise),
       $this->childrenOf(new IfStatement($this->condition, $body, $otherwise))
     );

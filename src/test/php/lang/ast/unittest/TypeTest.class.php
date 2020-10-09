@@ -22,7 +22,7 @@ class TypeTest {
     ;
   }
 
-  #[Test, Values(['string', 'int', 'bool', 'mixed', 'float', 'array', 'object', 'resource', 'iterable', 'callable', 'double',])]
+  #[Test, Values(['string', 'int', 'bool', 'mixed', 'float', 'array', 'object', 'resource', 'iterable', 'callable', 'double'])]
   public function literals($t) {
     Assert::equals(new IsLiteral($t), $this->parse($t));
   }
