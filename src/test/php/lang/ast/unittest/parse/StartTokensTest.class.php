@@ -1,6 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{NamespaceDeclaration, Start};
+use lang\ast\Errors;
+use lang\ast\nodes\NamespaceDeclaration;
 use unittest\{Assert, Test};
 
 class StartTokensTest extends ParseTest {
@@ -8,16 +9,13 @@ class StartTokensTest extends ParseTest {
   #[Test]
   public function php() {
     $this->assertParsed(
-      [new Start('php', self::LINE), new NamespaceDeclaration('test', self::LINE)],
+      [new NamespaceDeclaration('test', self::LINE)],
       '<?php namespace test;'
     );
   }
 
-  #[Test]
+  #[Test, Expect(class: Errors::class, withMessage: 'Unexpected syntax hh, expecting php in <?')]
   public function hack() {
-    $this->assertParsed(
-      [new Start('hh', self::LINE), new NamespaceDeclaration('test', self::LINE)],
-      '<?hh namespace test;'
-    );
+    $this->parse('<?hh namespace test;')->tree();
   }
 }

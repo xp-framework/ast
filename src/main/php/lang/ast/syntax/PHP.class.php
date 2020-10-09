@@ -520,8 +520,12 @@ class PHP extends Language {
 
     $this->stmt('<?', function($parse, $token) {
       $syntax= $parse->token->value;
+      if ('php' !== $syntax) {
+        $parse->raise('Unexpected syntax '.$syntax.', expecting php', $token->value);
+      }
+
       $parse->forward();
-      return new Start($syntax, $token->line);
+      return $this->statement($parse);
     });
 
     $this->stmt('{', function($parse, $token) {
