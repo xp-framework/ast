@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.0.0 / 2020-10-09
+
+* Merged PR #16: Omit start token from stream - @thekid
+
 ## 5.4.0 / 2020-09-29
 
 * Merged PR #9: Deprecate hacklang-style annotations in favor PHP 8
