@@ -15,7 +15,7 @@ class LiteralsTest extends ParseTest {
     $this->assertParsed([new Literal($input, self::LINE)], $input.';');
   }
 
-  #[Test, Values(['00', '01', '010', '0777'])]
+  #[Test, Values(['00', '01', '010', '0777', '0o16', '0O16'])]
   public function octal($input) {
     $this->assertParsed([new Literal($input, self::LINE)], $input.';');
   }
