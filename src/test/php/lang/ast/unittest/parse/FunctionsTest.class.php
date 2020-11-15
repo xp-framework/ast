@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{ArrayLiteral, BinaryExpression, FunctionDeclaration, Literal, Parameter, ReturnStatement, Signature, YieldExpression, YieldFromExpression};
-use lang\ast\types\{IsFunction, IsLiteral, IsNullable};
+use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion};
 use unittest\{Assert, Test, Values};
 
 class FunctionsTest extends ParseTest {
@@ -114,11 +114,11 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[Test]
-  public function with_function_return_type() {
+  #[Test, Values(['function(): string', '(function(): string)'])]
+  public function with_function_return_type($type) {
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], new IsFunction([], new IsLiteral('string'))), [], self::LINE)],
-      'function a(): function(): string { }'
+      'function a(): '.$type.' { }'
     );
   }
 
@@ -127,6 +127,14 @@ class FunctionsTest extends ParseTest {
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], new IsNullable(new IsLiteral('string'))), [], self::LINE)],
       'function a(): ?string { }'
+    );
+  }
+
+  #[Test]
+  public function with_union_return_type() {
+    $this->assertParsed(
+      [new FunctionDeclaration('a', new Signature([], new IsUnion([new IsLiteral('string'), new IsLiteral('int')])), [], self::LINE)],
+      'function a(): string|int { }'
     );
   }
 
