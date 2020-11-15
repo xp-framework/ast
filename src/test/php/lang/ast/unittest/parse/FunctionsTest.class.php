@@ -115,7 +115,15 @@ class FunctionsTest extends ParseTest {
   }
 
   #[Test]
-  public function with_nullable_return() {
+  public function with_function_return_type() {
+    $this->assertParsed(
+      [new FunctionDeclaration('a', new Signature([], new IsFunction([], new IsLiteral('string'))), [], self::LINE)],
+      'function a(): function(): string { }'
+    );
+  }
+
+  #[Test]
+  public function with_nullable_return_type() {
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], new IsNullable(new IsLiteral('string'))), [], self::LINE)],
       'function a(): ?string { }'
