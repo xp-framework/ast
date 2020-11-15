@@ -1,10 +1,24 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{ArrayLiteral, BinaryExpression, FunctionDeclaration, Literal, Parameter, ReturnStatement, Signature, YieldExpression, YieldFromExpression};
-use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion};
+use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion, IsValue};
 use unittest\{Assert, Test, Values};
 
 class FunctionsTest extends ParseTest {
+
+  /** @return iterable */
+  private function types() {
+    yield ['string', new IsLiteral('string')];
+    yield ['Test', new IsValue('Test')];
+    yield ['\unittest\Test', new IsValue('\unittest\Test')];
+    yield ['?string', new IsNullable(new IsLiteral('string'))];
+    yield ['?(string|int)', new IsNullable(new IsUnion([new IsLiteral('string'), new IsLiteral('int')]))];
+    yield ['string|int', new IsUnion([new IsLiteral('string'), new IsLiteral('int')])];
+    yield ['string|function(): void', new IsUnion([new IsLiteral('string'), new IsFunction([], new IsLiteral('void'))])];
+    yield ['string|(function(): void)', new IsUnion([new IsLiteral('string'), new IsFunction([], new IsLiteral('void'))])];
+    yield ['function(): string', new IsFunction([], new IsLiteral('string'))];
+    yield ['(function(): string)', new IsFunction([], new IsLiteral('string'))];
+  }
 
   #[Test]
   public function empty_function_without_parameters() {
@@ -52,12 +66,12 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[Test]
-  public function with_typed_parameter() {
-    $params= [new Parameter('param', new IsLiteral('string'), null, false, false, null, [])];
+  #[Test, Values('types')]
+  public function with_typed_parameter($declaration, $expected) {
+    $params= [new Parameter('param', $expected, null, false, false, null, [])];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null), [], self::LINE)],
-      'function a(string $param) { }'
+      'function a('.$declaration.' $param) { }'
     );
   }
 
@@ -106,35 +120,11 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[Test]
-  public function with_return_type() {
+  #[Test, Values('types')]
+  public function with_return_type($declaration, $expected) {
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], new IsLiteral('void')), [], self::LINE)],
-      'function a(): void { }'
-    );
-  }
-
-  #[Test, Values(['function(): string', '(function(): string)'])]
-  public function with_function_return_type($type) {
-    $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], new IsFunction([], new IsLiteral('string'))), [], self::LINE)],
-      'function a(): '.$type.' { }'
-    );
-  }
-
-  #[Test]
-  public function with_nullable_return_type() {
-    $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], new IsNullable(new IsLiteral('string'))), [], self::LINE)],
-      'function a(): ?string { }'
-    );
-  }
-
-  #[Test]
-  public function with_union_return_type() {
-    $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], new IsUnion([new IsLiteral('string'), new IsLiteral('int')])), [], self::LINE)],
-      'function a(): string|int { }'
+      [new FunctionDeclaration('a', new Signature([], $expected), [], self::LINE)],
+      'function a(): '.$declaration.' { }'
     );
   }
 
