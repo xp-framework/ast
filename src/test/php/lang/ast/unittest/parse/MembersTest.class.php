@@ -1,10 +1,25 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Type;
-use lang\ast\nodes\{ClassDeclaration, Constant, InstanceExpression, InvokeExpression, Literal, Method, Property, ScopeExpression, Signature, Variable};
+use lang\ast\nodes\{ClassDeclaration, Constant, InstanceExpression, InvokeExpression, Literal, Method, Property, ScopeExpression, Signature, Variable, Parameter};
+use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion, IsValue};
 use unittest\{Assert, Test, Values};
 
 class MembersTest extends ParseTest {
+
+  /** @return iterable */
+  private function types() {
+    yield ['string', new IsLiteral('string')];
+    yield ['Test', new IsValue('Test')];
+    yield ['\unittest\Test', new IsValue('\unittest\Test')];
+    yield ['?string', new IsNullable(new IsLiteral('string'))];
+    yield ['?(string|int)', new IsNullable(new IsUnion([new IsLiteral('string'), new IsLiteral('int')]))];
+    yield ['string|int', new IsUnion([new IsLiteral('string'), new IsLiteral('int')])];
+    yield ['string|function(): void', new IsUnion([new IsLiteral('string'), new IsFunction([], new IsLiteral('void'))])];
+    yield ['string|(function(): void)', new IsUnion([new IsLiteral('string'), new IsFunction([], new IsLiteral('void'))])];
+    yield ['function(): string', new IsFunction([], new IsLiteral('string'))];
+    yield ['(function(): string)', new IsFunction([], new IsLiteral('string'))];
+  }
 
   #[Test]
   public function private_instance_property() {
@@ -64,12 +79,21 @@ class MembersTest extends ParseTest {
     $this->assertParsed([$class], 'class A { private const T = 1; }');
   }
 
-  #[Test]
-  public function method_with_return_type() {
+  #[Test, Values('types')]
+  public function method_with_typed_parameter($declaration, $expected) {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Method(['public'], 'a', new Signature([], new Type('void')), [], [], null, self::LINE));
+    $params= [new Parameter('param', $expected, null, false, false, null, [])];
+    $class->declare(new Method(['public'], 'a', new Signature($params, null), [], [], null, self::LINE));
 
-    $this->assertParsed([$class], 'class A { public function a(): void { } }');
+    $this->assertParsed([$class], 'class A { public function a('.$declaration.' $param) { } }');
+  }
+
+  #[Test, Values('types')]
+  public function method_with_return_type($declaration, $expected) {
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $class->declare(new Method(['public'], 'a', new Signature([], $expected), [], [], null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { public function a(): '.$declaration.' { } }');
   }
 
   #[Test]
