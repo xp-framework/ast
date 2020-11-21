@@ -457,9 +457,13 @@ class PHP extends Language {
     });
 
     $this->prefix('match', 0, function($parse, $token) {
-      $parse->expecting('(', 'match');
-      $condition= $this->expression($parse, 0);
-      $parse->expecting(')', 'match');
+      if ('{' === $parse->token->value) {
+        $condition= null;
+      } else {
+        $parse->expecting('(', 'match');
+        $condition= $this->expression($parse, 0);
+        $parse->expecting(')', 'match');
+      }
 
       $default= null;
       $cases= [];
