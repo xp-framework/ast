@@ -745,12 +745,17 @@ class PHP extends Language {
           $parse->forward();
         }
 
-        $variable= $parse->token;
-        $parse->forward();
-        $parse->expecting(')', 'catch');
+        if (')' === $parse->token->value) {
+          $variable= null;
+          $parse->forward();
+        } else {
+          $variable= substr($parse->token->value, 1);
+          $parse->forward();
+          $parse->expecting(')', 'catch');
+        }
 
         $parse->expecting('{', 'catch');
-        $catches[]= new CatchStatement($types, substr($variable->value, 1), $this->statements($parse), $parse->token->line);
+        $catches[]= new CatchStatement($types, $variable, $this->statements($parse), $parse->token->line);
         $parse->expecting('}', 'catch');
       }
 

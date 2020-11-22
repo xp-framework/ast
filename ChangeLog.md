@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.1.0 / 2020-11-22
+
+* Added support for non-capturing catches, see this PHP 8 RFC:
+  https://wiki.php.net/rfc/non-capturing_catches
+  (@thekid)
+
 ## 6.0.0 / 2020-10-09
 
 * Merged PR #16: Omit start token from stream - @thekid
