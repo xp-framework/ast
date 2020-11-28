@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{BinaryExpression, InvokeExpression, LambdaExpression, Literal, Parameter, ReturnStatement, Signature, Variable};
+use lang\ast\nodes\{BinaryExpression, InvokeExpression, LambdaExpression, Literal, Parameter, ReturnStatement, Signature, Variable, Block};
 use unittest\{Assert, Before, Test};
 
 class LambdasTest extends ParseTest {
@@ -17,7 +17,6 @@ class LambdasTest extends ParseTest {
       [new LambdaExpression(new Signature([new Parameter('a', null)], null), $this->expression, self::LINE)],
       'fn($a) => $a + 1;'
     );
-    \xp::gc();
   }
 
   #[Test]
@@ -30,15 +29,17 @@ class LambdasTest extends ParseTest {
       )],
       'execute(fn($a) => $a + 1);'
     );
-    \xp::gc();
   }
 
   #[Test]
-  public function short_closure_with_braces() {
+  public function short_closure_with_block() {
     $this->assertParsed(
-      [new LambdaExpression(new Signature([new Parameter('a', null)], null), [new ReturnStatement($this->expression, self::LINE)], self::LINE)],
+      [new LambdaExpression(
+        new Signature([new Parameter('a', null)], null),
+        new Block([new ReturnStatement($this->expression, self::LINE)], self::LINE),
+        self::LINE
+      )],
       'fn($a) => { return $a + 1; };'
     );
-    \xp::gc();
   }
 }
