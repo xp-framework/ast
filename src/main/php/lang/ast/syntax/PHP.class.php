@@ -481,7 +481,7 @@ class PHP extends Language {
     });
 
     $this->stmt('(end)', function($parse, $token) {
-      throw new Error('Unexpected EOF', $parse->file, $token->line);
+      throw new Error('Unexpected (end)', $parse->file, $token->line);
     });
 
     $this->stmt('(name)', function($parse, $token) {
@@ -1252,7 +1252,6 @@ class PHP extends Language {
           $parse->token->symbol->id
         ));
         $parse->forward();
-        if (null === $parse->token->value) break;
       }
     }
     return $body;
