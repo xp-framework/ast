@@ -239,7 +239,7 @@ class PHP extends Language {
       $skipped= [$token, $parse->token];
       $cast= true;
       $level= 1;
-      while ($level > 0 && null !== $parse->token->value) {
+      while ($level > 0) {
         if ('(' === $parse->token->value) {
           $level++;
         } else if (')' === $parse->token->value) {
@@ -833,7 +833,7 @@ class PHP extends Language {
           } else {
             $parse->expecting(', or {', 'interface parents');
           }
-        } while (null !== $parse->token->value);
+        } while (true);
       }
 
       $decl= new InterfaceDeclaration([], $name, $parents, [], [], $comment, $token->line);
@@ -1043,7 +1043,7 @@ class PHP extends Language {
         } else {
           $parse->expecting(', or )', 'function type');
         }
-      } while (null !== $parse->token->value);
+      } while (true);
       $parse->expecting(')', 'type');
       $parse->expecting(':', 'type');
       return new IsFunction($signature, $this->type($parse, false));
@@ -1146,7 +1146,7 @@ class PHP extends Language {
         $parse->expecting(', or ]', $context);
         break;
       }
-    } while (null !== $parse->token->value);
+    } while (true);
 
     return $attributes;
   }
@@ -1308,7 +1308,7 @@ class PHP extends Language {
         } else {
           $parse->expecting(', or {', 'interfaces list');
         }
-      } while (null !== $parse->token->value);
+      } while (true);
     }
 
     $decl= new ClassDeclaration($modifiers, $name, $parent, $implements, [], [], $comment, $line);
