@@ -3,7 +3,7 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 7.0.0 / ????-??-??
+## 7.0.0 / 2020-11-28
 
 * Fixed multiple semicolons yielding syntax errors, skip them instead
   (@thekid)
