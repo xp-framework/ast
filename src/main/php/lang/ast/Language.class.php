@@ -1,7 +1,7 @@
 <?php namespace lang\ast;
 
 use lang\ast\nodes\{Assignment, BinaryExpression, Literal, UnaryExpression};
-use lang\ast\syntax\{Extension, TransformationApi};
+use lang\ast\syntax\Extension;
 use lang\reflect\Package;
 
 /**
@@ -144,7 +144,6 @@ abstract class Language {
    * @return iterable
    */
   public function extensions() {
-    yield new TransformationApi();
     foreach (Package::forName(strtr(strtolower(static::class), '\\', '.'))->getClasses() as $class) {
       if ($class->isSubclassOf(Extension::class)) yield $class->newInstance();
     }
