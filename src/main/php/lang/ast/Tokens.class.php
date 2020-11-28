@@ -9,7 +9,7 @@ use lang\FormatException;
  *
  * @test  xp://lang.ast.unittest.TokensTest
  */
-class Tokens implements \IteratorAggregate {
+class Tokens {
   const DELIMITERS = " \r\n\t'\$\"=,;.:?!(){}[]#+-*/|&^@%~<>";
   const OPERATORS = [
     '<' => ['<=>', '<<=', '<=', '<<', '<>', '<?'],
@@ -64,8 +64,13 @@ class Tokens implements \IteratorAggregate {
     }
   }
 
-  /** @return php.Iterator */
-  public function getIterator() {
+  /**
+   * Creates token iterator
+   *
+   * @param  lang.ast.Language $language
+   * @return iterable
+   */
+  public function iterator($language) {
     $buffer= '';
     $length= $offset= 0;
 
@@ -110,23 +115,23 @@ class Tokens implements \IteratorAggregate {
           }
         } while ($token !== $chunk);
 
-        yield 'string' => [$string, $line];
+        yield new Token($language->symbol('(literal)'), 'string', $string, $line);
         $line+= substr_count($string, "\n");
       } else if ('$' === $token) {
-        yield 'variable' => ['$'.$next(self::DELIMITERS), $line];
+        yield new Token($language->symbol('(variable)'), 'variable', '$'.$next(self::DELIMITERS), $line);
       } else if ('#' === $token) {
         $t= $next(self::DELIMITERS);
         if ('[' === $t) {
-          yield 'operator' => ['#[', $line];
+          yield new Token($language->symbol('#['), 'operator', '#[', $line);
         } else {
-          yield 'comment' => ['#'.$t.$next("\r\n"), $line];
+          yield new Token(null, 'comment', '#'.$t.$next("\r\n"), $line);
         }
       } else if (0 === strcspn($token, '0123456789')) {
         if ('.' === ($t= $next(self::DELIMITERS))) {
-          yield 'decimal' => [str_replace('_', '', $token.$t.$next(self::DELIMITERS)), $line];
+          yield new Token($language->symbol('(literal)'), 'decimal', str_replace('_', '', $token).$t.$next(self::DELIMITERS), $line);
         } else {
           $offset-= strlen($t);
-          yield 'integer' => [str_replace('_', '', $token), $line];
+          yield new Token($language->symbol('(literal)'), 'integer', str_replace('_', '', $token), $line);
         }
       } else if (isset(self::OPERATORS[$token])) {
 
@@ -135,14 +140,14 @@ class Tokens implements \IteratorAggregate {
         if ('.' === $token) {
           $t= $next(self::DELIMITERS);
           if (0 === strcspn($t, '0123456789')) {
-            yield 'decimal' => [".$t", $line];
+            yield new Token($language->symbol('(literal)'), 'decimal', ".$t", $line);
             continue;
           }
           $offset-= strlen($t);
         } else if ('/' === $token) {
           $t= $next(self::DELIMITERS);
           if ('/' === $t) {
-            yield 'comment' => ['//'.$next("\r\n"), $line];
+            yield new Token(null, 'comment', '//'.$next("\r\n"), $line);
             continue;
           } else if ('*' === $t) {
             $comment= '';
@@ -151,7 +156,7 @@ class Tokens implements \IteratorAggregate {
               $comment.= $chunk;
             } while (null !== $chunk && '*' !== $chunk[strlen($chunk) - 1]);
             $comment.= $next('/');
-            yield 'comment' => ['/*'.$comment, $line];
+            yield new Token(null, 'comment', '/*'.$comment, $line);
             $line+= substr_count($comment, "\n");
             continue;
           }
@@ -176,9 +181,9 @@ class Tokens implements \IteratorAggregate {
           $offset+= strlen($token);
         }
 
-        yield 'operator' => [$token, $line];
+        yield new Token($language->symbol($token), 'operator', $token, $line);
       } else {
-        yield 'name' => [$token, $line];
+        yield new Token($language->symbols[$token] ?? $language->symbol('(name)'), 'name', $token, $line);
       }
     } while ($offset < $length);
   }

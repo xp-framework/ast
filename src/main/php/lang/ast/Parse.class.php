@@ -17,7 +17,7 @@ class Parse {
    */
   public function __construct($language, $tokens, Scope $scope= null) {
     $this->language= $language;
-    $this->tokens= $tokens->getIterator();
+    $this->tokens= $tokens->iterator($language);
     $this->file= $tokens->source;
     $this->scope= $scope ?? new Scope(null);
   }
@@ -61,37 +61,21 @@ class Parse {
     }
 
     while ($this->tokens->valid()) {
-      $type= $this->tokens->key();
-      list($value, $line)= $this->tokens->current();
+      $this->token= $this->tokens->current();
       $this->tokens->next();
-      if ('name' === $type) {
-        $t= new Token($this->language->symbols[$value] ?? $this->language->symbol('(name)'));
-        $t->kind= $type;
-      } else if ('operator' === $type) {
-        $t= new Token($this->language->symbol($value));
-        $t->kind= $type;
-      } else if ('string' === $type || 'integer' === $type || 'decimal' === $type) {
-        $t= new Token($this->language->symbol('(literal)'));
-        $t->kind= 'literal';
-      } else if ('variable' === $type) {
-        $t= new Token($this->language->symbol('(variable)'));
-        $t->kind= 'variable';
-      } else if ('comment' === $type) {
-        if ('/' === $value[0] && '*' === $value[2] ?? null) $this->comment= $value;
+
+      // Store apidoc comments, then continue to next token
+      if ('comment' === $this->token->kind) {
+        if ('/' === $this->token->value[0] && '*' === $this->token->value[2] ?? null) {
+          $this->comment= $this->token->value;
+        }
         continue;
-      } else {
-        throw new Error('Unexpected token '.$value, $this->file, $line);
       }
 
-      $t->value= $value;
-      $t->line= $line;
-      $this->token= $t;
       return;
     }
 
-    $t= new Token($this->language->symbol('(end)'));
-    $t->line= $line;
-    $this->token= $t;
+    $this->token= new Token($this->language->symbol('(end)'), null, null, $line);
   }
 
   /**

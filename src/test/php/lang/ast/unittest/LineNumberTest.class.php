@@ -1,9 +1,10 @@
 <?php namespace lang\ast\unittest;
 
-use lang\ast\Tokens;
+use lang\ast\{Tokens, Language};
 use unittest\{Assert, Test};
 
 class LineNumberTest {
+  private $language;
 
   /**
    * Assertion helper
@@ -15,10 +16,15 @@ class LineNumberTest {
    */
   private function assertPositions($expected, $tokens) {
     $actual= [];
-    foreach ($tokens as $type => $value) {
-      $actual[]= [$value[0] => $value[1]];
+    foreach ($tokens->iterator($this->language) as $token) {
+      $actual[]= [$token->value => $token->line];
     }
     Assert::equals($expected, $actual);
+  }
+
+  #[Before]
+  public function language() {
+    $this->language= Language::named('PHP');
   }
 
   #[Test]

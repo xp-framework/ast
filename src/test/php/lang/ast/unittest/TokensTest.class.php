@@ -1,10 +1,11 @@
 <?php namespace lang\ast\unittest;
 
 use lang\FormatException;
-use lang\ast\Tokens;
+use lang\ast\{Language, Tokens};
 use unittest\{Assert, Expect, Test, Values};
 
 class TokensTest {
+  private $language;
 
   /**
    * Assertion helper
@@ -16,10 +17,15 @@ class TokensTest {
    */
   private function assertTokens($expected, $tokens) {
     $actual= [];
-    foreach ($tokens as $type => $value) {
-      $actual[]= [$type => $value[0]];
+    foreach ($tokens->iterator($this->language) as $token) {
+      $actual[]= [$token->kind => $token->value];
     }
     Assert::equals($expected, $actual);
+  }
+
+  #[Before]
+  public function language() {
+    $this->language= Language::named('PHP');
   }
 
   #[Test]
@@ -34,8 +40,7 @@ class TokensTest {
 
   #[Test, Expect(class: FormatException::class, withMessage: '/Unclosed string literal/'), Values(['"', "'", '"Test', "'Test"])]
   public function unclosed_string_literals($input) {
-    $t= (new Tokens($input))->getIterator(); 
-    $t->current();
+    (new Tokens($input))->iterator($this->language)->current();
   }
 
   #[Test, Values(['0', '1', '1_000_000_000'])]
