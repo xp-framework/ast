@@ -5,6 +5,8 @@ XP AST ChangeLog
 
 ## 7.0.0 / ????-??-??
 
+* Merged PR #22: Stream tokens directly instead of using if/else cascade
+  (@thekid)
 * Merged PR #18: Allow match without expression: `match { ... }`. See
   https://wiki.php.net/rfc/match_expression_v2#allow_dropping_true
   (@thekid)
