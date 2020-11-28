@@ -45,7 +45,6 @@ namespace lang\ast\syntax;
 
 use lang\ast\Code;
 use lang\ast\nodes\{Method, Signature};
-use lang\ast\syntax\Extension;
 use codegen\Getters;
 
 class CreateGetters implements Extension {
