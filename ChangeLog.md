@@ -5,6 +5,8 @@ XP AST ChangeLog
 
 ## 7.0.0 / ????-??-??
 
+* Fixed multiple semicolons yielding syntax errors, skip them instead
+  (@thekid)
 * Removed support for using curly braces as offset (e.g. `$value{0}`)
   (@thekid)
 * Merged PR #22: Stream tokens directly instead of using if/else cascade

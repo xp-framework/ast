@@ -131,8 +131,9 @@ abstract class Language {
   public function statements($parse) {
     $statements= [];
     while ('}' !== $parse->token->value) {
-      if (null === ($statement= $this->statement($parse))) break;
-      $statements[]= $statement;
+      if ($statement= $this->statement($parse)) {
+        $statements[]= $statement;
+      }
     }
     return $statements;
   }

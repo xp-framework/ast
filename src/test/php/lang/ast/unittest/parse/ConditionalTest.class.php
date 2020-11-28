@@ -1,5 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
+use lang\ast\Errors;
 use lang\ast\nodes\{CaseLabel, IfStatement, InvokeExpression, Literal, MatchCondition, MatchExpression, SwitchStatement, Variable};
 use unittest\{Assert, Before, Test};
 
@@ -124,5 +125,10 @@ class ConditionalTest extends ParseTest {
       [new MatchExpression(new Variable('condition', self::LINE), $cases, $this->blocks[2][0], self::LINE)],
       'match ($condition) { 1, 2 => action1(), default => action2() };'
     );
+  }
+
+  #[Test, Expect(class: Errors::class, withMessage: 'Unexpected EOF')]
+  public function unclosed_statement_list() {
+    $this->parse('if ($condition) { action1();')->stream()->current();
   }
 }

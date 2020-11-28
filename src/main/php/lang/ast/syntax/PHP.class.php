@@ -55,7 +55,7 @@ use lang\ast\nodes\{
   YieldFromExpression
 };
 use lang\ast\types\{IsArray, IsFunction, IsMap, IsUnion, IsValue, IsNullable, IsGeneric, IsLiteral};
-use lang\ast\{Token, Language};
+use lang\ast\{Token, Language, Error};
 
 /**
  * PHP language
@@ -74,11 +74,6 @@ class PHP extends Language {
     $this->symbol(']');
     $this->symbol('}');
     $this->symbol('as');
-    $this->symbol('const');
-    $this->symbol('(end)');
-    $this->symbol('(name)');
-    $this->symbol('(literal)');
-    $this->symbol('(variable)');
 
     $this->constant('true', 'true');
     $this->constant('false', 'false');
@@ -479,6 +474,14 @@ class PHP extends Language {
 
     $this->prefix('(name)', 0, function($parse, $token) {
       return new Literal($token->value, $token->line);
+    });
+
+    $this->stmt(';', function($parse, $token) {
+      return null;
+    });
+
+    $this->stmt('(end)', function($parse, $token) {
+      throw new Error('Unexpected EOF', $parse->file, $token->line);
     });
 
     $this->stmt('(name)', function($parse, $token) {

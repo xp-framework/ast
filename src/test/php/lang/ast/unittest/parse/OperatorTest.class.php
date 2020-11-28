@@ -320,4 +320,15 @@ class OperatorTest extends ParseTest {
       '!$a[0];'
     );
   }
+
+  #[Test]
+  public function multiple_semicolons() {
+    $this->assertParsed(
+      [
+        new Assignment(new Variable('a', self::LINE), '=', new Literal('1', self::LINE), self::LINE),
+        new Assignment(new Variable('b', self::LINE), '=', new Literal('2', self::LINE), self::LINE)
+      ],
+      ';; $a= 1 ;;; $b= 2;'
+    );
+  }
 }

@@ -1,10 +1,10 @@
 <?php namespace lang\ast;
 
 class Parse {
-  private $tokens, $file;
+  private $tokens;
   private $errors= [];
 
-  public $token, $scope;
+  public $file, $token, $scope;
   public $comment= null;
   public $queue= [];
 
@@ -117,8 +117,9 @@ class Parse {
     $this->forward();
     try {
       while (null !== $this->token->value) {
-        if (null === ($statement= $this->language->statement($this))) break;
-        yield $statement;
+        if ($statement= $this->language->statement($this)) {
+          yield $statement;
+        }
       }
     } catch (Error $e) {
       $this->errors[]= $e;
