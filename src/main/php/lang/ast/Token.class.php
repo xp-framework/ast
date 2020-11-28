@@ -4,9 +4,8 @@ use lang\Value;
 use util\Objects;
 
 class Token implements Value {
-  public $symbol, $value, $kind;
+  public $symbol, $value, $kind, $line;
   public $comment= null;
-  public $line= -1;
 
   /**
    * Creates a new node
@@ -14,11 +13,13 @@ class Token implements Value {
    * @param lang.ast.Symbol $symbol
    * @param string $kind
    * @param var $value
+   * @param int $line
    */
-  public function __construct(Symbol $symbol= null, $kind= null, $value= null) {
+  public function __construct(Symbol $symbol= null, $kind= null, $value= null, $line= -1) {
     $this->symbol= $symbol;
     $this->kind= $kind;
     $this->value= $value;
+    $this->line= $line;
   }
 
   /** @return string */
