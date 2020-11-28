@@ -372,50 +372,33 @@ class PHP extends Language {
     });
 
     $this->prefix('function', 0, function($parse, $token) {
+      $signature= $this->signature($parse);
 
-      // Closure `$a= function() { ... };` vs. declaration `function a() { ... }`;
-      // the latter explicitely becomes a statement by pushing a semicolon.
-      if ('(' === $parse->token->value) {
-        $signature= $this->signature($parse);
-
-        if ('use' === $parse->token->value) {
-          $parse->forward();
-          $parse->forward();
-          $use= [];
-          while (')' !== $parse->token->value) {
-            if ('&' === $parse->token->value) {
-              $parse->forward();
-              $use[]= '&'.$parse->token->value;
-            } else {
-              $use[]= $parse->token->value;
-            }
-            $parse->forward();
-            if (')' === $parse->token->value) break;
-            $parse->expecting(',', 'use list');
-          }
-          $parse->expecting(')', 'closure');
-        } else {
-          $use= null;
-        }
-
-        $parse->expecting('{', 'function');
-        $statements= $this->statements($parse);
-        $parse->expecting('}', 'function');
-
-        return new ClosureExpression($signature, $use, $statements, $token->line);
-      } else {
-        $name= $parse->token->value;
+      if ('use' === $parse->token->value) {
         $parse->forward();
-        $signature= $this->signature($parse);
-
-        $parse->expecting('{', 'function');
-        $statements= $this->statements($parse);
-        $parse->expecting('}', 'function');
-
-        $parse->queue= [$parse->token];
-        $parse->token= new Token($this->symbol(';'));
-        return new FunctionDeclaration($name, $signature, $statements, $token->line);
+        $parse->forward();
+        $use= [];
+        while (')' !== $parse->token->value) {
+          if ('&' === $parse->token->value) {
+            $parse->forward();
+            $use[]= '&'.$parse->token->value;
+          } else {
+            $use[]= $parse->token->value;
+          }
+          $parse->forward();
+          if (')' === $parse->token->value) break;
+          $parse->expecting(',', 'use list');
+        }
+        $parse->expecting(')', 'closure');
+      } else {
+        $use= null;
       }
+
+      $parse->expecting('{', 'function');
+      $statements= $this->statements($parse);
+      $parse->expecting('}', 'function');
+
+      return new ClosureExpression($signature, $use, $statements, $token->line);
     });
 
     $this->prefix('static', 0, function($parse, $token) {
@@ -795,6 +778,30 @@ class PHP extends Language {
       $type= $this->statement($parse);
       $type->annotations= $annotations;
       return $type;
+    });
+
+    $this->stmt('function', function($parse, $token) {
+      $name= $parse->token->value;
+
+      // Function expression used as statement (e.g. for pure side-effects!)
+      if ('(' === $name) {
+        $parse->queue= [$parse->token];
+        $parse->token= new Token($this->symbol('function'));
+        $parse->token->line= $token->line;
+        $expr= $this->expression($parse, 0);
+
+        $parse->queue= [$parse->token];
+        $parse->token= new Token($this->symbol(';'));
+        return $expr;
+      }
+
+      $parse->forward();
+      $signature= $this->signature($parse);
+      $parse->expecting('{', 'function');
+      $statements= $this->statements($parse);
+      $parse->expecting('}', 'function');
+
+      return new FunctionDeclaration($name, $signature, $statements, $token->line);
     });
 
     $this->stmt('class', function($parse, $token) {
