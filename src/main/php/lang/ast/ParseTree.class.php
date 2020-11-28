@@ -1,6 +1,9 @@
 <?php namespace lang\ast;
 
-class ParseTree {
+use lang\Value;
+use util\Objects;
+
+class ParseTree implements Value {
   private $scope, $file;
   private $children= [];
 
@@ -50,5 +53,31 @@ class ParseTree {
     foreach ($this->children as $node) {
       if ($node->is('@type')) yield $this->scope->resolve($node->name) => $node;
     }
+  }
+
+  /** @return string */
+  public function hashCode() {
+    return Objects::hashOf([$this->scope, $this->file, $this->children]);
+  }
+
+  /** @return string */
+  public function toString() {
+    return nameof($this)."(source: ".$this->file.")@{\n".
+      "  scope => ".Objects::stringOf($this->scope, '  ')."\n".
+      "  children => ".Objects::stringOf($this->children, '  ')."\n".
+    "}";
+  }
+
+  /**
+   * Compare this parse tree to another
+   *
+   * @param  var $value
+   * @return int
+   */
+  public function compareTo($value) {
+    return $value instanceof self
+      ? Objects::compare([$this->scope, $this->file, $this->children], [$value->scope, $value->file, $value->children])
+      : 1
+    ;
   }
 }
