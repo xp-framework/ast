@@ -457,12 +457,12 @@ class PHP extends Language {
     });
 
     $this->prefix('match', 0, function($parse, $token) {
-      if ('{' === $parse->token->value) {
-        $condition= null;
-      } else {
-        $parse->expecting('(', 'match');
+      if ('(' === $parse->token->value) {
+        $parse->forward();
         $condition= $this->expression($parse, 0);
         $parse->expecting(')', 'match');
+      } else {
+        $condition= null;
       }
 
       $default= null;
