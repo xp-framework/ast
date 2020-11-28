@@ -12,6 +12,8 @@ XP AST ChangeLog
   is allowed. This not only allows `fn() => { ... }` but also using blocks
   in `match` expressions.
   (@thekid)
+* Merged PR #21: Remove legacy XP annotations (`#[@annotation]`) - @thekid
+* Merged PR #19: Remove support for Hack language annotations - @thekid
 * Merged PR #20: Remove transformations API - @thekid
 
 ## 6.1.0 / 2020-11-22
