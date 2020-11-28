@@ -7,31 +7,65 @@ XP AST
 [![Requires PHP 7.0+](https://raw.githubusercontent.com/xp-framework/web/master/static/php-7_0plus.svg)](http://php.net/)
 [![Supports PHP 8.0+](https://raw.githubusercontent.com/xp-framework/web/master/static/php-8_0plus.svg)](http://php.net/)[![Latest Stable Version](https://poser.pugx.org/xp-framework/ast/version.png)](https://packagist.org/packages/xp-framework/ast)
 
-Abstract syntax tree library used for [Compile-time metaprogramming](https://github.com/xp-framework/rfc/issues/327).
+Abstract syntax tree library used for [XP Compiler](https://github.com/xp-framework/compiler).
 
 Example
 -------
-Register transformations to be used by the [XP Compiler](https://github.com/xp-framework/compiler). This can be done in your library's `module.xp`, for instance.
+```php
+use lang\ast\{Language, Tokens};
+
+$tree= Language::named('PHP')->parse(new Tokens('echo PHP_VERSION;'))->tree();
+
+// lang.ast.ParseTree(source: (string))@{
+//   scope => lang.ast.Scope {
+//     parent => null
+//     package => null
+//     imports => []
+//     types => []
+//   }
+//   children => [lang.ast.nodes.EchoStatement {
+//     kind => "echo"
+//     expressions => [lang.ast.nodes.Literal {
+//       kind => "literal"
+//       expression => "PHP_VERSION"
+//       line => 1
+//     }]
+//     line => 1
+//   }]
+// }
+```
+
+Compile-time metaprogramming
+----------------------------
+Register transformations by creating classes inside the `lang.ast.syntax` package - see https://github.com/xp-framework/rfc/issues/327
+
 
 ```php
-use lang\ast\transform\Transformations;
-use lang\ast\nodes\{Method, Signature};
+namespace lang\ast\syntax;
+
 use lang\ast\Code;
+use lang\ast\nodes\{Method, Signature};
+use lang\ast\syntax\Extension;
 use codegen\Getters;
 
-Transformations::register('class', function($codegen, $class) {
-  if ($class->annotation(Getters::class)) {
-    foreach ($class->properties() as $property) {
-      $class->declare(new Method(
-        ['public'],
-        $property->name,
-        new Signature([], $property->type),
-        [new Code('return $this->'.$property->name)]
-      ));
-    }
+class CreateGetters implements Extension {
+
+  public function setup($language, $emitter) {
+    $emitter->transform('class', function($codegen, $class) {
+      if ($class->annotation(Getters::class)) {
+        foreach ($class->properties() as $property) {
+          $class->declare(new Method(
+            ['public'],
+            $property->name,
+            new Signature([], $property->type),
+            [new Code('return $this->'.$property->name)]
+          ));
+        }
+      }
+      return $class;
+    });
   }
-  return $class;
-});
+}
 ```
 
 When compiling the following sourcecode, getters for the `id` and `name` members will automatically be added.
