@@ -194,13 +194,6 @@ class PHP extends Language {
       return new OffsetExpression($left, $expr, $token->line);
     });
 
-    $this->infix('{', 100, function($parse, $token, $left) {
-      $parse->warn('Deprecated curly braces use as offset');
-      $expr= $this->expression($parse, 0);
-      $parse->expecting('}', 'offset');
-      return new OffsetExpression($left, $expr, $token->line);
-    });
-
     $this->infix('?', 80, function($parse, $token, $left) {
       $when= $this->expression($parse, 0);
       $parse->expecting(':', 'ternary');

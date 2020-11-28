@@ -5,6 +5,8 @@ XP AST ChangeLog
 
 ## 7.0.0 / ????-??-??
 
+* Removed support for using curly braces as offset (e.g. `$value{0}`)
+  (@thekid)
 * Merged PR #22: Stream tokens directly instead of using if/else cascade
   (@thekid)
 * Merged PR #18: Allow match without expression: `match { ... }`. See
