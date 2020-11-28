@@ -117,26 +117,7 @@ class Tokens implements \IteratorAggregate {
       } else if ('#' === $token) {
         $t= $next(self::DELIMITERS);
         if ('[' === $t) {
-          $t= $next(self::DELIMITERS);
-          if ('@' === $t) {
-            yield 'operator' => ['#[@', $line];
-
-            // Uncomment all following lines by replacing "#" with spaces
-            $start= $offset - 1;
-            $next("\r\n");
-            do {
-              $chunk= $next("\r\n");
-              if ("\n" === $chunk || "\r" === $chunk) continue;
-              $s= strspn($chunk, ' ');
-              if ('#' !== $chunk[$s]) break;
-
-              $buffer[$offset - strlen($chunk) + $s]= ' ';
-            } while (true);
-            $offset= $start;
-          } else {
-            $offset-= strlen($t);
-            yield 'operator' => ['#[', $line];
-          }
+          yield 'operator' => ['#[', $line];
         } else {
           yield 'comment' => ['#'.$t.$next("\r\n"), $line];
         }
