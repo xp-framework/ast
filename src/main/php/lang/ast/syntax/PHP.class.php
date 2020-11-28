@@ -279,6 +279,12 @@ class PHP extends Language {
       }
     });
 
+    $this->prefix('{', 0, function($parse, $token) {
+      $statements= $this->statements($parse);
+      $parse->expecting('}', 'block');
+      return new Block($statements, $token->line);
+    });
+
     $this->prefix('[', 0, function($parse, $token) {
       $values= [];
       while (']' !== $parse->token->value) {
@@ -369,15 +375,7 @@ class PHP extends Language {
       $signature= $this->signature($parse);
       $parse->expecting('=>', 'fn');
 
-      if ('{' === $parse->token->value) {
-        $parse->expecting('{', 'fn');
-        $statements= $this->statements($parse);
-        $parse->expecting('}', 'fn');
-      } else {
-        $statements= $this->expression($parse, 0);
-      }
-
-      return new LambdaExpression($signature, $statements, $token->line);
+      return new LambdaExpression($signature, $this->expression($parse, 0), $token->line);
     });
 
     $this->prefix('function', 0, function($parse, $token) {
@@ -1398,7 +1396,7 @@ class PHP extends Language {
     return new Signature($parameters, $return);
   }
 
-   public function block($parse) {
+  public function block($parse) {
     if ('{'  === $parse->token->value) {
       $parse->forward();
       $block= $this->statements($parse);
