@@ -5,11 +5,14 @@ XP AST ChangeLog
 
 ## 7.0.0 / ????-??-??
 
-* Merged PR #20: Remove transformations API - @thekid
+* Merged PR #18: Allow match without expression: `match { ... }`. See
+  https://wiki.php.net/rfc/match_expression_v2#allow_dropping_true
+  (@thekid)
 * Merged PR #17: Refactor parsing to allow blocks anywhere an expression
   is allowed. This not only allows `fn() => { ... }` but also using blocks
   in `match` expressions.
   (@thekid)
+* Merged PR #20: Remove transformations API - @thekid
 
 ## 6.1.0 / 2020-11-22
 
