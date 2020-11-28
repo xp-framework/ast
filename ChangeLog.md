@@ -3,6 +3,13 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.0 / ????-??-??
+
+* Merged PR #17: Refactor parsing to allow blocks anywhere an expression
+  is allowed. This not only allows `fn() => { ... }` but also using blocks
+  in `match` expressions.
+  (@thekid)
+
 ## 6.1.0 / 2020-11-22
 
 * Added support for non-capturing catches, see this PHP 8 RFC:
