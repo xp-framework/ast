@@ -38,14 +38,15 @@ $tree= Language::named('PHP')->parse(new Tokens('echo PHP_VERSION;'))->tree();
 
 Compile-time metaprogramming
 ----------------------------
-Register transformations by creating classes inside the `lang.ast.syntax` package - see https://github.com/xp-framework/rfc/issues/327
+Register transformations by creating classes inside the `lang.ast.syntax.php` package - see https://github.com/xp-framework/rfc/issues/327
 
 
 ```php
-namespace lang\ast\syntax;
+namespace lang\ast\syntax\php;
 
 use lang\ast\Code;
 use lang\ast\nodes\{Method, Signature};
+use lang\ast\syntax\Extension;
 use codegen\Getters;
 
 class CreateGetters implements Extension {
