@@ -2,6 +2,7 @@
 
 use lang\{IllegalArgumentException, IllegalStateException};
 
+/** A collection of errors */
 class Errors extends IllegalStateException {
 
   /**

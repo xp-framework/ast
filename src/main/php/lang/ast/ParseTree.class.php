@@ -3,6 +3,7 @@
 use lang\Value;
 use util\Objects;
 
+/** The result of a Parse::tree() invocations */
 class ParseTree implements Value {
   private $scope, $file;
   private $children= [];

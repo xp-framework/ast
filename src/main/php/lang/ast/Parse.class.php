@@ -1,5 +1,6 @@
 <?php namespace lang\ast;
 
+/** A parsing operation for streaming and access via parse tree */
 class Parse {
   private $tokens;
   private $errors= [];

@@ -2,6 +2,7 @@
 
 use lang\IllegalStateException;
 
+/** Base class for all classes in the `lang.ast.nodes` package */
 abstract class Node {
   public $line= -1;
   public $kind= null;

@@ -6,6 +6,8 @@ use lang\reflect\Package;
 
 /**
  * Base class for input languages
+ *
+ * @see  lang.ast.syntax.PHP
  */
 abstract class Language {
   private static $instance= [];

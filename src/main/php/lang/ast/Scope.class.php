@@ -3,7 +3,7 @@
 use lang\ast\types\{Compiled, Reflection};
 
 /**
- * Scope
+ * Scope with package and imports
  *
  * @test  xp://lang.unittest.ast.ScopeTest
  */

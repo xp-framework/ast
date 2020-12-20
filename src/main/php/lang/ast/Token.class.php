@@ -3,6 +3,7 @@
 use lang\Value;
 use util\Objects;
 
+/** A single token as returned by the Tokens class */
 class Token implements Value {
   public $symbol, $value, $kind, $line;
   public $comment= null;

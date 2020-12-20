@@ -1,5 +1,6 @@
 <?php namespace lang\ast;
 
+/** Shorthand for emitting a complete code block */
 class Code extends Node {
   public $kind= 'code';
   public $value;

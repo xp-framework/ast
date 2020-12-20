@@ -1,5 +1,9 @@
 <?php namespace lang\ast;
 
+/**
+ * Abstract base class for all visitors. Handles all node types without
+ * doing anything.
+ */
 abstract class Visitor {
 
   /**

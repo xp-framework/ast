@@ -2,6 +2,7 @@
 
 use lang\Value;
 
+/** A symbol as used by language setup */
 class Symbol implements Value {
   public $id, $lbp= 0, $std= null, $nud, $led;
 
