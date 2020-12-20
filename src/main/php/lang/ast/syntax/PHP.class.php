@@ -222,7 +222,6 @@ class PHP extends Language {
 
     // This is ambiguous:
     //
-    // - An arrow function `($a) ==> $a + 1`
     // - An expression surrounded by parentheses `($a ?? $b)->invoke()`;
     // - A cast `(int)$a` or `(int)($a / 2)`.
     //
@@ -262,7 +261,14 @@ class PHP extends Language {
         $parse->forward();
         $parse->expecting('(', 'braced');
         $expr= $this->expression($parse, 0);
-        $parse->expecting(')', 'braced');
+
+        // See https://github.com/xp-framework/compiler/issues/98, unsure why we are
+        // short one ')' in this case though.
+        if (';' === $parse->token->value) {
+          $parse->queue= [$parse->token];
+        } else {
+          $parse->expecting(')', 'braced');
+        }
         return new Braced($expr, $token->line);
       }
     });
