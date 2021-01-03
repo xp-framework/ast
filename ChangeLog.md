@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.1 / 2021-01-03
+
+* Fixed xp-framework/compiler#98: `(fstat(STDOUT))` causes a parse error
+  (@thekid)
+
 ## 7.0.0 / 2020-11-28
 
 * Fixed multiple semicolons yielding syntax errors, skip them instead
