@@ -249,7 +249,7 @@ class PHP extends Language {
         $parse->forward();
         $skipped[]= $parse->token;
       }
-      $parse->queue= array_merge($skipped, $parse->queue);
+      $parse->queue= $parse->queue ? array_merge($parse->queue, $skipped) : $skipped;
 
       if ($cast && ('operator' !== $parse->token->kind || '(' === $parse->token->value || '[' === $parse->token->value)) {
         $parse->forward();
@@ -261,14 +261,8 @@ class PHP extends Language {
         $parse->forward();
         $parse->expecting('(', 'braced');
         $expr= $this->expression($parse, 0);
+        $parse->expecting(')', 'braced');
 
-        // See https://github.com/xp-framework/compiler/issues/98, unsure why we are
-        // short one ')' in this case though.
-        if (';' === $parse->token->value) {
-          $parse->queue= [$parse->token];
-        } else {
-          $parse->expecting(')', 'braced');
-        }
         return new Braced($expr, $token->line);
       }
     });
