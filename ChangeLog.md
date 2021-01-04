@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.2 / 2021-01-04
+
+* Fixed ambiguity between named arguments and global constants (issue #98)
+  (@thekid)
+
 ## 7.0.1 / 2021-01-03
 
 * Fixed xp-framework/compiler#98: `(fstat(STDOUT))` causes a parse error

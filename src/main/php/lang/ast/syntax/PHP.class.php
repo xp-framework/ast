@@ -249,13 +249,14 @@ class PHP extends Language {
         $parse->forward();
         $skipped[]= $parse->token;
       }
-      $parse->queue= $parse->queue ? array_merge($parse->queue, $skipped) : $skipped;
+      $parse->queue= $parse->queue ? array_merge($skipped, $parse->queue) : $skipped;
 
       if ($cast && ('operator' !== $parse->token->kind || '(' === $parse->token->value || '[' === $parse->token->value)) {
         $parse->forward();
         $parse->expecting('(', 'cast');
         $type= $this->type0($parse, false);
         $parse->expecting(')', 'cast');
+
         return new CastExpression($type, $this->expression($parse, 0), $token->line);
       } else {
         $parse->forward();
@@ -1331,7 +1332,7 @@ class PHP extends Language {
           $parse->forward();
           $arguments[$token->value]= $this->expression($parse, 0);
         } else {
-          $parse->queue[]= $parse->token;
+          array_unshift($parse->queue, $parse->token);
           $parse->token= $token;
           $arguments[]= $this->expression($parse, 0);
         }

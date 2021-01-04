@@ -68,4 +68,16 @@ class NamedArgumentsTest extends ParseTest {
     $node= $this->parse('#[Values(using: "$values")] class T { }')->tree()->children()[0];
     $this->assertNamed(['using'], $node->annotations['Values']);
   }
+
+  #[Test]
+  public function unnamed() {
+    $node= $this->parse('func(named);')->tree()->children()[0];
+    $this->assertNamed([0], $node->arguments);
+  }
+
+  #[Test]
+  public function unnamed_inside_braces() {
+    $node= $this->parse('(func(named));')->tree()->children()[0]->expression;
+    $this->assertNamed([0], $node->arguments);
+  }
 }
