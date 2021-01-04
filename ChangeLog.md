@@ -5,7 +5,8 @@ XP AST ChangeLog
 
 ## 7.0.2 / 2021-01-04
 
-* Fixed ambiguity between named arguments and global constants (issue #98)
+* Fixed argument parser to queue correctly when handling ambiguity between
+  named arguments and global constants (see xp-framework/compiler#98)
   (@thekid)
 
 ## 7.0.1 / 2021-01-03
