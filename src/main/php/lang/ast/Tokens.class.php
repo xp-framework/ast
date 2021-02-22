@@ -130,7 +130,7 @@ class Tokens {
         if ('.' === ($t= $next(self::DELIMITERS))) {
           yield new Token($language->symbol('(literal)'), 'decimal', str_replace('_', '', $token).$t.$next(self::DELIMITERS), $line);
         } else {
-          $offset-= strlen($t);
+          null === $t || $offset-= strlen($t);
           yield new Token($language->symbol('(literal)'), 'integer', str_replace('_', '', $token), $line);
         }
       } else if (isset(self::OPERATORS[$token])) {
@@ -160,7 +160,7 @@ class Tokens {
             $line+= substr_count($comment, "\n");
             continue;
           }
-          $offset-= strlen($t);
+          null === $t || $offset-= strlen($t);
         }
 
         // Handle combined operators. First, ensure we have enough bytes in our buffer

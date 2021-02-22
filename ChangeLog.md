@@ -3,6 +3,9 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed PHP 8.1 compatiblity by ensuring we do not pass NULL to strlen()
+  (@thekid)
+
 ## 7.0.2 / 2021-01-04
 
 * Fixed argument parser to queue correctly when handling ambiguity between
