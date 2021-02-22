@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{MatchExpression, MatchCondition, Literal, Variable};
+use lang\ast\nodes\{MatchExpression, MatchCondition, Literal, Variable, Block, ReturnStatement};
 use unittest\{Assert, Test};
 
 class MatchExpressionTest extends ParseTest {
@@ -22,6 +22,15 @@ class MatchExpressionTest extends ParseTest {
     $this->assertParsed(
       [new MatchExpression(new Variable('arg', self::LINE), $cases, null, self::LINE)],
       'match ($arg) { 0 => true, 1 => false };'
+    );
+  }
+
+  #[Test]
+  public function match_with_block() {
+    $default= new Block([new ReturnStatement(new Literal('false', self::LINE), self::LINE)], self::LINE);
+    $this->assertParsed(
+      [new MatchExpression(new Variable('arg', self::LINE), [], $default, self::LINE)],
+      'match ($arg) { default => { return false; } };'
     );
   }
 

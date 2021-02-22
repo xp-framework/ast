@@ -19,8 +19,6 @@ class MatchCondition extends Node {
     foreach ($this->expressions as $expression) {
       yield $expression;
     }
-    foreach ($this->body as $node) {
-      yield $node;
-    }
+    yield $this->body;
   }
 }

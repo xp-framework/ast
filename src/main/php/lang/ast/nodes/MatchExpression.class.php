@@ -21,9 +21,10 @@ class MatchExpression extends Node {
 
   /** @return iterable */
   public function children() {
-    yield $this->expression;
+    if (null !== $this->expression) yield $this->expression;
     foreach ($this->cases as $element) {
       yield $element;
     }
+    if (null !== $this->default) yield $this->default;
   }
 }

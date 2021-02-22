@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.3 / 2021-02-22
+
+* Fixed children() accessor for `match` expressions and conditions, see
+  xp-framework/compiler#101
+  (@thekid)
 * Fixed PHP 8.1 compatiblity by ensuring we do not pass NULL to strlen()
   (@thekid)
 
