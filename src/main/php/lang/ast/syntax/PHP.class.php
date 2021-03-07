@@ -868,13 +868,6 @@ class PHP extends Language {
       $comment= $parse->comment;
       $parse->comment= null;
 
-      $parent= null;
-      if ('extends' === $parse->token->value) {
-        $parse->forward();
-        $parent= $parse->scope->resolve($parse->token->value);
-        $parse->forward();
-      }
-
       $implements= [];
       if ('implements' === $parse->token->value) {
         $parse->forward();
@@ -892,7 +885,7 @@ class PHP extends Language {
         } while (null !== $parse->token->value);
       }
       
-      $decl= new EnumDeclaration([], $name, $parent, $implements, [], [], $comment, $token->line);
+      $decl= new EnumDeclaration([], $name, $implements, [], [], $comment, $token->line);
       $parse->expecting('{', 'enum');
       $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'enum');
