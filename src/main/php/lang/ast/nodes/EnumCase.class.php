@@ -2,7 +2,7 @@
 
 use lang\ast\Node;
 
-class EnumCase extends Node {
+class EnumCase extends Node implements Member {
   public $kind= 'enumcase';
   public $name;
 
@@ -10,4 +10,7 @@ class EnumCase extends Node {
     $this->name= $name;
     $this->line= $line;
   }
+
+  /** @return string */
+  public function lookup() { return $this->name; }
 }

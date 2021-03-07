@@ -910,6 +910,7 @@ class PHP extends Language {
       $parse->expecting(';', 'case');
 
       $body[$name]= new EnumCase($name, $line);
+      $body[$name]->holder= $holder;
     });
 
     $this->body('use', function($parse, &$body, $annotations, $modifiers, $holder) {

@@ -105,8 +105,8 @@ class TypesTest extends ParseTest {
   #[Test]
   public function enum_with_cases() {
     $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $enum->body['ONE']= new EnumCase('ONE', self::LINE);
-    $enum->body['TWO']= new EnumCase('TWO', self::LINE);
+    $enum->declare(new EnumCase('ONE', self::LINE));
+    $enum->declare(new EnumCase('TWO', self::LINE));
     $this->assertParsed([$enum], 'enum A { case ONE; case TWO; }');
   }
 
