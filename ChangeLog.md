@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.4 / 2021-03-07
+
+* Fixed *Call to undefined method ::emitoperator()* caused by standalone
+  operators, see xp-framework/compiler#105
+  (@thekid)
+
 ## 7.0.3 / 2021-02-22
 
 * Fixed children() accessor for `match` expressions and conditions, see
