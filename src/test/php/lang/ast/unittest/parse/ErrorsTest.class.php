@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Errors;
-use unittest\{Assert, Test};
+use unittest\{Assert, Test, AssertionFailedError};
 
 class ErrorsTest extends ParseTest {
 
@@ -15,7 +15,7 @@ class ErrorsTest extends ParseTest {
   private function assertError($message, $parse) {
     try {
       $parse->tree();
-      $this->fail('No exception raised', null, Errors::class);
+      throw new AssertionFailedError('No exception raised');
     } catch (Errors $expected) {
       Assert::equals($message, $expected->getMessage());
     }
@@ -82,6 +82,14 @@ class ErrorsTest extends ParseTest {
     $this->assertError(
       'Expected "]", have ";" in offset access',
       $this->parse('$a[$s[0]= 5;')
+    );
+  }
+
+  #[Test, Values(['}', ']', ')', ':', ','])]
+  public function standalone_operator($brace) {
+    $this->assertError(
+      'Unexpected '.$brace,
+      $this->parse('class T { } '.$brace.';')
     );
   }
 }

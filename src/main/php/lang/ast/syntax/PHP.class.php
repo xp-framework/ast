@@ -67,12 +67,6 @@ class PHP extends Language {
 
   /** Setup language parser */
   public function __construct() {
-    $this->symbol(':');
-    $this->symbol(';');
-    $this->symbol(',');
-    $this->symbol(')');
-    $this->symbol(']');
-    $this->symbol('}');
     $this->symbol('as');
 
     $this->constant('true', 'true');
@@ -477,10 +471,17 @@ class PHP extends Language {
       return new Literal($token->value, $token->line);
     });
 
-    $this->stmt(';', function($parse, $token) {
-      return null;
-    });
+    $this->stmt(';', function($parse, $token) { return null; });
 
+    // Unexpected standalone symbols, warn but continue
+    $unexpected= function($parse, $token) { $parse->raise('Unexpected '.$token->value); };
+    $this->stmt('}', $unexpected);
+    $this->stmt(']', $unexpected);
+    $this->stmt(')', $unexpected);
+    $this->stmt(':', $unexpected);
+    $this->stmt(',', $unexpected);
+
+    // Unexpected EOF; stop parsing immediately!
     $this->stmt('(end)', function($parse, $token) {
       throw new Error('Unexpected (end)', $parse->file, $token->line);
     });
