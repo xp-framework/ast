@@ -1,7 +1,15 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Errors;
-use lang\ast\nodes\{ClassDeclaration, InterfaceDeclaration, NamespaceDeclaration, TraitDeclaration, UseExpression};
+use lang\ast\nodes\{
+  ClassDeclaration,
+  InterfaceDeclaration,
+  EnumDeclaration,
+  EnumCase,
+  NamespaceDeclaration,
+  TraitDeclaration,
+  UseExpression
+};
 use unittest\{Assert, Expect, Test};
 
 class TypesTest extends ParseTest {
@@ -84,6 +92,22 @@ class TypesTest extends ParseTest {
       [new TraitDeclaration([], '\\A', [], [], null, self::LINE)],
       'trait A { }'
     );
+  }
+
+  #[Test]
+  public function empty_enum() {
+    $this->assertParsed(
+      [new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE)],
+      'enum A { }'
+    );
+  }
+
+  #[Test]
+  public function enum_with_cases() {
+    $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $enum->body['ONE']= new EnumCase('ONE', self::LINE);
+    $enum->body['TWO']= new EnumCase('TWO', self::LINE);
+    $this->assertParsed([$enum], 'enum A { case ONE; case TWO; }');
   }
 
   #[Test]

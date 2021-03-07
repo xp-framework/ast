@@ -14,6 +14,8 @@ use lang\ast\nodes\{
   ContinueStatement,
   DoLoop,
   EchoStatement,
+  EnumCase,
+  EnumDeclaration,
   ForLoop,
   ForeachLoop,
   FunctionDeclaration,
@@ -858,6 +860,56 @@ class PHP extends Language {
       $parse->expecting('}', 'trait');
 
       return $decl;
+    });
+
+    $this->stmt('enum', function($parse, $token) {
+      $name= $parse->scope->resolve($parse->token->value);
+      $parse->forward();
+      $comment= $parse->comment;
+      $parse->comment= null;
+
+      $parent= null;
+      if ('extends' === $parse->token->value) {
+        $parse->forward();
+        $parent= $parse->scope->resolve($parse->token->value);
+        $parse->forward();
+      }
+
+      $implements= [];
+      if ('implements' === $parse->token->value) {
+        $parse->forward();
+        do {
+          $implements[]= $parse->scope->resolve($parse->token->value);
+          $parse->forward();
+          if (',' === $parse->token->value) {
+            $parse->forward();
+            continue;
+          } else if ('{' === $parse->token->value) {
+            break;
+          } else {
+            $parse->expecting(', or {', 'interfaces list');
+          }
+        } while (null !== $parse->token->value);
+      }
+      
+      $decl= new EnumDeclaration([], $name, $parent, $implements, [], [], $comment, $token->line);
+      $parse->expecting('{', 'enum');
+      $decl->body= $this->typeBody($parse, $decl->name);
+      $parse->expecting('}', 'enum');
+
+      return $decl;
+    });
+
+    $this->body('case', function($parse, &$body, $annotations, $modifiers, $holder) {
+      $line= $parse->token->line;
+
+      $parse->forward();
+      $name= $parse->token->value;
+
+      $parse->forward();
+      $parse->expecting(';', 'case');
+
+      $body[$name]= new EnumCase($name, $line);
     });
 
     $this->body('use', function($parse, &$body, $annotations, $modifiers, $holder) {
