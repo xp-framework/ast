@@ -884,8 +884,17 @@ class PHP extends Language {
           }
         } while (null !== $parse->token->value);
       }
-      
-      $decl= new EnumDeclaration([], $name, $implements, [], [], $comment, $token->line);
+
+      // Backed enums vs. unit enums
+      if (':' === $parse->token->value) {
+        $parse->forward();
+        $base= $parse->token->value;
+        $parse->forward();
+      } else {
+        $base= null;
+      }
+
+      $decl= new EnumDeclaration([], $name, $base, $implements, [], [], $comment, $token->line);
       $parse->expecting('{', 'enum');
       $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'enum');

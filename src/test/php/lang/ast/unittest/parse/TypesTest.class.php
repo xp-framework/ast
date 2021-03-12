@@ -95,16 +95,24 @@ class TypesTest extends ParseTest {
   }
 
   #[Test]
-  public function empty_enum() {
+  public function empty_unit_enum() {
     $this->assertParsed(
-      [new EnumDeclaration([], '\\A', [], [], [], null, self::LINE)],
+      [new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE)],
       'enum A { }'
     );
   }
 
   #[Test]
+  public function empty_backed_enum() {
+    $this->assertParsed(
+      [new EnumDeclaration([], '\\A', 'string', [], [], [], null, self::LINE)],
+      'enum A: string { }'
+    );
+  }
+
+  #[Test]
   public function enum_with_cases() {
-    $enum= new EnumDeclaration([], '\\A', [], [], [], null, self::LINE);
+    $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $enum->declare(new EnumCase('ONE', self::LINE));
     $enum->declare(new EnumCase('TWO', self::LINE));
     $this->assertParsed([$enum], 'enum A { case ONE; case TWO; }');
