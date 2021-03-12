@@ -902,7 +902,7 @@ class PHP extends Language {
       return $decl;
     });
 
-    $this->body('case', function($parse, &$body, $annotations, $modifiers, $holder) {
+    $this->body('case', function($parse, &$body, $meta, $modifiers, $holder) {
       $line= $parse->token->line;
 
       $parse->forward();
@@ -917,11 +917,11 @@ class PHP extends Language {
       }
       $parse->expecting(';', 'case');
 
-      $body[$name]= new EnumCase($name, $expr, $line);
+      $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? [], $line);
       $body[$name]->holder= $holder;
     });
 
-    $this->body('use', function($parse, &$body, $annotations, $modifiers, $holder) {
+    $this->body('use', function($parse, &$body, $meta, $modifiers, $holder) {
       $line= $parse->token->line;
 
       $parse->forward();

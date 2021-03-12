@@ -13,4 +13,6 @@ class EnumDeclaration extends TypeDeclaration {
   }
 
   public function interfaces() { return $this->implements; }
+
+  public function case($name) { return $this->body[$name] ?? null; }
 }
