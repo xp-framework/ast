@@ -4,10 +4,11 @@ use lang\ast\Node;
 
 class EnumCase extends Node implements Member {
   public $kind= 'enumcase';
-  public $name;
+  public $name, $expression;
 
-  public function __construct($name, $line= -1) {
+  public function __construct($name, $expression, $line= -1) {
     $this->name= $name;
+    $this->expression= $expression;
     $this->line= $line;
   }
 

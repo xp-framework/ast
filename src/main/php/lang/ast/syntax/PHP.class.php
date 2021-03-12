@@ -909,9 +909,15 @@ class PHP extends Language {
       $name= $parse->token->value;
 
       $parse->forward();
+      if ('=' === $parse->token->value) {
+        $parse->forward();
+        $expr= $this->expression($parse, 0);
+      } else {
+        $expr= null;
+      }
       $parse->expecting(';', 'case');
 
-      $body[$name]= new EnumCase($name, $line);
+      $body[$name]= new EnumCase($name, $expr, $line);
       $body[$name]->holder= $holder;
     });
 

@@ -8,7 +8,8 @@ use lang\ast\nodes\{
   EnumCase,
   NamespaceDeclaration,
   TraitDeclaration,
-  UseExpression
+  UseExpression,
+  Literal
 };
 use unittest\{Assert, Expect, Test};
 
@@ -111,11 +112,19 @@ class TypesTest extends ParseTest {
   }
 
   #[Test]
-  public function enum_with_cases() {
+  public function unit_enum_with_cases() {
     $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $enum->declare(new EnumCase('ONE', self::LINE));
-    $enum->declare(new EnumCase('TWO', self::LINE));
+    $enum->declare(new EnumCase('ONE', null, self::LINE));
+    $enum->declare(new EnumCase('TWO', null, self::LINE));
     $this->assertParsed([$enum], 'enum A { case ONE; case TWO; }');
+  }
+
+  #[Test]
+  public function backed_enum_with_cases() {
+    $enum= new EnumDeclaration([], '\\A', 'int', [], [], [], null, self::LINE);
+    $enum->declare(new EnumCase('ONE', new Literal('1', self::LINE), self::LINE));
+    $enum->declare(new EnumCase('TWO', new Literal('2', self::LINE), self::LINE));
+    $this->assertParsed([$enum], 'enum A: int { case ONE = 1; case TWO = 2; }');
   }
 
   #[Test]
