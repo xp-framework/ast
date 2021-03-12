@@ -13,4 +13,14 @@ class EnumCase extends Annotated implements Member {
 
   /** @return string */
   public function lookup() { return $this->name; }
+
+  /**
+   * Checks whether this node is of a given kind
+   *
+   * @param  string $kind
+   * @return bool
+   */
+  public function is($kind) {
+    return $this->kind === $kind || '@member' === $kind || parent::is($kind);
+  }
 }
