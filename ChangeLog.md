@@ -3,7 +3,7 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 7.1.0 / ????-??-??
+## 7.1.0 / 2021-03-13
 
 * Merged PR #23: Add syntactic support for PHP 8.1 enums. Implementation
   in the compiler is in pull request xp-framework/compiler#106
