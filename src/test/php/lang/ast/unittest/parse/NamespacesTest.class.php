@@ -46,6 +46,14 @@ class NamespacesTest extends ParseTest {
   }
 
   #[Test]
+  public function grouped_use_with_relative() {
+    $this->assertParsed(
+      [new UseStatement(null, ['lang\\ast\\Parse' => null, 'lang\\ast\\emit\\Result' => null], self::LINE)],
+      'use lang\\ast\\{Parse, emit\\Result};'
+    );
+  }
+
+  #[Test]
   public function grouped_use_with_alias() {
     $this->assertParsed(
       [new UseStatement(null, ['lang\\ast\\Parse' => 'P'], self::LINE)],
