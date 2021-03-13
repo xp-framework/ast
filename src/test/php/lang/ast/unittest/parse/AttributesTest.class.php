@@ -200,6 +200,11 @@ class AttributesTest extends ParseTest {
   }
 
   #[Test, Values('attributes')]
+  public function on_enum($attributes, $expected) {
+    $this->assertAnnotated($expected, $this->type($attributes.' enum T { }'));
+  }
+
+  #[Test, Values('attributes')]
   public function on_constant($attributes, $expected) {
     $type= $this->type('class T { '.$attributes.' const FIXTURE = 1; }');
     $this->assertAnnotated($expected, $type->constant('FIXTURE'));
@@ -221,5 +226,11 @@ class AttributesTest extends ParseTest {
   public function on_parameter($attributes, $expected) {
     $type= $this->type('class T { public function fixture('.$attributes.' $p) { } }');
     $this->assertAnnotated($expected, $type->method('fixture')->signature->parameters[0]);
+  }
+
+  #[Test, Values('attributes')]
+  public function on_enum_case($attributes, $expected) {
+    $type= $this->type('enum T { '.$attributes.' case ONE; }');
+    $this->assertAnnotated($expected, $type->case('ONE'));
   }
 }

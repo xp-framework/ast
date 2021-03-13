@@ -1,7 +1,16 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Errors;
-use lang\ast\nodes\{ClassDeclaration, InterfaceDeclaration, NamespaceDeclaration, TraitDeclaration, UseExpression};
+use lang\ast\nodes\{
+  ClassDeclaration,
+  InterfaceDeclaration,
+  EnumDeclaration,
+  EnumCase,
+  NamespaceDeclaration,
+  TraitDeclaration,
+  UseExpression,
+  Literal
+};
 use unittest\{Assert, Expect, Test};
 
 class TypesTest extends ParseTest {
@@ -84,6 +93,46 @@ class TypesTest extends ParseTest {
       [new TraitDeclaration([], '\\A', [], [], null, self::LINE)],
       'trait A { }'
     );
+  }
+
+  #[Test]
+  public function empty_unit_enum() {
+    $this->assertParsed(
+      [new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE)],
+      'enum A { }'
+    );
+  }
+
+  #[Test]
+  public function empty_backed_enum() {
+    $this->assertParsed(
+      [new EnumDeclaration([], '\\A', 'string', [], [], [], null, self::LINE)],
+      'enum A: string { }'
+    );
+  }
+
+  #[Test]
+  public function unit_enum_with_cases() {
+    $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $enum->declare(new EnumCase('ONE', null, [], self::LINE));
+    $enum->declare(new EnumCase('TWO', null, [], self::LINE));
+    $this->assertParsed([$enum], 'enum A { case ONE; case TWO; }');
+  }
+
+  #[Test]
+  public function backed_enum_with_cases() {
+    $enum= new EnumDeclaration([], '\\A', 'int', [], [], [], null, self::LINE);
+    $enum->declare(new EnumCase('ONE', new Literal('1', self::LINE), [], self::LINE));
+    $enum->declare(new EnumCase('TWO', new Literal('2', self::LINE), [], self::LINE));
+    $this->assertParsed([$enum], 'enum A: int { case ONE = 1; case TWO = 2; }');
+  }
+
+  #[Test]
+  public function unit_enum_with_grouped_cases() {
+    $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $enum->declare(new EnumCase('ONE', null, [], self::LINE));
+    $enum->declare(new EnumCase('TWO', null, [], self::LINE));
+    $this->assertParsed([$enum], 'enum A { case ONE, TWO; }');
   }
 
   #[Test]

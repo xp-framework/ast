@@ -14,6 +14,8 @@ use lang\ast\nodes\{
   ContinueStatement,
   DoLoop,
   EchoStatement,
+  EnumCase,
+  EnumDeclaration,
   ForLoop,
   ForeachLoop,
   FunctionDeclaration,
@@ -860,7 +862,74 @@ class PHP extends Language {
       return $decl;
     });
 
-    $this->body('use', function($parse, &$body, $annotations, $modifiers, $holder) {
+    $this->stmt('enum', function($parse, $token) {
+      $name= $parse->scope->resolve($parse->token->value);
+      $parse->forward();
+      $comment= $parse->comment;
+      $parse->comment= null;
+
+      $implements= [];
+      if ('implements' === $parse->token->value) {
+        $parse->forward();
+        do {
+          $implements[]= $parse->scope->resolve($parse->token->value);
+          $parse->forward();
+          if (',' === $parse->token->value) {
+            $parse->forward();
+            continue;
+          } else if ('{' === $parse->token->value) {
+            break;
+          } else {
+            $parse->expecting(', or {', 'interfaces list');
+          }
+        } while (null !== $parse->token->value);
+      }
+
+      // Backed enums vs. unit enums
+      if (':' === $parse->token->value) {
+        $parse->forward();
+        $base= $parse->token->value;
+        $parse->forward();
+      } else {
+        $base= null;
+      }
+
+      $decl= new EnumDeclaration([], $name, $base, $implements, [], [], $comment, $token->line);
+      $parse->expecting('{', 'enum');
+      $decl->body= $this->typeBody($parse, $decl->name);
+      $parse->expecting('}', 'enum');
+
+      return $decl;
+    });
+
+    $this->body('case', function($parse, &$body, $meta, $modifiers, $holder) {
+      $parse->forward();
+      do {
+        $line= $parse->token->line;
+        $name= $parse->token->value;
+
+        $parse->forward();
+        if ('=' === $parse->token->value) {
+          $parse->forward();
+          $expr= $this->expression($parse, 0);
+        } else {
+          $expr= null;
+        }
+
+        $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? [], $line);
+        $body[$name]->holder= $holder;
+
+        if (',' === $parse->token->value) {
+          $parse->forward();
+          continue;
+        } else {
+          $parse->expecting(';', 'case');
+          break;
+        }
+      } while ($parse->token->value);
+    });
+
+    $this->body('use', function($parse, &$body, $meta, $modifiers, $holder) {
       $line= $parse->token->line;
 
       $parse->forward();

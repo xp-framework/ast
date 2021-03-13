@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.1.0 / ????-??-??
+
+* Merged PR #23: Add syntactic support for PHP 8.1 enums. Implementation
+  in the compiler is in pull request xp-framework/compiler#106
+  (@thekid)
+
 ## 7.0.4 / 2021-03-07
 
 * Fixed *Call to undefined method ::emitoperator()* caused by standalone
