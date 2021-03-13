@@ -128,6 +128,14 @@ class TypesTest extends ParseTest {
   }
 
   #[Test]
+  public function unit_enum_with_grouped_cases() {
+    $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $enum->declare(new EnumCase('ONE', null, [], self::LINE));
+    $enum->declare(new EnumCase('TWO', null, [], self::LINE));
+    $this->assertParsed([$enum], 'enum A { case ONE, TWO; }');
+  }
+
+  #[Test]
   public function class_with_trait() {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->body[]= new UseExpression(['\\B'], [], self::LINE);

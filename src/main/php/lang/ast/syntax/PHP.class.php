@@ -903,22 +903,30 @@ class PHP extends Language {
     });
 
     $this->body('case', function($parse, &$body, $meta, $modifiers, $holder) {
-      $line= $parse->token->line;
-
       $parse->forward();
-      $name= $parse->token->value;
+      do {
+        $line= $parse->token->line;
+        $name= $parse->token->value;
 
-      $parse->forward();
-      if ('=' === $parse->token->value) {
         $parse->forward();
-        $expr= $this->expression($parse, 0);
-      } else {
-        $expr= null;
-      }
-      $parse->expecting(';', 'case');
+        if ('=' === $parse->token->value) {
+          $parse->forward();
+          $expr= $this->expression($parse, 0);
+        } else {
+          $expr= null;
+        }
 
-      $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? [], $line);
-      $body[$name]->holder= $holder;
+        $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? [], $line);
+        $body[$name]->holder= $holder;
+
+        if (',' === $parse->token->value) {
+          $parse->forward();
+          continue;
+        } else {
+          $parse->expecting(';', 'case');
+          break;
+        }
+      } while ($parse->token->value);
     });
 
     $this->body('use', function($parse, &$body, $meta, $modifiers, $holder) {
