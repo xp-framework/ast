@@ -1,6 +1,19 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{ArrayLiteral, BinaryExpression, FunctionDeclaration, Literal, Parameter, ReturnStatement, Signature, YieldExpression, YieldFromExpression};
+use lang\ast\nodes\{
+  ArrayLiteral,
+  Assignment,
+  BinaryExpression,
+  Braced,
+  FunctionDeclaration,
+  Literal,
+  Parameter,
+  ReturnStatement,
+  Signature,
+  Variable,
+  YieldExpression,
+  YieldFromExpression
+};
 use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion, IsValue};
 use unittest\{Assert, Test, Values};
 
@@ -161,6 +174,77 @@ class FunctionsTest extends ParseTest {
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], null), [$yield], self::LINE)],
       'function a() { yield from []; }'
+    );
+  }
+
+  #[Test]
+  public function assign_to_yield() {
+    $yield= new Assignment(
+      new Variable('value', self::LINE),
+      '=',
+      new YieldExpression(null, null, self::LINE),
+      self::LINE
+    );
+    $this->assertParsed(
+      [new FunctionDeclaration('a', new Signature([], null), [$yield], self::LINE)],
+      'function a() { $value= yield; }'
+    );
+  }
+
+  #[Test]
+  public function assign_to_yield_with_braced() {
+    $yield= new Assignment(
+      new Variable('value', self::LINE),
+      '=',
+      new YieldExpression(null, new Braced(new Literal('1', self::LINE), self::LINE), self::LINE),
+      self::LINE
+    );
+    $this->assertParsed(
+      [new FunctionDeclaration('a', new Signature([], null), [$yield], self::LINE)],
+      'function a() { $value= yield (1); }'
+    );
+  }
+
+
+  #[Test]
+  public function assign_to_yield_in_braces() {
+    $yield= new Assignment(
+      new Variable('value', self::LINE),
+      '=',
+      new Braced(new YieldExpression(null, null, self::LINE), self::LINE),
+      self::LINE
+    );
+    $this->assertParsed(
+      [new FunctionDeclaration('a', new Signature([], null), [$yield], self::LINE)],
+      'function a() { $value= (yield); }'
+    );
+  }
+
+  #[Test, Values(['function a() { $value= [yield]; }', 'function a() { $value= [yield, ]; }'])]
+  public function assign_to_yield_in_array($declaration) {
+    $yield= new Assignment(
+      new Variable('value', self::LINE),
+      '=',
+      new ArrayLiteral([[null, new YieldExpression(null, null, self::LINE)]], self::LINE),
+      self::LINE
+    );
+    $this->assertParsed(
+      [new FunctionDeclaration('a', new Signature([], null), [$yield], self::LINE)],
+      $declaration
+    );
+  }
+
+  #[Test, Values(['function a() { $value= [yield => 1]; }', 'function a() { $value= [yield => 1, ]; }'])]
+  public function assign_to_yield_in_map($declaration) {
+    $yield= new Assignment(
+      new Variable('value', self::LINE),
+      '=',
+      new ArrayLiteral([[new YieldExpression(null, null, self::LINE), new Literal('1', self::LINE)]], self::LINE),
+      self::LINE
+    );
+    $this->assertParsed(
+      [new FunctionDeclaration('a', new Signature([], null), [$yield], self::LINE)],
+      $declaration
     );
   }
 }

@@ -329,14 +329,16 @@ class PHP extends Language {
     });
 
     $this->prefix('yield', 0, function($parse, $token) {
-      if (';' === $parse->token->value) {
-        return new YieldExpression(null, null, $token->line);
-      } else if ('from' === $parse->token->value) {
+      if ('from' === $parse->token->value) {
         $parse->forward();
         return new YieldFromExpression($this->expression($parse, 0), $token->line);
       } else {
         $expr= $this->expression($parse, 0);
-        if ('=>' === $parse->token->value) {
+        if ('operator' === $expr->kind) {
+          $parse->queue[]= $parse->token;
+          $parse->token= $expr;
+          return new YieldExpression(null, null, $token->line);
+        } else if ('=>' === $parse->token->value) {
           $parse->forward();
           return new YieldExpression($expr, $this->expression($parse, 0), $token->line);
         } else {

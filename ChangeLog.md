@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.1.1 / 2021-04-18
+
+* Fixed `yield` without expression in various situations - @thekid
+
 ## 7.1.0 / 2021-03-13
 
 * Merged PR #23: Add syntactic support for PHP 8.1 enums. Implementation
