@@ -1088,6 +1088,7 @@ class PHP extends Language {
       'mixed'    => true,
       'array'    => true,
       'void'     => true,
+      'never'    => true,
       'resource' => true,
       'callable' => true,
       'iterable' => true,
