@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.2.0 / 2021-04-25
+
+* Merged PR #24: Add support for never return type - @thekid
+
 ## 7.1.1 / 2021-04-18
 
 * Fixed `yield` without expression in various situations - @thekid
