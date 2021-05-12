@@ -12,6 +12,7 @@ use lang\ast\nodes\{
   ClosureExpression,
   Constant,
   ContinueStatement,
+  Directives,
   DoLoop,
   EchoStatement,
   EnumCase,
@@ -512,6 +513,24 @@ class PHP extends Language {
 
       $parse->forward();
       return $this->statement($parse);
+    });
+
+    $this->stmt('declare', function($parse, $token) {
+      $parse->expecting('(', 'declare');
+
+      $declare= [];
+      while (')' !== $parse->token->value) {
+        $name= $parse->token->value;
+        $parse->forward();
+        $parse->expecting('=', 'declare');
+        $declare[$name]= $this->expression($parse, 0);
+
+        if (')' === $parse->token->value) break;
+        $parse->expecting(',', 'declare');        
+      }
+
+      $parse->expecting(')', 'declare');
+      return new Directives($declare, $token->line);
     });
 
     $this->stmt('{', function($parse, $token) {
