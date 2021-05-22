@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.3.0 / 2021-05-22
+
+* Merged PR #25: Add support for declare construct - @thekid
+
 ## 7.2.0 / 2021-04-25
 
 * Merged PR #24: Add support for never return type - @thekid
