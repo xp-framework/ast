@@ -36,6 +36,7 @@ use lang\ast\nodes\{
   NullSafeInstanceExpression,
   OffsetExpression,
   Parameter,
+  PartialExpression,
   Property,
   ReturnStatement,
   ScopeExpression,
@@ -160,8 +161,17 @@ class PHP extends Language {
       $parse->forward();
       if ('(' === $parse->token->value) {
         $parse->expecting('(', 'invoke expression');
-        $arguments= $this->arguments($parse);
+        list($placeholders, $arguments)= $this->arguments($parse);
         $parse->expecting(')', 'invoke expression');
+
+        // Workaround: T::method(?) = partial(..., invoke(scope(T, method), arguments))
+        // while T::method() is scope(T, invoke(method, arguments))
+        if ($placeholders) return new PartialExpression(
+          $placeholders,
+          new InvokeExpression(new ScopeExpression($scope, $expr, $token->line), $arguments, $token->line),
+          $token->line
+        );
+
         $expr= new InvokeExpression($expr, $arguments, $token->line);
       }
 
@@ -169,9 +179,10 @@ class PHP extends Language {
     });
 
     $this->infix('(', 100, function($parse, $token, $left) {
-      $arguments= $this->arguments($parse);
+      list($placeholders, $arguments)= $this->arguments($parse);
       $parse->expecting(')', 'invoke expression');
-      return new InvokeExpression($left, $arguments, $token->line);
+      $invoke= new InvokeExpression($left, $arguments, $token->line);
+      return $placeholders ? new PartialExpression($placeholders, $invoke, $token->line) : $invoke;
     });
 
     $this->infix('[', 100, function($parse, $token, $left) {
@@ -317,16 +328,18 @@ class PHP extends Language {
       }
 
       $parse->expecting('(', 'new arguments');
-      $arguments= $this->arguments($parse);
+      list($placeholders, $arguments)= $this->arguments($parse);
       $parse->expecting(')', 'new arguments');
 
       if (null === $type) {
         $class= $this->clazz($parse, null);
         $class->annotations= $annotations;
-        return new NewClassExpression($class, $arguments, $token->line);
+        $invocation= new NewClassExpression($class, $arguments, $token->line);
       } else {
-        return new NewExpression($type, $arguments, $token->line);
+        $invocation= new NewExpression($type, $arguments, $token->line);
       }
+
+      return $placeholders ? new PartialExpression($placeholders, $invocation, $token->line) : $invocation;
     });
 
     $this->prefix('yield', 0, function($parse, $token) {
@@ -1223,7 +1236,7 @@ class PHP extends Language {
 
       if ('(' === $parse->token->value) {
         $parse->expecting('(', $context);
-        $attributes[$name]= $this->arguments($parse);
+        $attributes[$name]= $this->arguments($parse)[1];
         $parse->expecting(')', $context);
       } else {
         $attributes[$name]= [];
@@ -1414,11 +1427,15 @@ class PHP extends Language {
 
   public function arguments($parse) {
     $arguments= [];
+    $placeholders= [];
     while (')' !== $parse->token->value) {
 
       // Named arguments (name: <argument>) vs. positional arguments
       if ('name' === $parse->token->kind) {
         $token= $parse->token;
+
+        // Look ahead and resolve ambiguity between "name: [EXPR]" and
+        // "name" referring to a global constant, function or type.
         $parse->forward();
         if (':' === $parse->token->value) {
           $parse->forward();
@@ -1427,6 +1444,21 @@ class PHP extends Language {
           array_unshift($parse->queue, $parse->token);
           $parse->token= $token;
           $arguments[]= $this->expression($parse, 0);
+        }
+      } else if ('?' === $parse->token->value) {
+        $placeholders[sizeof($arguments)]= false;
+        $parse->forward();
+        $arguments[]= null;
+      } else if ('...' === $parse->token->value) {
+
+        // Look ahead and resolve ambiguity between "..." as placeholder and "...[EXPR]"
+        // as argument with an array unpacking expression.
+        $parse->forward();
+        if (',' === $parse->token->value || ')' === $parse->token->value) {
+          $placeholders[sizeof($arguments)]= true;
+          $arguments[]= null;
+        } else {
+          $arguments[]= new UnpackExpression($this->expression($parse, 0), $parse->token->line);
         }
       } else {
         $arguments[]= $this->expression($parse, 0);
@@ -1441,7 +1473,8 @@ class PHP extends Language {
         break;
       }
     }
-    return $arguments;
+
+    return [$placeholders, $arguments];
   }
 
   public function expressions($parse, $end) {
