@@ -168,6 +168,7 @@ class PHP extends Language {
           $dots= $parse->token;
           $parse->forward();
           if (')' === $parse->token->value) {
+            $parse->forward();
             return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $token->line);
           }
 
@@ -191,6 +192,7 @@ class PHP extends Language {
         $dots= $parse->token;
         $parse->forward();
         if (')' === $parse->token->value) {
+          $parse->forward();
           return new CallableExpression($left, $token->line);
         }
 
