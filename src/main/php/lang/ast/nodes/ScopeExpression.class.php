@@ -13,6 +13,7 @@ class ScopeExpression extends Node {
   }
 
   /** @return iterable */
-  public function children() { return [$this->member]; }
-
+  public function children() {
+    return $this->type instanceof parent ? [$this->type, $this->member] : [$this->member];
+  }
 }
