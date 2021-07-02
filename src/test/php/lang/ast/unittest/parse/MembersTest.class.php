@@ -126,12 +126,20 @@ class MembersTest extends ParseTest {
   public function dynamic_instance_property_access_via_variable() {
     $this->assertParsed(
       [new InstanceExpression(new Variable('a', self::LINE), new Variable('member', self::LINE), self::LINE)],
+      '$a->$member;'
+    );
+  }
+
+  #[Test]
+  public function dynamic_instance_property_access_via_variable_expression() {
+    $this->assertParsed(
+      [new InstanceExpression(new Variable('a', self::LINE), new Variable('member', self::LINE), self::LINE)],
       '$a->{$member};'
     );
   }
 
   #[Test]
-  public function dynamic_instance_property_access_via_expression() {
+  public function dynamic_instance_property_access_via_complex_expression() {
     $member= new InvokeExpression(
       new InstanceExpression(new Variable('field', self::LINE), new Literal('get', self::LINE), self::LINE),
       [new Variable('instance', self::LINE)],
