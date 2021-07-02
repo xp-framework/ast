@@ -5,6 +5,7 @@ use lang\ast\nodes\{
   Block,
   Braced,
   BreakStatement,
+  CallableExpression,
   CaseLabel,
   CastExpression,
   CatchStatement,
@@ -160,6 +161,20 @@ class PHP extends Language {
       $parse->forward();
       if ('(' === $parse->token->value) {
         $parse->expecting('(', 'invoke expression');
+
+        // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
+        // callable reference vs. `func(...$it)` - a call with an unpacked argument
+        if ('...' === $parse->token->value) {
+          $dots= $parse->token;
+          $parse->forward();
+          if (')' === $parse->token->value) {
+            return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $token->line);
+          }
+
+          $parse->queue[]= $parse->token;
+          $parse->token= $dots;
+        }
+
         $arguments= $this->arguments($parse);
         $parse->expecting(')', 'invoke expression');
         $expr= new InvokeExpression($expr, $arguments, $token->line);
@@ -169,6 +184,20 @@ class PHP extends Language {
     });
 
     $this->infix('(', 100, function($parse, $token, $left) {
+
+      // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
+      // callable reference vs. `func(...$it)` - a call with an unpacked argument
+      if ('...' === $parse->token->value) {
+        $dots= $parse->token;
+        $parse->forward();
+        if (')' === $parse->token->value) {
+          return new CallableExpression($left, $token->line);
+        }
+
+        $parse->queue[]= $parse->token;
+        $parse->token= $dots;
+      }
+
       $arguments= $this->arguments($parse);
       $parse->expecting(')', 'invoke expression');
       return new InvokeExpression($left, $arguments, $token->line);
