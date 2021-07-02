@@ -1114,8 +1114,9 @@ class PHP extends Language {
       $expr= new Literal($parse->token->value, $parse->token->line);
       $parse->forward();
     } else {
-      $parse->expecting('name or variable', 'member');
-      $expr= null;
+      $parse->expecting('an expression in curly braces, a name or a variable', 'member');
+      $expr= new Literal($parse->token->value, $parse->token->line);
+      $parse->forward();
     }
     return $expr;
   }
