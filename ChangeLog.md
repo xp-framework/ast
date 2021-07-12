@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.4.0 / 2021-07-12
+
+* Merged PR #27: Implement first-class callable syntax - @thekid
+
 ## 7.3.0 / 2021-05-22
 
 * Merged PR #25: Add support for declare construct - @thekid
