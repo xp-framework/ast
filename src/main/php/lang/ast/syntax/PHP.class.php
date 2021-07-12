@@ -5,6 +5,7 @@ use lang\ast\nodes\{
   Block,
   Braced,
   BreakStatement,
+  CallableExpression,
   CaseLabel,
   CastExpression,
   CatchStatement,
@@ -118,48 +119,36 @@ class PHP extends Language {
     });
 
     $this->infix('->', 100, function($parse, $token, $left) {
-      if ('{' === $parse->token->value) {
-        $parse->forward();
-        $expr= $this->expression($parse, 0);
-        $parse->expecting('}', 'dynamic member');
-      } else {
-        $expr= new Literal($parse->token->value, $token->line);
-        $parse->forward();
-      }
-
-      return new InstanceExpression($left, $expr, $token->line);
+      return new InstanceExpression($left, $this->member($parse), $token->line);
     });
 
     $this->infix('?->', 100, function($parse, $node, $left) {
-      if ('{' === $parse->token->value) {
-        $parse->forward();
-        $expr= $this->expression($parse, 0);
-        $parse->expecting('}', 'dynamic member');
-      } else {
-        $expr= new Literal($parse->token->value);
-        $parse->forward();
-      }
-
-      $value= new InstanceExpression($left, $expr, $node->line);
+      $value= new InstanceExpression($left, $this->member($parse), $node->line);
       $value->kind= 'nullsafeinstance';
       return $value;
     });
 
     $this->infix('::', 120, function($parse, $token, $left) {
       $scope= $left instanceof Literal ? $parse->scope->resolve($left->expression) : $left;
+      $expr= $this->member($parse);
 
-      if ('variable' === $parse->token->kind) {
-        $expr= new Variable(substr($parse->token->value, 1), $parse->token->line);
-      } else if ('name' === $parse->token->kind) {
-        $expr= new Literal($parse->token->value, $parse->token->line);
-      } else {
-        $parse->expecting('name or variable', '::');
-        $expr= null;
-      }
-
-      $parse->forward();
       if ('(' === $parse->token->value) {
         $parse->expecting('(', 'invoke expression');
+
+        // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
+        // callable reference vs. `func(...$it)` - a call with an unpacked argument
+        if ('...' === $parse->token->value) {
+          $dots= $parse->token;
+          $parse->forward();
+          if (')' === $parse->token->value) {
+            $parse->forward();
+            return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $token->line);
+          }
+
+          $parse->queue[]= $parse->token;
+          $parse->token= $dots;
+        }
+
         $arguments= $this->arguments($parse);
         $parse->expecting(')', 'invoke expression');
         $expr= new InvokeExpression($expr, $arguments, $token->line);
@@ -169,6 +158,21 @@ class PHP extends Language {
     });
 
     $this->infix('(', 100, function($parse, $token, $left) {
+
+      // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
+      // callable reference vs. `func(...$it)` - a call with an unpacked argument
+      if ('...' === $parse->token->value) {
+        $dots= $parse->token;
+        $parse->forward();
+        if (')' === $parse->token->value) {
+          $parse->forward();
+          return new CallableExpression($left, $token->line);
+        }
+
+        $parse->queue[]= $parse->token;
+        $parse->token= $dots;
+      }
+
       $arguments= $this->arguments($parse);
       $parse->expecting(')', 'invoke expression');
       return new InvokeExpression($left, $arguments, $token->line);
@@ -1096,6 +1100,25 @@ class PHP extends Language {
       }
       return 1 === sizeof($t) ? $t[0] : new IsUnion($t);
     } while (true);
+  }
+
+  private function member($parse) {
+    if ('{' === $parse->token->value) {
+      $parse->forward();
+      $expr= $this->expression($parse, 0);
+      $parse->expecting('}', 'dynamic member');
+    } else if ('variable' === $parse->token->kind) {
+      $expr= new Variable(substr($parse->token->value, 1), $parse->token->line);
+      $parse->forward();
+    } else if ('name' === $parse->token->kind) {
+      $expr= new Literal($parse->token->value, $parse->token->line);
+      $parse->forward();
+    } else {
+      $parse->expecting('an expression in curly braces, a name or a variable', 'member');
+      $expr= new Literal($parse->token->value, $parse->token->line);
+      $parse->forward();
+    }
+    return $expr;
   }
 
   private function type0($parse, $optional) {

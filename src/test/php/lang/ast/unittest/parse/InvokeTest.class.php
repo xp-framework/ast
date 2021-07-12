@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{InstanceExpression, InvokeExpression, Literal, Variable};
+use lang\ast\nodes\{CallableExpression, InstanceExpression, InvokeExpression, UnpackExpression, ScopeExpression, Literal, Variable};
 use unittest\{Assert, Test};
 
 /**
@@ -60,6 +60,31 @@ class InvokeTest extends ParseTest {
     $this->assertParsed(
       [new InvokeExpression(new Literal('test', self::LINE), $arguments, self::LINE)],
       'test(1, named: 2);'
+    );
+  }
+
+  #[Test]
+  public function argument_unpacking() {
+    $unpack= new UnpackExpression(new Variable('it', self::LINE), self::LINE);
+    $this->assertParsed(
+      [new InvokeExpression(new Literal('func', self::LINE), [$unpack], self::LINE)],
+      'func(...$it);'
+    );
+  }
+
+  #[Test]
+  public function first_class_callable_function() {
+    $this->assertParsed(
+      [new CallableExpression(new Literal('strlen', self::LINE), self::LINE)],
+      'strlen(...);'
+    );
+  }
+
+  #[Test]
+  public function first_class_callable_static() {
+    $this->assertParsed(
+      [new CallableExpression(new ScopeExpression('self', new Literal('length', self::LINE), self::LINE), self::LINE)],
+      'self::length(...);'
     );
   }
 }
