@@ -17,20 +17,20 @@ class Errors extends IllegalStateException {
         throw new IllegalArgumentException('Errors may not be empty!');
 
       case 1:
-        $message= $errors[0]->getMessage();
+        $message= $errors[0]->message.' [line '.$errors[0]->line.' of '.$errors[0]->file.']';
         break;
 
       default: 
         $message= "Errors {\n";
         foreach ($errors as $error) {
-          $message.= '  '.$error->message.' at line '.$error->line."\n";
+          $message.= '  '.$error->message.' [line '.$error->line.' of '.$error->file."]\n";
         }
         $message.= '}';
     }
 
     parent::__construct($message);
     $this->file= $file;
-    $this->line= $errors[0]->getLine();
+    $this->line= $errors[0]->line;
   }
 
   /**
