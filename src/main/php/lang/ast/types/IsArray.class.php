@@ -8,9 +8,9 @@ class IsArray extends Type {
   /**
    * Creates a new type
    *
-   * @param  self[] $component
+   * @param  parent $component
    */
-  public function __construct($component= []) {
+  public function __construct($component) {
     $this->component= $component;
   }
 

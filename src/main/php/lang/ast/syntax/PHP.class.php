@@ -58,7 +58,7 @@ use lang\ast\nodes\{
   YieldExpression,
   YieldFromExpression
 };
-use lang\ast\types\{IsArray, IsFunction, IsMap, IsUnion, IsValue, IsNullable, IsGeneric, IsLiteral};
+use lang\ast\types\{IsArray, IsFunction, IsMap, IsUnion, IsIntersection, IsValue, IsNullable, IsGeneric, IsLiteral};
 use lang\ast\{Token, Language, Error};
 
 /**
@@ -1090,16 +1090,42 @@ class PHP extends Language {
     });
   }
 
-  private function type($parse, $optional= true) {
-    $t= [];
-    do {
-      $t[]= $this->type0($parse, $optional);
-      if ('|' === $parse->token->value) {
+  public function type($parse, $optional= true) {
+    $t= $this->type0($parse, $optional);
+
+    if ('|' === $parse->token->value) {
+      $t= new IsUnion([$t]);
+      do {
         $parse->forward();
-        continue;
+        $t->components[]= $this->type0($parse, false);
+      } while ('|' === $parse->token->value);
+    } else if ('&' === $parse->token->value) {
+
+      // Solve ambiguity between `T &$param` and `T1&T2 $param`
+      $token= $parse->token;
+      $parse->forward();
+      if ('variable' === $parse->token->kind) {
+        $parse->queue[]= $parse->token;
+        $parse->token= $token;
+        return $t;
       }
-      return 1 === sizeof($t) ? $t[0] : new IsUnion($t);
-    } while (true);
+
+      $t= new IsIntersection([$t]);
+      do {
+        $t->components[]= $this->type0($parse, false);
+        if ('&' !== $parse->token->value) break;
+
+        $token= $parse->token;
+        $parse->forward();
+        if ('variable' === $parse->token->kind) {
+          $parse->queue[]= $parse->token;
+          $parse->token= $token;
+          break;
+        }
+      } while (true);
+    }
+
+    return $t;
   }
 
   private function member($parse) {
