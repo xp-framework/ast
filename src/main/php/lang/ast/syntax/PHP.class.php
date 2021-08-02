@@ -1093,6 +1093,8 @@ class PHP extends Language {
   public function type($parse, $optional= true) {
     $t= $this->type0($parse, $optional);
 
+    // Check for union and intersection types (which cannot be mixed
+    // with one another!).
     if ('|' === $parse->token->value) {
       $t= new IsUnion([$t]);
       do {
@@ -1100,29 +1102,21 @@ class PHP extends Language {
         $t->components[]= $this->type0($parse, false);
       } while ('|' === $parse->token->value);
     } else if ('&' === $parse->token->value) {
-
-      // Solve ambiguity between `T &$param` and `T1&T2 $param`
-      $token= $parse->token;
-      $parse->forward();
-      if ('variable' === $parse->token->kind) {
-        $parse->queue[]= $parse->token;
-        $parse->token= $token;
-        return $t;
-      }
-
-      $t= new IsIntersection([$t]);
+      $i= null;
       do {
-        $t->components[]= $this->type0($parse, false);
-        if ('&' !== $parse->token->value) break;
-
         $token= $parse->token;
         $parse->forward();
+
+        // Solve ambiguity `T1&T2` vs. `T1 &$param`
         if ('variable' === $parse->token->kind) {
           $parse->queue[]= $parse->token;
           $parse->token= $token;
-          break;
+          return $t;
         }
-      } while (true);
+
+        $i ?? $i= $t= new IsIntersection([$t]);
+        $t->components[]= $this->type0($parse, false);
+      } while ('&' === $parse->token->value);
     }
 
     return $t;
