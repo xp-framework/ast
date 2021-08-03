@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.5.0 / 2021-08-03
+
+* Merged PR #28: Intersection types (see xp-framework/compiler#117 and
+  https://wiki.php.net/rfc/pure-intersection-types)
+  (@thekid)
 * Merged PR #29: Add error source (file and line) to message - @thekid
 
 ## 7.4.0 / 2021-07-12
