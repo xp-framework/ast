@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\types\{IsLiteral, IsArray, IsMap, IsValue, IsFunction, IsGeneric, IsUnion, IsIntersection};
+use lang\ast\types\{IsLiteral, IsArray, IsMap, IsValue, IsFunction, IsGeneric, IsNullable, IsUnion, IsIntersection};
 use lang\ast\{Language, Parse, Tokens};
 use unittest\{Assert, Test, Values};
 
@@ -59,6 +59,13 @@ class TypeParsingTest {
     yield ['Countable&Traversable&Throwable', [new IsValue('Countable'), new IsValue('Traversable'), new IsValue('Throwable')]];
   }
 
+  /** @return iterable */
+  private function nullables() {
+    yield ['?Countable', new IsValue('Countable')];
+    yield ['?string|int', new IsUnion([new IsLiteral('string'), new IsLiteral('int')])];
+    yield ['?Countable&Traversable', new IsIntersection([new IsValue('Countable'), new IsValue('Traversable')])];
+  }
+
   #[Test, Values(['string', 'int', 'bool', 'float', 'void', 'never', 'array', 'object', 'callable', 'iterable', 'mixed'])]
   public function literal_type($type) {
     Assert::equals(new IsLiteral($type), $this->parse($type));
@@ -97,6 +104,11 @@ class TypeParsingTest {
   #[Test, Values('intersections')]
   public function intersection_type($type, $components) {
     Assert::equals(new IsIntersection($components), $this->parse($type));
+  }
+
+  #[Test, Values('nullables')]
+  public function nullable_type($declaration, $type) {
+    Assert::equals(new IsNullable($type), $this->parse($declaration));
   }
 
   #[Test]
