@@ -67,43 +67,43 @@ class TypeParsingTest {
   }
 
   #[Test, Values(['string', 'int', 'bool', 'float', 'void', 'never', 'array', 'object', 'callable', 'iterable', 'mixed'])]
-  public function literal_type($type) {
-    Assert::equals(new IsLiteral($type), $this->parse($type));
+  public function literal_type($declaration) {
+    Assert::equals(new IsLiteral($declaration), $this->parse($declaration));
   }
 
   #[Test, Values(['Value', '\Error', '\lang\Value'])]
-  public function value_type($type) {
-    Assert::equals(new IsValue($type), $this->parse($type));
+  public function value_type($declaration) {
+    Assert::equals(new IsValue($declaration), $this->parse($declaration));
   }
 
   #[Test, Values('arrays')]
-  public function array_type($type, $component) {
-    Assert::equals(new IsArray($component), $this->parse($type));
+  public function array_type($declaration, $component) {
+    Assert::equals(new IsArray($component), $this->parse($declaration));
   }
 
   #[Test, Values('maps')]
-  public function map_type($type, $key, $value) {
-    Assert::equals(new IsMap($key, $value), $this->parse($type));
+  public function map_type($declaration, $key, $value) {
+    Assert::equals(new IsMap($key, $value), $this->parse($declaration));
   }
 
   #[Test, Values('generics')]
-  public function generic_type($type, $base, $components) {
-    Assert::equals(new IsGeneric($base, $components), $this->parse($type));
+  public function generic_type($declaration, $base, $components) {
+    Assert::equals(new IsGeneric($base, $components), $this->parse($declaration));
   }
 
   #[Test, Values('functions')]
-  public function function_type($type, $arguments, $returns) {
-    Assert::equals(new IsFunction($arguments, $returns), $this->parse($type));
+  public function function_type($declaration, $arguments, $returns) {
+    Assert::equals(new IsFunction($arguments, $returns), $this->parse($declaration));
   }
 
   #[Test, Values('unions')]
-  public function union_type($type, $components) {
-    Assert::equals(new IsUnion($components), $this->parse($type));
+  public function union_type($declaration, $components) {
+    Assert::equals(new IsUnion($components), $this->parse($declaration));
   }
 
   #[Test, Values('intersections')]
-  public function intersection_type($type, $components) {
-    Assert::equals(new IsIntersection($components), $this->parse($type));
+  public function intersection_type($declaration, $components) {
+    Assert::equals(new IsIntersection($components), $this->parse($declaration));
   }
 
   #[Test, Values('nullables')]
