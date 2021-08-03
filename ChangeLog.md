@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #29: Add error source (file and line) to message - @thekid
+
 ## 7.4.0 / 2021-07-12
 
 * Merged PR #27: Implement first-class callable syntax - @thekid
