@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Errors;
-use lang\ast\nodes\{CaseLabel, IfStatement, InvokeExpression, Literal, MatchCondition, MatchExpression, SwitchStatement, Variable};
+use lang\ast\nodes\{CaseLabel, IfStatement, InvokeExpression, Literal, MatchCondition, MatchExpression, ScopeExpression, SwitchStatement, Variable};
 use unittest\{Assert, Before, Test};
 
 class ConditionalTest extends ParseTest {
@@ -61,6 +61,24 @@ class ConditionalTest extends ParseTest {
     $this->assertParsed(
       [new SwitchStatement(new Variable('condition', self::LINE), $cases, self::LINE)],
       'switch ($condition) { case 1: action1(); }'
+    );
+  }
+
+  #[Test]
+  public function switch_with_constant() {
+    $cases= [new CaseLabel(new Literal('SEEK_SET', self::LINE), $this->blocks[1], self::LINE)];
+    $this->assertParsed(
+      [new SwitchStatement(new Variable('condition', self::LINE), $cases, self::LINE)],
+      'switch ($condition) { case SEEK_SET: action1(); }'
+    );
+  }
+
+  #[Test]
+  public function switch_with_class_constant() {
+    $cases= [new CaseLabel(new ScopeExpression('self', new Literal('SET', self::LINE), self::LINE), $this->blocks[1], self::LINE)];
+    $this->assertParsed(
+      [new SwitchStatement(new Variable('condition', self::LINE), $cases, self::LINE)],
+      'switch ($condition) { case self::SET: action1(); }'
     );
   }
 

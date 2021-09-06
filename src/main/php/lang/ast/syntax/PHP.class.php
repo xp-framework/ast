@@ -640,12 +640,22 @@ class PHP extends Language {
         } else if ('case' === $parse->token->value) {
           $parse->forward();
 
+          // Resolve ambiguity by looking ahead: goto labels vs. global constants as case expressions
           if ('name' === $parse->token->kind) {
-            $expr= new Literal($parse->token->value, $parse->token->line);
+            $const= $parse->token;
             $parse->forward();
-          } else {
-            $expr= $this->expression($parse, 0);
+            if (':' === $parse->token->value) {
+              $parse->forward();
+              $expr= new Literal($const->value, $const->line);
+              $cases[]= new CaseLabel($expr, [], $const->line);
+              continue;
+            }
+
+            $parse->queue[]= $parse->token;
+            $parse->token= $const;
           }
+
+          $expr= $this->expression($parse, 0);
           $parse->expecting(':', 'switch');
           $cases[]= new CaseLabel($expr, [], $parse->token->line);
         } else {

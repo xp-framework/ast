@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.5.1 / 2021-09-06
+
+* Fixed *Expected ":", have "::" in switch* for class constants - @thekid
+
 ## 7.5.0 / 2021-08-03
 
 * Merged PR #28: Intersection types (see xp-framework/compiler#117 and
