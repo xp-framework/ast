@@ -226,6 +226,14 @@ class MembersTest extends ParseTest {
   }
 
   #[Test]
+  public function readonly_property() {
+    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $class->declare(new Property(['public', 'readonly'], 'a', new Type('int'), null, [], null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { public readonly int $a; }');
+  }
+
+  #[Test]
   public function typed_constant() {
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), [], self::LINE));

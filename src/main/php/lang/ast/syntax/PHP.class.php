@@ -1312,6 +1312,12 @@ class PHP extends Language {
       if ('name' === $parse->token->kind && isset($promotion[$parse->token->value])) {
         $promote= $parse->token->value;
         $parse->forward();
+
+        // It would be better to use an array for promote, but this way we keep BC
+        if ('readonly' === $parse->token->value) {
+          $promote.= ' readonly';
+          $parse->forward();
+        }
       } else {
         $promote= null;
       }
@@ -1371,7 +1377,8 @@ class PHP extends Language {
       'public'    => true,
       'static'    => true,
       'final'     => true,
-      'abstract'  => true
+      'abstract'  => true,
+      'readonly'  => true,
     ];
 
     $body= [];
