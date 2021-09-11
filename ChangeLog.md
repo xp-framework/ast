@@ -3,6 +3,13 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.6.0 / 2021-09-11
+
+* Merged PR #30: Add support for readonly properties, to both property
+  declarations and constructor argument promotion - available in PHP 8.1
+  See https://wiki.php.net/rfc/readonly_properties_v2
+  (@thekid)
+
 ## 7.5.1 / 2021-09-06
 
 * Fixed *Expected ":", have "::" in switch* for class constants - @thekid
