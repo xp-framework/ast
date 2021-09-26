@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.6.1 / 2021-09-26
+
 * Fixed `use` statement not supporting multiple imports separated by `,`.
   (@thekid)
 * Fixed importing global classes into namespaces, e.g. `use Traversable`.
