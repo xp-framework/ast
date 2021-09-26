@@ -955,15 +955,9 @@ class PHP extends Language {
 
         $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? [], $line);
         $body[$name]->holder= $holder;
+      } while (',' === $parse->token->value && true | $parse->forward());
 
-        if (',' === $parse->token->value) {
-          $parse->forward();
-          continue;
-        } else {
-          $parse->expecting(';', 'case');
-          break;
-        }
-      } while ($parse->token->value);
+      $parse->expecting(';', 'case');
     });
 
     $this->body('use', function($parse, &$body, $meta, $modifiers, $holder) {
@@ -974,13 +968,7 @@ class PHP extends Language {
       do {
         $types[]= $parse->scope->resolve($parse->token->value);
         $parse->forward();
-        if (',' === $parse->token->value) {
-          $parse->forward();
-          continue;
-        } else {
-          break;
-        }
-      } while ($parse->token->value);
+      } while (',' === $parse->token->value && true | $parse->forward());
 
       $aliases= [];
       if ('{' === $parse->token->value) {
@@ -1184,14 +1172,7 @@ class PHP extends Language {
       $signature= [];
       if (')' !== $parse->token->value) do {
         $signature[]= $this->type($parse, false);
-        if (',' === $parse->token->value) {
-          $parse->forward();
-        } else if (')' === $parse->token->value) {
-          break;
-        } else {
-          $parse->expecting(', or )', 'function type');
-        }
-      } while (true);
+      } while (',' === $parse->token->value && true | $parse->forward());
       $parse->expecting(')', 'type');
       $parse->expecting(':', 'type');
       return new IsFunction($signature, $this->type($parse, false));
@@ -1283,18 +1264,8 @@ class PHP extends Language {
       } else {
         $attributes[$name]= [];
       }
-
-      if (',' === $parse->token->value) {
-        $parse->forward();
-        continue;
-      } else if (']' === $parse->token->value) {
-        $parse->forward();
-        break;
-      } else {
-        $parse->expecting(', or ]', $context);
-        break;
-      }
-    } while (true);
+    } while (',' === $parse->token->value && true | $parse->forward());
+    $parse->expecting(']', $context);
 
     return $attributes;
   }
