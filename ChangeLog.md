@@ -3,6 +3,9 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed importing global classes into namespaces, e.g. `use Traversable`.
+  (@thekid)
+
 ## 7.6.0 / 2021-09-11
 
 * Merged PR #30: Add support for readonly properties, to both property

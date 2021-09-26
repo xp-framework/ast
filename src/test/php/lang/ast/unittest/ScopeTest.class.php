@@ -73,4 +73,14 @@ class ScopeTest {
 
     Assert::equals('\\lang\\ast\\Parse', (new Scope($s))->resolve('Parse'));
   }
+
+  #[Test]
+  public function resolve_global() {
+    $s= new Scope();
+    $s->package('test');
+    $s->import('Traversable');
+
+    Assert::equals('\\Traversable', $s->resolve('Traversable'));
+  }
+
 }

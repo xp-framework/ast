@@ -54,7 +54,7 @@ class Scope {
    * @return void
    */
   public function import($name, $alias= null) {
-    $this->imports[$alias ?: substr($name, strrpos($name,  '\\') + 1)]= '\\'.$name;
+    $this->imports[$alias ?: (false === ($p= strrpos($name,  '\\')) ? $name : substr($name, $p + 1))]= '\\'.$name;
   }
 
   /**
