@@ -38,6 +38,30 @@ class NamespacesTest extends ParseTest {
   }
 
   #[Test]
+  public function use_with_types_separated_by_commas() {
+    $this->assertParsed(
+      [new UseStatement(null, ['lang\\ast\\Parse' => null, 'lang\\ast\\Emitter' => null], self::LINE)],
+      'use lang\\ast\\Parse, lang\\ast\\Emitter;'
+    );
+  }
+
+  #[Test]
+  public function use_global() {
+    $this->assertParsed(
+      [new UseStatement(null, ['Iterator' => null], self::LINE)],
+      'use Iterator;'
+    );
+  }
+
+  #[Test]
+  public function use_globals() {
+    $this->assertParsed(
+      [new UseStatement(null, ['Iterator' => null, 'Traversable' => null], self::LINE)],
+      'use Iterator, Traversable;'
+    );
+  }
+
+  #[Test]
   public function grouped_use_statement() {
     $this->assertParsed(
       [new UseStatement(null, ['lang\\ast\\Parse' => null, 'lang\\ast\\Emitter' => null], self::LINE)],

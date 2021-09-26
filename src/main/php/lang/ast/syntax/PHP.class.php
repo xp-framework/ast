@@ -566,45 +566,47 @@ class PHP extends Language {
         $type= null;  // class, interface or trait
       }
 
-      $import= $parse->token->value;
-      $parse->forward();
-
-      if ('{' === $parse->token->value) {
-        $names= [];
+      $names= [];
+      do {
+        $import= $parse->token->value;
         $parse->forward();
-        while ('}' !== $parse->token->value) {
-          $class= $import.$parse->token->value;
 
+        if ('{' === $parse->token->value) {
           $parse->forward();
-          if ('as' === $parse->token->value) {
-            $parse->forward();
-            $names[$class]= $parse->token->value;
-            $parse->scope->import($parse->token->value);
-            $parse->forward();
-          } else {
-            $names[$class]= null;
-            $parse->scope->import($class);
-          }
+          while ('}' !== $parse->token->value) {
+            $class= $import.$parse->token->value;
 
-          if (',' === $parse->token->value) {
             $parse->forward();
-          } else if ('}' === $parse->token->value) {
-            break;
-          } else {
-            $this->expecting(', or }', 'use');
-            break;
+            if ('as' === $parse->token->value) {
+              $parse->forward();
+              $names[$class]= $parse->token->value;
+              $parse->scope->import($parse->token->value);
+              $parse->forward();
+            } else {
+              $names[$class]= null;
+              $parse->scope->import($class);
+            }
+
+            if (',' === $parse->token->value) {
+              $parse->forward();
+            } else if ('}' === $parse->token->value) {
+              break;
+            } else {
+              $this->expecting(', or }', 'use');
+              break;
+            }
           }
+          $parse->forward();
+        } else if ('as' === $parse->token->value) {
+          $parse->forward();
+          $names[$import]= $parse->token->value;
+          $parse->scope->import($import, $parse->token->value);
+          $parse->forward();
+        } else {
+          $names[$import]= null;
+          $parse->scope->import($import);
         }
-        $parse->forward();
-      } else if ('as' === $parse->token->value) {
-        $parse->forward();
-        $names= [$import => $parse->token->value];
-        $parse->scope->import($import, $parse->token->value);
-        $parse->forward();
-      } else {
-        $names= [$import => null];
-        $parse->scope->import($import);
-      }
+      } while (',' === $parse->token->value && true | $parse->forward());
 
       $parse->expecting(';', 'use');
       return new UseStatement($type, $names, $token->line);
