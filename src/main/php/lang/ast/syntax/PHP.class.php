@@ -592,7 +592,7 @@ class PHP extends Language {
             } else if ('}' === $parse->token->value) {
               break;
             } else {
-              $this->expecting(', or }', 'use');
+              $parse->expecting(', or }', 'use');
               break;
             }
           }

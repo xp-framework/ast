@@ -17,7 +17,10 @@ class ErrorsTest extends ParseTest {
       $parse->tree();
       throw new AssertionFailedError('No exception raised');
     } catch (Errors $expected) {
-      Assert::equals($message.' [line 1 of '.self::class.']', $expected->getMessage());
+      Assert::true(
+        false !== strpos($expected->getMessage(), $message.' [line 1 of '.self::class.']'),
+        $expected->getMessage()
+      );
     }
   }
 
@@ -90,6 +93,14 @@ class ErrorsTest extends ParseTest {
     $this->assertError(
       'Unexpected '.$brace,
       $this->parse('class T { } '.$brace.';')
+    );
+  }
+
+  #[Test]
+  public function missing_comma_in_grouped_use() {
+    $this->assertError(
+      'Expected ", or }", have "Dates" in use',
+      $this->parse('use util\{Date Dates};')
     );
   }
 }
