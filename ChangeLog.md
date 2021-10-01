@@ -5,7 +5,7 @@ XP AST ChangeLog
 
 ## 7.6.2 / 2021-10-01
 
-* Fixed #32: Call to undefined method `lang\ast\syntax\PHP::expecting()`
+* Fixed #31: Call to undefined method `lang\ast\syntax\PHP::expecting()`
   (@thekid)
 
 ## 7.6.1 / 2021-09-26
