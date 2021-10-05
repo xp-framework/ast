@@ -321,6 +321,31 @@ class PHP extends Language {
       }
 
       $parse->expecting('(', 'new arguments');
+
+      // Resolve ambiguity by looking ahead: `new T(...)` which is a first-class
+      // callable reference vs. `new T(...$it)` - a call with an unpacked argument
+      if ('...' === $parse->token->value) {
+        $dots= $parse->token;
+        $parse->forward();
+        if (')' === $parse->token->value) {
+          $parse->forward();
+
+          $arguments= [new UnpackExpression(new Variable('__args'), $token->line)];
+          if (null === $type) {
+            $class= $this->clazz($parse, null);
+            $class->annotations= $annotations;
+            $new= new NewClassExpression($class, $arguments, $token->line);
+          } else {
+            $new= new NewExpression($type, $arguments, $token->line);
+          }
+
+          return new CallableExpression($new, $token->line);
+        }
+
+        $parse->queue[]= $parse->token;
+        $parse->token= $dots;
+      }
+
       $arguments= $this->arguments($parse);
       $parse->expecting(')', 'new arguments');
 
