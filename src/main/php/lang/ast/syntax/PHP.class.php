@@ -6,6 +6,7 @@ use lang\ast\nodes\{
   Braced,
   BreakStatement,
   CallableExpression,
+  CallableNewExpression,
   CaseLabel,
   CastExpression,
   CatchStatement,
@@ -330,16 +331,15 @@ class PHP extends Language {
         if (')' === $parse->token->value) {
           $parse->forward();
 
-          $arguments= [new UnpackExpression(new Variable('__args'), $token->line)];
           if (null === $type) {
             $class= $this->clazz($parse, null);
             $class->annotations= $annotations;
-            $new= new NewClassExpression($class, $arguments, $token->line);
+            $new= new NewClassExpression($class, null, $token->line);
           } else {
-            $new= new NewExpression($type, $arguments, $token->line);
+            $new= new NewExpression($type, null, $token->line);
           }
 
-          return new CallableExpression($new, $token->line);
+          return new CallableNewExpression($new, $token->line);
         }
 
         $parse->queue[]= $parse->token;

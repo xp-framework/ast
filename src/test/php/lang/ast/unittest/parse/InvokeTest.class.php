@@ -2,6 +2,7 @@
 
 use lang\ast\nodes\{
   CallableExpression,
+  CallableNewExpression,
   NewExpression,
   InstanceExpression,
   InvokeExpression,
@@ -99,9 +100,8 @@ class InvokeTest extends ParseTest {
 
   #[Test]
   public function first_class_callable_object_creation() {
-    $args= [new UnpackExpression(new Variable('__args'), self::LINE)];
     $this->assertParsed(
-      [new CallableExpression(new NewExpression('\\T', $args, self::LINE), self::LINE)],
+      [new CallableNewExpression(new NewExpression('\\T', null, self::LINE), self::LINE)],
       'new T(...);'
     );
   }
