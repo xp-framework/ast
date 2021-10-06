@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.7.0 / 2021-10-06
+
+* Merged PR #32: Support `new T(...)` callable syntax - @thekid
+
 ## 7.6.2 / 2021-10-01
 
 * Fixed #31: Call to undefined method `lang\ast\syntax\PHP::expecting()`
