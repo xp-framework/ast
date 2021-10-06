@@ -6,6 +6,7 @@ use lang\ast\nodes\{
   Braced,
   BreakStatement,
   CallableExpression,
+  CallableNewExpression,
   CaseLabel,
   CastExpression,
   CatchStatement,
@@ -321,6 +322,30 @@ class PHP extends Language {
       }
 
       $parse->expecting('(', 'new arguments');
+
+      // Resolve ambiguity by looking ahead: `new T(...)` which is a first-class
+      // callable reference vs. `new T(...$it)` - a call with an unpacked argument
+      if ('...' === $parse->token->value) {
+        $dots= $parse->token;
+        $parse->forward();
+        if (')' === $parse->token->value) {
+          $parse->forward();
+
+          if (null === $type) {
+            $class= $this->clazz($parse, null);
+            $class->annotations= $annotations;
+            $new= new NewClassExpression($class, null, $token->line);
+          } else {
+            $new= new NewExpression($type, null, $token->line);
+          }
+
+          return new CallableNewExpression($new, $token->line);
+        }
+
+        $parse->queue[]= $parse->token;
+        $parse->token= $dots;
+      }
+
       $arguments= $this->arguments($parse);
       $parse->expecting(')', 'new arguments');
 
