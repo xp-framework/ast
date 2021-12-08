@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.7.2 / 2021-12-08
+
 * Fixed PHP 8.2 warning about dynamic properties - @thekid
 
 ## 7.7.1 / 2021-10-21
