@@ -3,6 +3,7 @@
 class EnumCase extends Annotated implements Member {
   public $kind= 'enumcase';
   public $name, $expression;
+  public $holder= null;
 
   public function __construct($name, $expression, $annotations, $line= -1) {
     $this->name= $name;

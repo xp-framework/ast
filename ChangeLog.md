@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed PHP 8.2 warning about dynamic properties - @thekid
+
 ## 7.7.1 / 2021-10-21
 
 * Made library compatible with XP 11 - @thekid

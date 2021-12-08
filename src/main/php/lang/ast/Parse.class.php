@@ -5,7 +5,7 @@ class Parse {
   private $tokens;
   private $errors= [];
 
-  public $file, $token, $scope;
+  public $language, $file, $token, $scope;
   public $comment= null;
   public $queue= [];
 
