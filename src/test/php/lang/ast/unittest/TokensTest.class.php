@@ -88,6 +88,6 @@ class TokensTest {
 
   #[Test]
   public function apidoc_comment() {
-    $this->assertTokens([['comment' => '/** Test */']], new Tokens('/** Test */'));
+    $this->assertTokens([['apidoc' => '/** Test */']], new Tokens('/** Test */'));
   }
 }

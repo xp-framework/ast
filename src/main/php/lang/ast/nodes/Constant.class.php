@@ -2,16 +2,17 @@
 
 class Constant extends Annotated implements Member {
   public $kind= 'const';
-  public $name, $modifiers, $expression, $type;
-  public $holder= null;
+  public $name, $modifiers, $expression, $type, $holder;
 
-  public function __construct($modifiers, $name, $type, $expression, $annotations= [], $line= -1) {
+  public function __construct($modifiers, $name, $type, $expression, $annotations= [], $comment= null, $line= -1, $holder= null) {
     $this->modifiers= $modifiers;
     $this->name= $name;
     $this->type= $type;
     $this->expression= $expression;
     $this->annotations= $annotations;
     $this->line= $line;
+    $this->holder= $holder;
+    null === $comment || $this->attach($comment);
   }
 
   /**

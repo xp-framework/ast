@@ -12,6 +12,7 @@ use lang\ast\nodes\{
   CatchStatement,
   ClassDeclaration,
   ClosureExpression,
+  Comment,
   Constant,
   ContinueStatement,
   Directives,
@@ -332,7 +333,7 @@ class PHP extends Language {
           $parse->forward();
 
           if (null === $type) {
-            $class= $this->clazz($parse, null);
+            $class= $this->class($parse, null);
             $class->annotations= $annotations;
             $new= new NewClassExpression($class, null, $token->line);
           } else {
@@ -350,7 +351,7 @@ class PHP extends Language {
       $parse->expecting(')', 'new arguments');
 
       if (null === $type) {
-        $class= $this->clazz($parse, null);
+        $class= $this->class($parse, null);
         $class->annotations= $annotations;
         return new NewClassExpression($class, $arguments, $token->line);
       } else {
@@ -874,17 +875,21 @@ class PHP extends Language {
     });
 
     $this->stmt('class', function($parse, $token) {
-      $type= $parse->scope->resolve($parse->token->value);
+      $comment= $parse->comment;
+      $parse->comment= null;
+
+      $name= $parse->scope->resolve($parse->token->value);
       $parse->forward();
 
-      return $this->clazz($parse, $type);
+      return $this->class($parse, $name, $comment);
     });
 
     $this->stmt('interface', function($parse, $token) {
-      $name= $parse->scope->resolve($parse->token->value);
-      $parse->forward();
       $comment= $parse->comment;
       $parse->comment= null;
+
+      $name= $parse->scope->resolve($parse->token->value);
+      $parse->forward();
 
       $parents= [];
       if ('extends' === $parse->token->value) {
@@ -911,10 +916,11 @@ class PHP extends Language {
     });
 
     $this->stmt('trait', function($parse, $token) {
-      $name= $parse->scope->resolve($parse->token->value);
-      $parse->forward();
       $comment= $parse->comment;
       $parse->comment= null;
+
+      $name= $parse->scope->resolve($parse->token->value);
+      $parse->forward();
 
       $decl= new TraitDeclaration([], $name, [], [], $comment, $token->line);
       $parse->expecting('{', 'trait');
@@ -925,10 +931,11 @@ class PHP extends Language {
     });
 
     $this->stmt('enum', function($parse, $token) {
-      $name= $parse->scope->resolve($parse->token->value);
-      $parse->forward();
       $comment= $parse->comment;
       $parse->comment= null;
+
+      $name= $parse->scope->resolve($parse->token->value);
+      $parse->forward();
 
       $implements= [];
       if ('implements' === $parse->token->value) {
@@ -965,6 +972,9 @@ class PHP extends Language {
     });
 
     $this->body('case', function($parse, &$body, $meta, $modifiers, $holder) {
+      $comment= $parse->comment;
+      $parse->comment= null;
+
       $parse->forward();
       do {
         $line= $parse->token->line;
@@ -978,8 +988,7 @@ class PHP extends Language {
           $expr= null;
         }
 
-        $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? [], $line);
-        $body[$name]->holder= $holder;
+        $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? [], $comment, $line, $holder);
       } while (',' === $parse->token->value && true | $parse->forward());
 
       $parse->expecting(';', 'case');
@@ -1028,6 +1037,8 @@ class PHP extends Language {
     });
 
     $this->body('const', function($parse, &$body, $meta, $modifiers, $holder) {
+      $comment= $parse->comment;
+      $parse->comment= null;
       $parse->forward();
 
       $type= null;
@@ -1061,9 +1072,10 @@ class PHP extends Language {
           $type,
           $this->expression($parse, 0),
           $meta[DETAIL_ANNOTATIONS] ?? [],
-          $line
+          $comment,
+          $line,
+          $holder
         );
-        $body[$name]->holder= $holder;
         if (',' === $parse->token->value) {
           $parse->forward();
         }
@@ -1076,9 +1088,9 @@ class PHP extends Language {
     });
 
     $this->body('function', function($parse, &$body, $meta, $modifiers, $holder) {
-      $line= $parse->token->line;
       $comment= $parse->comment;
       $parse->comment= null;
+      $line= $parse->token->line;
 
       $parse->forward();
       $name= $parse->token->value;
@@ -1109,9 +1121,9 @@ class PHP extends Language {
         $statements,
         $meta[DETAIL_ANNOTATIONS] ?? [],
         $comment,
-        $line
+        $line,
+        $holder
       );
-      $body[$lookup]->holder= $holder;
     });
   }
 
@@ -1238,9 +1250,8 @@ class PHP extends Language {
   }
 
   private function properties($parse, &$body, $meta, $modifiers, $type, $holder) {
-    $comment= $parse->comment;
-    $parse->comment= null;
     $annotations= $meta[DETAIL_ANNOTATIONS] ?? [];
+    $comment= $meta[DETAIL_COMMENT] ?? null;
 
     while (';' !== $parse->token->value) {
       $line= $parse->token->line;
@@ -1264,8 +1275,7 @@ class PHP extends Language {
       } else {
         $expr= null;
       }
-      $body[$name]= new Property($modifiers, substr($name, 1), $type, $expr, $annotations, $comment, $line);
-      $body[$name]->holder= $holder;
+      $body[$name]= new Property($modifiers, substr($name, 1), $type, $expr, $annotations, $comment, $line, $holder);
 
       if (',' === $parse->token->value) {
         $parse->forward();
@@ -1390,9 +1400,12 @@ class PHP extends Language {
         $f($parse, $body, $meta, $modifiers, $holder);
         $modifiers= [];
         $meta= [];
+      } else if ('comment' === $parse->token->kind) {
+        $meta[DETAIL_COMMENT]= new Comment($parse->token->value, $parse->token->line);
+        $parse->forward();
       } else if ('#[' === $parse->token->value) {
         $parse->forward();
-        $meta= [DETAIL_ANNOTATIONS => $this->attributes($parse, 'member attributes')];
+        $meta[DETAIL_ANNOTATIONS]= $this->attributes($parse, 'member attributes');
       } else if ($type= $this->type($parse)) {
         $this->properties($parse, $body, $meta, $modifiers, $type, $holder);
         $modifiers= [];
@@ -1434,11 +1447,8 @@ class PHP extends Language {
     }
   }
 
-  public function clazz($parse, $name, $modifiers= []) {
-    $comment= $parse->comment;
-    $parse->comment= null;
+  public function class($parse, $name, $comment= null, $modifiers= []) {
     $line= $parse->token->line;
-
     $parent= null;
     if ('extends' === $parse->token->value) {
       $parse->forward();
