@@ -1250,9 +1250,9 @@ class PHP extends Language {
   }
 
   private function properties($parse, &$body, $meta, $modifiers, $type, $holder) {
-    $annotations= $meta[DETAIL_ANNOTATIONS] ?? [];
     $comment= $parse->comment;
     $parse->comment= null;
+    $annotations= $meta[DETAIL_ANNOTATIONS] ?? [];
 
     while (';' !== $parse->token->value) {
       $line= $parse->token->line;

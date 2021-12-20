@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{ClassDeclaration, Comment, Method, Signature, Literal};
+use lang\ast\nodes\{ClassDeclaration, Comment, Constant, Property, Method, Signature, Literal};
 use unittest\{Assert, Test};
 
 class CommentTest extends ParseTest {
@@ -117,9 +117,35 @@ class CommentTest extends ParseTest {
   }
 
   #[Test]
-  public function apidoc_comment_attached_to_next_member() {
+  public function apidoc_comment_attached_to_next_constant() {
     $class= new ClassDeclaration([], '\\T', null, [], [], [], null, 2);
-    $class->declare(new Method(['public'], '__construct', new Signature([], null, 4), [], [], new Comment('/** @api */', 3), 4));
+    $class->declare(new Constant(['public'], 'FIXTURE', null, new Literal('1', 4), [], new Comment('/** @api */', 3), 4));
+
+    $this->assertParsed([$class], '
+      class T {
+        /** @api */
+        public const FIXTURE = 1;
+      }
+    ');
+  }
+
+  #[Test]
+  public function apidoc_comment_attached_to_next_property() {
+    $class= new ClassDeclaration([], '\\T', null, [], [], [], null, 2);
+    $class->declare(new Property(['public'], 'fixture', null, null, [], new Comment('/** @api */', 3), 4));
+
+    $this->assertParsed([$class], '
+      class T {
+        /** @api */
+        public $fixture;
+      }
+    ');
+  }
+
+  #[Test]
+  public function apidoc_comment_attached_to_next_method() {
+    $class= new ClassDeclaration([], '\\T', null, [], [], [], null, 2);
+    $class->declare(new Method(['public'], '__construct', new Signature([], null, 4), [], [], new Comment('/** @api */', 3), 3));
 
     $this->assertParsed([$class], '
       class T {
