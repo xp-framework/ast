@@ -10,7 +10,7 @@ abstract class Annotated extends Node {
    * Attach a comment and modify line to include the comment.
    *
    * @param  lang.ast.nodes.Comment|string $comment
-   * @return self
+   * @return void
    */
   public function attach($comment) {
     if ('' === $comment) {
@@ -23,8 +23,7 @@ abstract class Annotated extends Node {
       $this->comment= new Comment($declaration, $this->line);
       $this->line+= substr_count($comment, "\n") + 1;
     }
-    return $this;
-  }
+    }
 
   /**
    * Returns an annotation for a given name, or NULL if no annotation
