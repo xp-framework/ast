@@ -1422,6 +1422,7 @@ class PHP extends Language {
   }
 
   public function signature($parse, $annotations= []) {
+    $line= $parse->token->line;
     $parse->expecting('(', 'signature');
     $parameters= $this->parameters($parse, $annotations);
     $parse->expecting(')', 'signature');
@@ -1433,7 +1434,7 @@ class PHP extends Language {
       $return= null;
     }
 
-    return new Signature($parameters, $return);
+    return new Signature($parameters, $return, $line);
   }
 
   public function block($parse) {

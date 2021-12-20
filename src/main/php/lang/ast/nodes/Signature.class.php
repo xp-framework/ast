@@ -6,9 +6,10 @@ class Signature extends Node {
   public $kind= 'signature';
   public $parameters, $returns;
 
-  public function __construct($parameters= [], $returns= null) {
+  public function __construct($parameters= [], $returns= null, $line= -1) {
     $this->parameters= $parameters;
     $this->returns= $returns;
+    $this->line= $line;
   }
 
   public function add(Parameter $p) {

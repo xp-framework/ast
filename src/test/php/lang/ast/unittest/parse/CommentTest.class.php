@@ -119,7 +119,7 @@ class CommentTest extends ParseTest {
   #[Test]
   public function apidoc_comment_attached_to_next_member() {
     $class= new ClassDeclaration([], '\\T', null, [], [], [], null, 2);
-    $class->declare(new Method(['public'], '__construct', new Signature([], null), [], [], new Comment('/** @api */', 3), 4));
+    $class->declare(new Method(['public'], '__construct', new Signature([], null, 4), [], [], new Comment('/** @api */', 3), 4));
 
     $this->assertParsed([$class], '
       class T {
