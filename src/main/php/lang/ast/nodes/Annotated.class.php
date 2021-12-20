@@ -23,7 +23,7 @@ abstract class Annotated extends Node {
       $this->comment= new Comment($declaration, $this->line);
       $this->line+= substr_count($comment, "\n") + 1;
     }
-    }
+  }
 
   /**
    * Returns an annotation for a given name, or NULL if no annotation
