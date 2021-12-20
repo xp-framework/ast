@@ -1251,7 +1251,8 @@ class PHP extends Language {
 
   private function properties($parse, &$body, $meta, $modifiers, $type, $holder) {
     $annotations= $meta[DETAIL_ANNOTATIONS] ?? [];
-    $comment= $meta[DETAIL_COMMENT] ?? null;
+    $comment= $parse->comment;
+    $parse->comment= null;
 
     while (';' !== $parse->token->value) {
       $line= $parse->token->line;
@@ -1400,9 +1401,6 @@ class PHP extends Language {
         $f($parse, $body, $meta, $modifiers, $holder);
         $modifiers= [];
         $meta= [];
-      } else if ('comment' === $parse->token->kind) {
-        $meta[DETAIL_COMMENT]= new Comment($parse->token->value, $parse->token->line);
-        $parse->forward();
       } else if ('#[' === $parse->token->value) {
         $parse->forward();
         $meta[DETAIL_ANNOTATIONS]= $this->attributes($parse, 'member attributes');
