@@ -16,7 +16,7 @@ abstract class Annotated extends Node {
     if ('' === $comment) {
       $this->comment= null;
     } else if ($comment instanceof Comment) {
-      $this->comment= $comment->ending($this->line);
+      $this->comment= $comment;
       $this->line= $comment->line;
     } else {
       $declaration= '/' === $comment[0] ? $comment : '/** '.str_replace("\n", "\n * ", $comment).' */';

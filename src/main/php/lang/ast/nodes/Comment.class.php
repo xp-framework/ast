@@ -8,7 +8,6 @@ use lang\ast\Node;
 class Comment extends Node implements ArrayAccess {
   public $kind= 'comment';
   public $declaration;
-  public $end= null;
 
   /**
    * Creates a new comment
@@ -19,17 +18,6 @@ class Comment extends Node implements ArrayAccess {
   public function __construct($declaration= '', $line= -1) {
     $this->declaration= $declaration;
     $this->line= $line;
-  }
-
-  /**
-   * Sets comment end line
-   *
-   * @param  int $end
-   * @return self
-   */
-  public function ending($end) {
-    $this->end= $end;
-    return $this;
   }
 
   #[ReturnTypeWillChange]
