@@ -54,7 +54,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test, Values(['param', 'protected'])]
   public function with_parameter($name) {
-    $params= [new Parameter($name, null, null, false, false, null, [])];
+    $params= [new Parameter($name, null, null, false, false, null, null)];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
       'function a($'.$name.') { }'
@@ -63,7 +63,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function with_reference_parameter() {
-    $params= [new Parameter('param', null, null, true, false, null, [])];
+    $params= [new Parameter('param', null, null, true, false, null, null)];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
       'function a(&$param) { }'
@@ -72,7 +72,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function dangling_comma_in_parameter_lists() {
-    $params= [new Parameter('param', null, null, false, false, null, [])];
+    $params= [new Parameter('param', null, null, false, false, null, null)];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
       'function a($param, ) { }'
@@ -81,7 +81,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test, Values('types')]
   public function with_typed_parameter($declaration, $expected) {
-    $params= [new Parameter('param', $expected, null, false, false, null, [])];
+    $params= [new Parameter('param', $expected, null, false, false, null, null)];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
       'function a('.$declaration.' $param) { }'
@@ -90,7 +90,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function with_nullable_typed_parameter() {
-    $params= [new Parameter('param', new IsNullable(new IsLiteral('string')), null, false, false, null, [])];
+    $params= [new Parameter('param', new IsNullable(new IsLiteral('string')), null, false, false, null, null)];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
       'function a(?string $param) { }'
@@ -99,7 +99,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function with_variadic_parameter() {
-    $params= [new Parameter('param', null, null, false, true, null, [])];
+    $params= [new Parameter('param', null, null, false, true, null, null)];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
       'function a(... $param) { }'
@@ -108,7 +108,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function with_optional_parameter() {
-    $params= [new Parameter('param', null, new Literal('null', self::LINE), false, false, null, [])];
+    $params= [new Parameter('param', null, new Literal('null', self::LINE), false, false, null, null)];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
       'function a($param= null) { }'
@@ -117,7 +117,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function with_parameter_named_function() {
-    $params= [new Parameter('function', null, null, false, false, null, [])];
+    $params= [new Parameter('function', null, null, false, false, null, null)];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
       'function a($function, ) { }'
@@ -126,7 +126,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function with_typed_parameter_named_function() {
-    $params= [new Parameter('function', new IsFunction([], new IsLiteral('void')), null, false, false, null, [])];
+    $params= [new Parameter('function', new IsFunction([], new IsLiteral('void')), null, false, false, null, null)];
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
       'function a((function(): void) $function) { }'

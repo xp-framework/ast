@@ -94,14 +94,14 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function apidoc_comment_after_class_name_discarded() {
-    $this->assertParsed([new ClassDeclaration([], '\\T', null, [], [], [], null, 2)], '
+    $this->assertParsed([new ClassDeclaration([], '\\T', null, [], [], null, null, 2)], '
       class T /** Discarded */ { }
     ');
   }
 
   #[Test]
   public function apidoc_comment_attached_to_next_node() {
-    $this->assertParsed([new ClassDeclaration([], '\\T', null, [], [], [], new Comment('/** @api */', 2), 3)], '
+    $this->assertParsed([new ClassDeclaration([], '\\T', null, [], [], null, new Comment('/** @api */', 2), 3)], '
       /** @api */
       class T { }
     ');
@@ -118,8 +118,8 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function apidoc_comment_attached_to_next_constant() {
-    $class= new ClassDeclaration([], '\\T', null, [], [], [], null, 2);
-    $class->declare(new Constant(['public'], 'FIXTURE', null, new Literal('1', 4), [], new Comment('/** @api */', 3), 4));
+    $class= new ClassDeclaration([], '\\T', null, [], [], null, null, 2);
+    $class->declare(new Constant(['public'], 'FIXTURE', null, new Literal('1', 4), null, new Comment('/** @api */', 3), 4));
 
     $this->assertParsed([$class], '
       class T {
@@ -131,8 +131,8 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function apidoc_comment_attached_to_next_property() {
-    $class= new ClassDeclaration([], '\\T', null, [], [], [], null, 2);
-    $class->declare(new Property(['public'], 'fixture', null, null, [], new Comment('/** @api */', 3), 4));
+    $class= new ClassDeclaration([], '\\T', null, [], [], null, null, 2);
+    $class->declare(new Property(['public'], 'fixture', null, null, null, new Comment('/** @api */', 3), 4));
 
     $this->assertParsed([$class], '
       class T {
@@ -144,8 +144,8 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function apidoc_comment_attached_to_next_method() {
-    $class= new ClassDeclaration([], '\\T', null, [], [], [], null, 2);
-    $class->declare(new Method(['public'], '__construct', new Signature([], null, 4), [], [], new Comment('/** @api */', 3), 3));
+    $class= new ClassDeclaration([], '\\T', null, [], [], null, null, 2);
+    $class->declare(new Method(['public'], '__construct', new Signature([], null, 4), [], null, new Comment('/** @api */', 3), 3));
 
     $this->assertParsed([$class], '
       class T {

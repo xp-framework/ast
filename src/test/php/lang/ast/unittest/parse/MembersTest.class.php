@@ -36,75 +36,75 @@ class MembersTest extends ParseTest {
 
   #[Test]
   public function private_instance_property() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Property(['private'], 'a', null, null, [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Property(['private'], 'a', null, null, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private $a; }');
   }
 
   #[Test]
   public function private_instance_properties() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Property(['private'], 'a', null, null, [], null, self::LINE));
-    $class->declare(new Property(['private'], 'b', null, null, [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Property(['private'], 'a', null, null, null, null, self::LINE));
+    $class->declare(new Property(['private'], 'b', null, null, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private $a, $b; }');
   }
 
   #[Test]
   public function private_instance_method() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Method(['private'], 'a', new Signature([], null, self::LINE), [], [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Method(['private'], 'a', new Signature([], null, self::LINE), [], null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private function a() { } }');
   }
 
   #[Test]
   public function private_static_method() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Method(['private', 'static'], 'a', new Signature([], null, self::LINE), [], [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Method(['private', 'static'], 'a', new Signature([], null, self::LINE), [], null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private static function a() { } }');
   }
 
   #[Test]
   public function class_constant() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { const T = 1; }');
   }
 
   #[Test]
   public function class_constants() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), [], null, self::LINE));
-    $class->declare(new Constant([], 'S', null, new Literal('2', self::LINE), [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'S', null, new Literal('2', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { const T = 1, S = 2; }');
   }
 
   #[Test]
   public function private_class_constant() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant(['private'], 'T', null, new Literal('1', self::LINE), [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Constant(['private'], 'T', null, new Literal('1', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private const T = 1; }');
   }
 
   #[Test, Values('types')]
   public function method_with_typed_parameter($declaration, $expected) {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $params= [new Parameter('param', $expected, null, false, false, null, [])];
-    $class->declare(new Method(['public'], 'a', new Signature($params, null, self::LINE), [], [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $params= [new Parameter('param', $expected, null, false, false, null, null)];
+    $class->declare(new Method(['public'], 'a', new Signature($params, null, self::LINE), [], null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { public function a('.$declaration.' $param) { } }');
   }
 
   #[Test, Values('types')]
   public function method_with_return_type($declaration, $expected) {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Method(['public'], 'a', new Signature([], $expected, self::LINE), [], [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Method(['public'], 'a', new Signature([], $expected, self::LINE), [], null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { public function a(): '.$declaration.' { } }');
   }
@@ -112,7 +112,7 @@ class MembersTest extends ParseTest {
   #[Test]
   public function method_with_annotation() {
     $annotations= new Annotations(['Test' => []], self::LINE);
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], null, self::LINE), [], $annotations, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { #[Test] public function a() { } }');
@@ -121,7 +121,7 @@ class MembersTest extends ParseTest {
   #[Test]
   public function method_with_annotations() {
     $annotations= new Annotations(['Test' => [], 'Ignore' => [new Literal('"Not implemented"', self::LINE)]], self::LINE);
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], null, self::LINE), [], $annotations, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { #[Test, Ignore("Not implemented")] public function a() { } }');
@@ -214,52 +214,52 @@ class MembersTest extends ParseTest {
 
   #[Test]
   public function typed_property() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Property(['private'], 'a', new Type('string'), null, [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Property(['private'], 'a', new Type('string'), null, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private string $a; }');
   }
 
   #[Test]
   public function typed_property_with_value() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Property(['private'], 'a', new Type('string'), new Literal('"test"', self::LINE), [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Property(['private'], 'a', new Type('string'), new Literal('"test"', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private string $a = "test"; }');
   }
 
   #[Test]
   public function typed_properties() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Property(['private'], 'a', new Type('string'), null, [], null, self::LINE));
-    $class->declare(new Property(['private'], 'b', new Type('string'), null, [], null, self::LINE));
-    $class->declare(new Property(['private'], 'c', new Type('int'), null, [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Property(['private'], 'a', new Type('string'), null, null, null, self::LINE));
+    $class->declare(new Property(['private'], 'b', new Type('string'), null, null, null, self::LINE));
+    $class->declare(new Property(['private'], 'c', new Type('int'), null, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private string $a, $b, int $c; }');
   }
 
   #[Test]
   public function readonly_property() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Property(['public', 'readonly'], 'a', new Type('int'), null, [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Property(['public', 'readonly'], 'a', new Type('int'), null, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { public readonly int $a; }');
   }
 
   #[Test]
   public function typed_constant() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { const int T = 1; }');
   }
 
   #[Test]
   public function typed_constants() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), [], null, self::LINE));
-    $class->declare(new Constant([], 'S', new Type('int'), new Literal('2', self::LINE), [], null, self::LINE));
-    $class->declare(new Constant([], 'I', new Type('string'), new Literal('"i"', self::LINE), [], null, self::LINE));
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'S', new Type('int'), new Literal('2', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'I', new Type('string'), new Literal('"i"', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { const int T = 1, S = 2, string I = "i"; }');
   }

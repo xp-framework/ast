@@ -311,7 +311,7 @@ class PHP extends Language {
         $type= $parse->token->value;
         $parse->forward();
       } else if ('class' === $parse->token->value) {
-        $annotations= [];
+        $annotations= null;
         $type= null;
         $parse->forward();
       } else if ('#[' === $parse->token->value) {
@@ -909,7 +909,7 @@ class PHP extends Language {
         } while (true);
       }
 
-      $decl= new InterfaceDeclaration([], $name, $parents, [], [], $comment, $token->line);
+      $decl= new InterfaceDeclaration([], $name, $parents, [], null, $comment, $token->line);
       $parse->expecting('{', 'interface');
       $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'interface');
@@ -924,7 +924,7 @@ class PHP extends Language {
       $name= $parse->scope->resolve($parse->token->value);
       $parse->forward();
 
-      $decl= new TraitDeclaration([], $name, [], [], $comment, $token->line);
+      $decl= new TraitDeclaration([], $name, [], null, $comment, $token->line);
       $parse->expecting('{', 'trait');
       $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'trait');
@@ -965,7 +965,7 @@ class PHP extends Language {
         $base= null;
       }
 
-      $decl= new EnumDeclaration([], $name, $base, $implements, [], [], $comment, $token->line);
+      $decl= new EnumDeclaration([], $name, $base, $implements, [], null, $comment, $token->line);
       $parse->expecting('{', 'enum');
       $decl->body= $this->typeBody($parse, $decl->name);
       $parse->expecting('}', 'enum');
@@ -1102,7 +1102,7 @@ class PHP extends Language {
       }
 
       $parse->forward();
-      $signature= $this->signature($parse, isset($meta[DETAIL_TARGET_ANNO]) ? $meta[DETAIL_TARGET_ANNO] : []);
+      $signature= $this->signature($parse);
 
       if ('{' === $parse->token->value) {          // Regular body
         $parse->forward();
@@ -1308,7 +1308,7 @@ class PHP extends Language {
     return $annotations;
   }
 
-  private function parameters($parse, $target) {
+  private function parameters($parse) {
     static $promotion= ['private' => true, 'protected' => true, 'public' => true];
 
     $parameters= [];
@@ -1317,7 +1317,7 @@ class PHP extends Language {
         $parse->forward();
         $annotations= $this->annotations($parse, 'parameter annotations');
       } else {
-        $annotations= [];
+        $annotations= null;
       }
 
       if ('name' === $parse->token->kind && isset($promotion[$parse->token->value])) {
@@ -1354,7 +1354,6 @@ class PHP extends Language {
       }
 
       $name= $parse->token->value;
-      if (isset($target[$name])) $annotations= array_merge($annotations, $target[$name]);
       $parse->forward();
 
       $default= null;
@@ -1421,10 +1420,10 @@ class PHP extends Language {
     return $body;
   }
 
-  public function signature($parse, $annotations= []) {
+  public function signature($parse) {
     $line= $parse->token->line;
     $parse->expecting('(', 'signature');
-    $parameters= $this->parameters($parse, $annotations);
+    $parameters= $this->parameters($parse);
     $parse->expecting(')', 'signature');
 
     if (':' === $parse->token->value) {
@@ -1473,7 +1472,7 @@ class PHP extends Language {
       } while (true);
     }
 
-    $decl= new ClassDeclaration($modifiers, $name, $parent, $implements, [], [], $comment, $line);
+    $decl= new ClassDeclaration($modifiers, $name, $parent, $implements, [], null, $comment, $line);
     $parse->expecting('{', 'class');
     $decl->body= $this->typeBody($parse, $decl->name);
     $parse->expecting('}', 'class');
