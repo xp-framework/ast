@@ -71,6 +71,11 @@ class AnnotationsTest {
   }
 
   #[Test]
+  public function no_annotations_from_declaration() {
+    Assert::equals([], (new ClassDeclaration([], 'Test', null, [], [], null))->annotations());
+  }
+
+  #[Test]
   public function no_annotation_from_declaration() {
     Assert::null((new ClassDeclaration([], 'Test', null, [], [], null))->annotation(Test::class));
   }

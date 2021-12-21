@@ -26,6 +26,15 @@ abstract class Annotated extends Node {
   }
 
   /**
+   * Returns all annotations on this element
+   *
+   * @return [:lang.ast.nodes.Annotation]
+   */
+  public function annotations() {
+    return $this->annotations ? $this->annotations->all() : [];
+  }
+
+  /**
    * Returns an annotation for a given name, or NULL if no annotation
    * exists by that name.
    *
