@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\nodes\{Annotation, Annotations, ClassDeclaration};
-use unittest\{Assert, Test};
+use unittest\{Assert, Test, Values};
 
 class AnnotationsTest {
 
@@ -85,6 +85,24 @@ class AnnotationsTest {
     Assert::equals(
       new Annotation(Test::class, []),
       (new ClassDeclaration([], 'Test', null, [], [], new Annotations([Test::class => []])))->annotation(Test::class)
+    );
+  }
+
+  #[Test]
+  public function annotate_declaration() {
+    $declaration= new ClassDeclaration([], 'Test', null, [], [], new Annotations([Test::class => []]));
+    Assert::equals(
+      [Test::class => new Annotation(Test::class, []), Values::class => new Annotation(Values::class, [])],
+      $declaration->annotate(new Annotation(Values::class, []))->annotations()
+    );
+  }
+
+  #[Test]
+  public function annotate_declaration_without_annotations() {
+    $declaration= new ClassDeclaration([], 'Test', null, [], [], null);
+    Assert::equals(
+      [Test::class => new Annotation(Test::class, [])],
+      $declaration->annotate(new Annotation(Test::class, []))->annotations()
     );
   }
 }

@@ -46,6 +46,19 @@ abstract class Annotated extends Node {
   }
 
   /**
+   * Annotate this element with a given annotation
+   *
+   * @param  lang.ast.nodes.Annotation $annotation
+   * @return self
+   */
+  public function annotate($annotation) {
+    if (null === $this->annotations) $this->annotations= new Annotations([], $this->line);
+
+    $this->annotations->add($annotation);
+    return $this;
+  }
+
+  /**
    * Checks whether this node is of a given kind
    *
    * @param  string $kind
