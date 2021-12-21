@@ -990,7 +990,7 @@ class PHP extends Language {
           $expr= null;
         }
 
-        $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? [], $comment, $line, $holder);
+        $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? null, $comment, $line, $holder);
       } while (',' === $parse->token->value && true | $parse->forward());
 
       $parse->expecting(';', 'case');
@@ -1073,7 +1073,7 @@ class PHP extends Language {
           $name,
           $type,
           $this->expression($parse, 0),
-          $meta[DETAIL_ANNOTATIONS] ?? [],
+          $meta[DETAIL_ANNOTATIONS] ?? null,
           $comment,
           $line,
           $holder
@@ -1121,7 +1121,7 @@ class PHP extends Language {
         $name,
         $signature,
         $statements,
-        $meta[DETAIL_ANNOTATIONS] ?? [],
+        $meta[DETAIL_ANNOTATIONS] ?? null,
         $comment,
         $line,
         $holder
@@ -1254,7 +1254,7 @@ class PHP extends Language {
   private function properties($parse, &$body, $meta, $modifiers, $type, $holder) {
     $comment= $parse->comment;
     $parse->comment= null;
-    $annotations= $meta[DETAIL_ANNOTATIONS] ?? [];
+    $annotations= $meta[DETAIL_ANNOTATIONS] ?? null;
 
     while (';' !== $parse->token->value) {
       $line= $parse->token->line;
