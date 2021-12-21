@@ -3,7 +3,7 @@
 abstract class TypeDeclaration extends Annotated {
   public $modifiers, $name, $body;
 
-  public function __construct($modifiers, $name, $body= [], $annotations= [], $comment= null, $line= -1) {
+  public function __construct($modifiers, $name, $body= [], $annotations= null, $comment= null, $line= -1) {
     $this->modifiers= $modifiers;
     $this->name= $name;
     $this->annotations= $annotations;

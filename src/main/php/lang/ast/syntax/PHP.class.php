@@ -2,6 +2,8 @@
 
 use lang\ast\nodes\{
   ArrayLiteral,
+  Annotation,
+  Annotations,
   Block,
   Braced,
   BreakStatement,
@@ -314,8 +316,8 @@ class PHP extends Language {
         $parse->forward();
       } else if ('#[' === $parse->token->value) {
         $parse->forward();
-        $annotations= $this->attributes($parse, 'anonymous class attributes');
-        $parse->expecting('class', 'anonymous class attributes');
+        $annotations= $this->annotations($parse, 'anonymous class annotations');
+        $parse->expecting('class', 'anonymous class annotations');
         $type= null;
       } else {
         $type= $parse->scope->resolve($parse->token->value);
@@ -383,7 +385,7 @@ class PHP extends Language {
     });
 
     $this->prefix('#[', 0, function($parse, $token) {
-      $annotations= $this->attributes($parse, 'attributes');
+      $annotations= $this->annotations($parse, 'annotations');
       $expression= $this->expression($parse, 0);
       $expression->annotations= $annotations;
       return $expression;
@@ -844,7 +846,7 @@ class PHP extends Language {
     });
 
     $this->stmt('#[', function($parse, $token) {
-      $annotations= $this->attributes($parse, 'attributes');
+      $annotations= $this->annotations($parse, 'annotations');
       $type= $this->statement($parse);
       $type->annotations= $annotations;
       return $type;
@@ -1286,8 +1288,8 @@ class PHP extends Language {
   }
 
   /** Parses PHP 8 attributes (#[Test]) */
-  private function attributes($parse, $context) {
-    $attributes= [];
+  private function annotations($parse, $context) {
+    $annotations= new Annotations([], $parse->token->line);
 
     do {
       $name= ltrim($parse->scope->resolve($parse->token->value), '\\');
@@ -1295,15 +1297,15 @@ class PHP extends Language {
 
       if ('(' === $parse->token->value) {
         $parse->expecting('(', $context);
-        $attributes[$name]= $this->arguments($parse);
+        $annotations->add(new Annotation($name, $this->arguments($parse), $parse->token->line));
         $parse->expecting(')', $context);
       } else {
-        $attributes[$name]= [];
+        $annotations->add(new Annotation($name, [], $parse->token->line));
       }
     } while (',' === $parse->token->value && true | $parse->forward());
     $parse->expecting(']', $context);
 
-    return $attributes;
+    return $annotations;
   }
 
   private function parameters($parse, $target) {
@@ -1313,7 +1315,7 @@ class PHP extends Language {
     while (')' !== $parse->token->value) {
       if ('#[' === $parse->token->value) {
         $parse->forward();
-        $annotations= $this->attributes($parse, 'parameter attributes');
+        $annotations= $this->annotations($parse, 'parameter annotations');
       } else {
         $annotations= [];
       }
@@ -1403,7 +1405,7 @@ class PHP extends Language {
         $meta= [];
       } else if ('#[' === $parse->token->value) {
         $parse->forward();
-        $meta[DETAIL_ANNOTATIONS]= $this->attributes($parse, 'member attributes');
+        $meta[DETAIL_ANNOTATIONS]= $this->annotations($parse, 'member annotations');
       } else if ($type= $this->type($parse)) {
         $this->properties($parse, $body, $meta, $modifiers, $type, $holder);
         $modifiers= [];

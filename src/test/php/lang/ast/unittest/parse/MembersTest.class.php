@@ -1,7 +1,20 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Type;
-use lang\ast\nodes\{ClassDeclaration, Constant, InstanceExpression, InvokeExpression, Literal, Method, Property, ScopeExpression, Signature, Variable, Parameter};
+use lang\ast\nodes\{
+  Annotations,
+  ClassDeclaration,
+  Constant,
+  InstanceExpression,
+  InvokeExpression,
+  Literal,
+  Method,
+  Property,
+  ScopeExpression,
+  Signature,
+  Variable,
+  Parameter
+};
 use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion, IsValue};
 use unittest\{Assert, Test, Values};
 
@@ -98,7 +111,7 @@ class MembersTest extends ParseTest {
 
   #[Test]
   public function method_with_annotation() {
-    $annotations= ['Test' => []];
+    $annotations= new Annotations(['Test' => []], self::LINE);
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], null, self::LINE), [], $annotations, null, self::LINE));
 
@@ -107,7 +120,7 @@ class MembersTest extends ParseTest {
 
   #[Test]
   public function method_with_annotations() {
-    $annotations= ['Test' => [], 'Ignore' => [new Literal('"Not implemented"', self::LINE)]];
+    $annotations= new Annotations(['Test' => [], 'Ignore' => [new Literal('"Not implemented"', self::LINE)]], self::LINE);
     $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], null, self::LINE), [], $annotations, null, self::LINE));
 

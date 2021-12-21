@@ -75,7 +75,7 @@ class ErrorsTest extends ParseTest {
   #[Test]
   public function unclosed_annotation() {
     $this->assertError(
-      'Expected "]", have "(end)" in attributes',
+      'Expected "]", have "(end)" in annotations',
       $this->parse('#[Annotation')
     );
   }

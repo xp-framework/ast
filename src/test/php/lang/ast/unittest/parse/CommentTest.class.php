@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{ClassDeclaration, Comment, Constant, Property, Method, Signature, Literal};
+use lang\ast\nodes\{Annotations, ClassDeclaration, Comment, Constant, Property, Method, Signature, Literal};
 use unittest\{Assert, Test};
 
 class CommentTest extends ParseTest {
@@ -109,7 +109,7 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function apidoc_comment_and_annotations() {
-    $this->assertParsed([new ClassDeclaration([], '\\T', null, [], [], ['Test' => []], new Comment('/** @api */', 2), 4)], '
+    $this->assertParsed([new ClassDeclaration([], '\\T', null, [], [], new Annotations(['Test' => []], 3), new Comment('/** @api */', 2), 4)], '
       /** @api */
       #[Test]
       class T { }

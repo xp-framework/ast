@@ -6,7 +6,16 @@ class EnumDeclaration extends TypeDeclaration {
   public $kind= 'enum';
   public $base, $implements;
 
-  public function __construct($modifiers, $name, $base, $implements= [], $body= [], $annotations= [], $comment= null, $line= -1) {
+  public function __construct(
+    $modifiers,
+    $name,
+    $base,
+    $implements= [],
+    $body= [],
+    $annotations= null,
+    $comment= null,
+    $line= -1
+  ) {
     parent::__construct($modifiers, $name, $body, $annotations, $comment, $line);
     $this->implements= $implements;
     $this->base= $base;

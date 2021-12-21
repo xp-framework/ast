@@ -30,13 +30,10 @@ abstract class Annotated extends Node {
    * exists by that name.
    *
    * @param  string $name
-   * @return lang.ast.nodes.Annotation
+   * @return ?lang.ast.nodes.Annotation
    */
   public function annotation($name) {
-    return array_key_exists($name, $this->annotations)
-      ? new Annotation($name, $this->annotations[$name])
-      : null
-    ;
+    return $this->annotations ? $this->annotations->named($name) : null;
   }
 
   /**
