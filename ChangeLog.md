@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.0.0 / ????-??-??
+
+* Merged PR #33: Refactor apidoc comments from bare strings to Comment
+  instances.
+  (@thekid)
+
 ## 7.7.2 / 2021-12-08
 
 * Fixed PHP 8.2 warning about dynamic properties - @thekid
