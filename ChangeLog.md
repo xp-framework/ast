@@ -5,6 +5,7 @@ XP AST ChangeLog
 
 ## 8.0.0 / ????-??-??
 
+* Implemented xp-framework/rfc#341: Drop XP 9 compatibility - @thekid
 * Merged PR #33: Refactor apidoc comments from bare strings to Comment
   instances.
   (@thekid)
