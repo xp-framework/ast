@@ -114,24 +114,24 @@ class TypesTest extends ParseTest {
   #[Test]
   public function unit_enum_with_cases() {
     $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $enum->declare(new EnumCase('ONE', null, [], self::LINE));
-    $enum->declare(new EnumCase('TWO', null, [], self::LINE));
+    $enum->declare(new EnumCase('ONE', null, [], null, self::LINE));
+    $enum->declare(new EnumCase('TWO', null, [], null, self::LINE));
     $this->assertParsed([$enum], 'enum A { case ONE; case TWO; }');
   }
 
   #[Test]
   public function backed_enum_with_cases() {
     $enum= new EnumDeclaration([], '\\A', 'int', [], [], [], null, self::LINE);
-    $enum->declare(new EnumCase('ONE', new Literal('1', self::LINE), [], self::LINE));
-    $enum->declare(new EnumCase('TWO', new Literal('2', self::LINE), [], self::LINE));
+    $enum->declare(new EnumCase('ONE', new Literal('1', self::LINE), [], null, self::LINE));
+    $enum->declare(new EnumCase('TWO', new Literal('2', self::LINE), [], null, self::LINE));
     $this->assertParsed([$enum], 'enum A: int { case ONE = 1; case TWO = 2; }');
   }
 
   #[Test]
   public function unit_enum_with_grouped_cases() {
     $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $enum->declare(new EnumCase('ONE', null, [], self::LINE));
-    $enum->declare(new EnumCase('TWO', null, [], self::LINE));
+    $enum->declare(new EnumCase('ONE', null, [], null, self::LINE));
+    $enum->declare(new EnumCase('TWO', null, [], null, self::LINE));
     $this->assertParsed([$enum], 'enum A { case ONE, TWO; }');
   }
 

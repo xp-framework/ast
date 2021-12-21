@@ -2,17 +2,17 @@
 
 class Method extends Annotated implements Member {
   public $kind= 'method';
-  public $name, $modifiers, $signature, $annotations, $body, $comment;
-  public $holder= null;
+  public $name, $modifiers, $signature, $body, $holder;
 
-  public function __construct($modifiers, $name, $signature, $body= null, $annotations= [], $comment= null, $line= -1) {
+  public function __construct($modifiers, $name, $signature, $body= null, $annotations= [], $comment= null, $line= -1, $holder= null) {
     $this->name= $name;
     $this->modifiers= $modifiers;
     $this->signature= $signature;
     $this->body= $body;
     $this->annotations= $annotations;
-    $this->comment= $comment;
     $this->line= $line;
+    $this->holder= $holder;
+    null === $comment || $this->attach($comment);
   }
 
   /**

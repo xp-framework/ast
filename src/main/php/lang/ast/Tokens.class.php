@@ -156,7 +156,7 @@ class Tokens {
               $comment.= $chunk;
             } while (null !== $chunk && '*' !== $chunk[strlen($chunk) - 1]);
             $comment.= $next('/');
-            yield new Token(null, 'comment', '/*'.$comment, $line);
+            yield new Token(null, '*' === $comment[0] ? 'apidoc' : 'comment', '/*'.$comment, $line);
             $line+= substr_count($comment, "\n");
             continue;
           }

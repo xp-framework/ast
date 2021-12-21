@@ -1,5 +1,7 @@
 <?php namespace lang\ast;
 
+use lang\ast\nodes\Comment;
+
 /** A parsing operation for streaming and access via parse tree */
 class Parse {
   private $tokens;
@@ -54,8 +56,6 @@ class Parse {
    * @return void
    */
   public function forward() {
-    static $line= 1;
-
     if ($this->queue) {
       $this->token= array_shift($this->queue);
       return;
@@ -66,17 +66,16 @@ class Parse {
       $this->tokens->next();
 
       // Store apidoc comments, then continue to next token
-      if ('comment' === $this->token->kind) {
-        if ('/' === $this->token->value[0] && '*' === $this->token->value[2] ?? null) {
-          $this->comment= $this->token->value;
+      if (null === $this->token->symbol) {
+        if ('apidoc' === $this->token->kind) {
+          $this->comment= new Comment($this->token->value, $this->token->line);
         }
         continue;
       }
-
       return;
     }
 
-    $this->token= new Token($this->language->symbol('(end)'), null, null, $line);
+    $this->token= new Token($this->language->symbol('(end)'), null, null, $this->token ? $this->token->line : 1);
   }
 
   /**
