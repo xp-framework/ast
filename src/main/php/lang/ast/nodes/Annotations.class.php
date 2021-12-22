@@ -10,11 +10,13 @@ class Annotations extends Node implements IteratorAggregate {
   /**
    * Creates annotations
    *
-   * @param  [:lang.ast.nodes.Annotation|var[]] $named
+   * @param  lang.ast.nodes.Annotation|[:lang.ast.nodes.Annotation|var[]] $arg
    * @param  int $line
    */
-  public function __construct($named= [], $line= -1) {
-    foreach ($named as $name => $value) {
+  public function __construct($arg= [], $line= -1) {
+    if ($arg instanceof Annotation) {
+      $this->named[$arg->name]= $arg;
+    } else foreach ($arg as $name => $value) {
       $this->named[$name]= $value instanceof Annotation ? $value : new Annotation($name, $value, $line);
     }
     $this->line= $line;

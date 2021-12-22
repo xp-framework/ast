@@ -1,9 +1,15 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\nodes\{Annotation, Annotations, ClassDeclaration};
-use unittest\{Assert, Test, Values};
+use unittest\{Assert, Before, Test, Values};
 
 class AnnotationsTest {
+  private $annotation;
+
+  #[Before]
+  public function annotation() {
+    $this->annotation= new Annotation(Test::class, []);
+  }
 
   #[Test]
   public function can_create() {
@@ -23,7 +29,7 @@ class AnnotationsTest {
   #[Test]
   public function all() {
     Assert::equals(
-      [Test::class => new Annotation(Test::class, [])],
+      [Test::class => $this->annotation],
       (new Annotations([Test::class => []]))->all()
     );
   }
@@ -37,18 +43,34 @@ class AnnotationsTest {
   }
 
   #[Test]
-  public function named() {
+  public function with_annotation() {
     Assert::equals(
-      new Annotation(Test::class, []),
+      $this->annotation,
+      (new Annotations($this->annotation))->named(Test::class)
+    );
+  }
+
+  #[Test]
+  public function with_named() {
+    Assert::equals(
+      $this->annotation,
       (new Annotations([Test::class => []]))->named(Test::class)
+    );
+  }
+
+  #[Test]
+  public function with_annotations() {
+    Assert::equals(
+      $this->annotation,
+      (new Annotations([Test::class => $this->annotation]))->named(Test::class)
     );
   }
 
   #[Test]
   public function add() {
     Assert::equals(
-      [Test::class => new Annotation(Test::class, [])],
-      (new Annotations())->add(new Annotation(Test::class, []))->all()
+      [Test::class => $this->annotation],
+      (new Annotations())->add($this->annotation)->all()
     );
   }
 
@@ -62,7 +84,7 @@ class AnnotationsTest {
   #[Test]
   public function removing_returns_removed_annotation() {
     $fixture= new Annotations([Test::class => []]);
-    Assert::equals(new Annotation(Test::class, []), $fixture->remove(Test::class));
+    Assert::equals($this->annotation, $fixture->remove(Test::class));
   }
 
   #[Test]
@@ -83,7 +105,7 @@ class AnnotationsTest {
   #[Test]
   public function annotation_from_declaration() {
     Assert::equals(
-      new Annotation(Test::class, []),
+      $this->annotation,
       (new ClassDeclaration([], 'Test', null, [], [], new Annotations([Test::class => []])))->annotation(Test::class)
     );
   }
@@ -92,7 +114,7 @@ class AnnotationsTest {
   public function annotate_declaration() {
     $declaration= new ClassDeclaration([], 'Test', null, [], [], new Annotations([Test::class => []]));
     Assert::equals(
-      [Test::class => new Annotation(Test::class, []), Values::class => new Annotation(Values::class, [])],
+      [Test::class => $this->annotation, Values::class => new Annotation(Values::class, [])],
       $declaration->annotate(new Annotation(Values::class, []))->annotations()
     );
   }
@@ -101,8 +123,17 @@ class AnnotationsTest {
   public function annotate_declaration_without_annotations() {
     $declaration= new ClassDeclaration([], 'Test', null, [], [], null);
     Assert::equals(
-      [Test::class => new Annotation(Test::class, [])],
-      $declaration->annotate(new Annotation(Test::class, []))->annotations()
+      [Test::class => $this->annotation],
+      $declaration->annotate($this->annotation)->annotations()
+    );
+  }
+
+  #[Test]
+  public function set_declarations_annotations() {
+    $declaration= new ClassDeclaration([], 'Test', null, [], [], null);
+    Assert::equals(
+      [Test::class => $this->annotation],
+      $declaration->annotate(new Annotations([Test::class => []]))->annotations()
     );
   }
 }
