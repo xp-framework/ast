@@ -9,9 +9,9 @@ class Method extends Annotated implements Member {
     $this->modifiers= $modifiers;
     $this->signature= $signature;
     $this->body= $body;
-    $this->annotations= $annotations;
-    $this->line= $line;
+    $this->declared= $this->line= $line;
     $this->holder= $holder;
+    null === $annotations || $this->annotate($annotations);
     null === $comment || $this->attach($comment);
   }
 

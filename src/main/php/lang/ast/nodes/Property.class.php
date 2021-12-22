@@ -9,9 +9,9 @@ class Property extends Annotated implements Member {
     $this->name= $name;
     $this->type= $type;
     $this->expression= $expression;
-    $this->annotations= $annotations;
-    $this->line= $line;
+    $this->declared= $this->line= $line;
     $this->holder= $holder;
+    null === $annotations || $this->annotate($annotations);
     null === $comment || $this->attach($comment);
   }
 

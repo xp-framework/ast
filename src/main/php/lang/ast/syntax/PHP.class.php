@@ -384,13 +384,6 @@ class PHP extends Language {
       return new UnpackExpression($this->expression($parse, 0), $token->line);
     });
 
-    $this->prefix('#[', 0, function($parse, $token) {
-      $annotations= $this->annotations($parse, 'annotations');
-      $expression= $this->expression($parse, 0);
-      $expression->annotations= $annotations;
-      return $expression;
-    });
-
     $this->prefix('fn', 0, function($parse, $token) {
       $signature= $this->signature($parse);
       $parse->expecting('=>', 'fn');
@@ -847,9 +840,7 @@ class PHP extends Language {
 
     $this->stmt('#[', function($parse, $token) {
       $annotations= $this->annotations($parse, 'annotations');
-      $type= $this->statement($parse);
-      $type->annotations= $annotations;
-      return $type;
+      return $this->statement($parse)->annotate($annotations);
     });
 
     $this->stmt('function', function($parse, $token) {

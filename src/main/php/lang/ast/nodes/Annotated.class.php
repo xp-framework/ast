@@ -5,6 +5,7 @@ use lang\ast\Node;
 abstract class Annotated extends Node {
   public $annotations;
   public $comment= null;
+  public $declared= null;
 
   /**
    * Attach a comment and modify line to include the comment.
@@ -17,12 +18,31 @@ abstract class Annotated extends Node {
       $this->comment= null;
     } else if ($comment instanceof Comment) {
       $this->comment= $comment;
-      $this->line= $comment->line;
+      $this->line= min($comment->line, $this->line);
     } else {
       $declaration= '/' === $comment[0] ? $comment : '/** '.str_replace("\n", "\n * ", $comment).' */';
       $this->comment= new Comment($declaration, $this->line);
       $this->line+= substr_count($comment, "\n") + 1;
     }
+  }
+
+  /**
+   * Annotate this element with a given annotation or given annotations
+   *
+   * @param  lang.ast.nodes.Annotation|lang.ast.nodes.Annotations $arg
+   * @return self
+   */
+  public function annotate($arg) {
+    if ($arg instanceof Annotations) {
+      $this->annotations= $arg;
+      $this->line= min($arg->line, $this->line);
+    } else if (null === $this->annotations) {
+      $this->annotations= new Annotations($arg, $this->line);
+      $this->line++;
+    } else {
+      $this->annotations->add($arg);
+    }
+    return $this;
   }
 
   /**
@@ -43,19 +63,6 @@ abstract class Annotated extends Node {
    */
   public function annotation($name) {
     return $this->annotations ? $this->annotations->named($name) : null;
-  }
-
-  /**
-   * Annotate this element with a given annotation
-   *
-   * @param  lang.ast.nodes.Annotation $annotation
-   * @return self
-   */
-  public function annotate($annotation) {
-    if (null === $this->annotations) $this->annotations= new Annotations([], $this->line);
-
-    $this->annotations->add($annotation);
-    return $this;
   }
 
   /**
