@@ -30,7 +30,7 @@ class ClosuresTest extends ParseTest {
 
   #[Test]
   public function with_param() {
-    $params= [new Parameter('a', null, null, false, false, null, null)];
+    $params= [new Parameter('a', null, null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(
       [new ClosureExpression(new Signature($params, null, self::LINE), null, [$this->returns], self::LINE)],
       'function($a) { return $a + 1; };'

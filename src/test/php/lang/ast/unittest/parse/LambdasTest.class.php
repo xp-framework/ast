@@ -4,17 +4,18 @@ use lang\ast\nodes\{BinaryExpression, InvokeExpression, LambdaExpression, Litera
 use unittest\{Assert, Before, Test};
 
 class LambdasTest extends ParseTest {
-  private $expression;
+  private $expression, $parameter;
 
   #[Before]
   public function expression() {
     $this->expression= new BinaryExpression(new Variable('a', self::LINE), '+', new Literal('1', self::LINE), self::LINE);
+    $this->parameter= new Parameter('a', null, null, false, false, null, null, null, self::LINE);
   }
 
   #[Test]
   public function short_closure() {
     $this->assertParsed(
-      [new LambdaExpression(new Signature([new Parameter('a', null)], null, self::LINE), $this->expression, self::LINE)],
+      [new LambdaExpression(new Signature([$this->parameter], null, self::LINE), $this->expression, self::LINE)],
       'fn($a) => $a + 1;'
     );
   }
@@ -24,7 +25,7 @@ class LambdasTest extends ParseTest {
     $this->assertParsed(
       [new InvokeExpression(
         new Literal('execute', self::LINE),
-        [new LambdaExpression(new Signature([new Parameter('a', null)], null, self::LINE), $this->expression, self::LINE)],
+        [new LambdaExpression(new Signature([$this->parameter], null, self::LINE), $this->expression, self::LINE)],
         self::LINE
       )],
       'execute(fn($a) => $a + 1);'
@@ -35,7 +36,7 @@ class LambdasTest extends ParseTest {
   public function short_closure_with_block() {
     $this->assertParsed(
       [new LambdaExpression(
-        new Signature([new Parameter('a', null)], null, self::LINE),
+        new Signature([$this->parameter], null, self::LINE),
         new Block([new ReturnStatement($this->expression, self::LINE)], self::LINE),
         self::LINE
       )],

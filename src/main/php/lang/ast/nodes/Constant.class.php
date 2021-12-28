@@ -9,10 +9,9 @@ class Constant extends Annotated implements Member {
     $this->name= $name;
     $this->type= $type;
     $this->expression= $expression;
-    $this->declared= $this->line= $line;
     $this->holder= $holder;
-    null === $annotations || $this->annotate($annotations);
-    null === $comment || $this->attach($comment);
+
+    parent::__construct($annotations, $comment, $line);
   }
 
   /**

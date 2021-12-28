@@ -1311,6 +1311,7 @@ class PHP extends Language {
         $annotations= null;
       }
 
+      $line= $parse->token->line;
       if ('name' === $parse->token->kind && isset($promotion[$parse->token->value])) {
         $promote= $parse->token->value;
         $parse->forward();
@@ -1352,7 +1353,7 @@ class PHP extends Language {
         $parse->forward();
         $default= $this->expression($parse, 0);
       }
-      $parameters[]= new Parameter(substr($name, 1), $type, $default, $byref, $variadic, $promote, $annotations);
+      $parameters[]= new Parameter(substr($name, 1), $type, $default, $byref, $variadic, $promote, $annotations, null, $line);
 
       if (')' === $parse->token->value) {
         break;
