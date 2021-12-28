@@ -36,7 +36,7 @@ class AttributesTest extends ParseTest {
    * @return void
    */
   private function assertAnnotated($expected, $node) {
-    Assert::equals($expected, cast($node, Annotated::class)->annotations);
+    Assert::equals($expected, iterator_to_array(cast($node, Annotated::class)->annotations));
   }
 
   #[Test]

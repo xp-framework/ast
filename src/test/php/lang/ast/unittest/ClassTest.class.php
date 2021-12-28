@@ -29,7 +29,7 @@ class ClassTest {
 
   #[Test]
   public function overwrite() {
-    $overwritten= new Method([], 'toString', new Signature([], null), [], [], 'Overwritten');
+    $overwritten= new Method([], 'toString', new Signature([], null), [], null, 'Overwritten');
 
     $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
     $fixture->declare($this->method);
@@ -40,7 +40,7 @@ class ClassTest {
 
   #[Test]
   public function declare() {
-    $overwritten= new Method([], 'toString', new Signature([], null), [], [], 'Overwritten');
+    $overwritten= new Method([], 'toString', new Signature([], null), [], null, 'Overwritten');
 
     $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
     $fixture->declare($this->method);

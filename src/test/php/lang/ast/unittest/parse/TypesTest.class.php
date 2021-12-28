@@ -18,7 +18,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function empty_class() {
     $this->assertParsed(
-      [new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE)],
+      [new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE)],
       'class A { }'
     );
   }
@@ -26,7 +26,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function class_with_parent() {
     $this->assertParsed(
-      [new ClassDeclaration([], '\\A', '\\B', [], [], [], null, self::LINE)],
+      [new ClassDeclaration([], '\\A', '\\B', [], [], null, null, self::LINE)],
       'class A extends B { }'
     );
   }
@@ -34,7 +34,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function class_with_interface() {
     $this->assertParsed(
-      [new ClassDeclaration([], '\\A', null, ['\\C'], [], [], null, self::LINE)],
+      [new ClassDeclaration([], '\\A', null, ['\\C'], [], null, null, self::LINE)],
       'class A implements C { }'
     );
   }
@@ -42,7 +42,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function class_with_interfaces() {
     $this->assertParsed(
-      [new ClassDeclaration([], '\\A', null, ['\\C', '\\D'], [], [], null, self::LINE)],
+      [new ClassDeclaration([], '\\A', null, ['\\C', '\\D'], [], null, null, self::LINE)],
       'class A implements C, D { }'
     );
   }
@@ -50,7 +50,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function abstract_class() {
     $this->assertParsed(
-      [new ClassDeclaration(['abstract'], '\\A', null, [], [], [], null, self::LINE)],
+      [new ClassDeclaration(['abstract'], '\\A', null, [], [], null, null, self::LINE)],
       'abstract class A { }'
     );
   }
@@ -58,7 +58,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function final_class() {
     $this->assertParsed(
-      [new ClassDeclaration(['final'], '\\A', null, [], [], [], null, self::LINE)],
+      [new ClassDeclaration(['final'], '\\A', null, [], [], null, null, self::LINE)],
       'final class A { }'
     );
   }
@@ -66,7 +66,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function empty_interface() {
     $this->assertParsed(
-      [new InterfaceDeclaration([], '\\A', [], [], [], null, self::LINE)],
+      [new InterfaceDeclaration([], '\\A', [], [], null, null, self::LINE)],
       'interface A { }'
     );
   }
@@ -74,7 +74,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function interface_with_parent() {
     $this->assertParsed(
-      [new InterfaceDeclaration([], '\\A', ['\\B'], [], [], null, self::LINE)],
+      [new InterfaceDeclaration([], '\\A', ['\\B'], [], null, null, self::LINE)],
       'interface A extends B { }'
     );
   }
@@ -82,7 +82,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function interface_with_parents() {
     $this->assertParsed(
-      [new InterfaceDeclaration([], '\\A', ['\\B', '\\C'], [], [], null, self::LINE)],
+      [new InterfaceDeclaration([], '\\A', ['\\B', '\\C'], [], null, null, self::LINE)],
       'interface A extends B, C { }'
     );
   }
@@ -90,7 +90,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function empty_trait() {
     $this->assertParsed(
-      [new TraitDeclaration([], '\\A', [], [], null, self::LINE)],
+      [new TraitDeclaration([], '\\A', [], null, null, self::LINE)],
       'trait A { }'
     );
   }
@@ -98,7 +98,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function empty_unit_enum() {
     $this->assertParsed(
-      [new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE)],
+      [new EnumDeclaration([], '\\A', null, [], [], null, null, self::LINE)],
       'enum A { }'
     );
   }
@@ -106,45 +106,45 @@ class TypesTest extends ParseTest {
   #[Test]
   public function empty_backed_enum() {
     $this->assertParsed(
-      [new EnumDeclaration([], '\\A', 'string', [], [], [], null, self::LINE)],
+      [new EnumDeclaration([], '\\A', 'string', [], [], null, null, self::LINE)],
       'enum A: string { }'
     );
   }
 
   #[Test]
   public function unit_enum_with_cases() {
-    $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $enum->declare(new EnumCase('ONE', null, [], null, self::LINE));
-    $enum->declare(new EnumCase('TWO', null, [], null, self::LINE));
+    $enum= new EnumDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $enum->declare(new EnumCase('ONE', null, null, null, self::LINE));
+    $enum->declare(new EnumCase('TWO', null, null, null, self::LINE));
     $this->assertParsed([$enum], 'enum A { case ONE; case TWO; }');
   }
 
   #[Test]
   public function backed_enum_with_cases() {
-    $enum= new EnumDeclaration([], '\\A', 'int', [], [], [], null, self::LINE);
-    $enum->declare(new EnumCase('ONE', new Literal('1', self::LINE), [], null, self::LINE));
-    $enum->declare(new EnumCase('TWO', new Literal('2', self::LINE), [], null, self::LINE));
+    $enum= new EnumDeclaration([], '\\A', 'int', [], [], null, null, self::LINE);
+    $enum->declare(new EnumCase('ONE', new Literal('1', self::LINE), null, null, self::LINE));
+    $enum->declare(new EnumCase('TWO', new Literal('2', self::LINE), null, null, self::LINE));
     $this->assertParsed([$enum], 'enum A: int { case ONE = 1; case TWO = 2; }');
   }
 
   #[Test]
   public function unit_enum_with_grouped_cases() {
-    $enum= new EnumDeclaration([], '\\A', null, [], [], [], null, self::LINE);
-    $enum->declare(new EnumCase('ONE', null, [], null, self::LINE));
-    $enum->declare(new EnumCase('TWO', null, [], null, self::LINE));
+    $enum= new EnumDeclaration([], '\\A', null, [], [], null, null, self::LINE);
+    $enum->declare(new EnumCase('ONE', null, null, null, self::LINE));
+    $enum->declare(new EnumCase('TWO', null, null, null, self::LINE));
     $this->assertParsed([$enum], 'enum A { case ONE, TWO; }');
   }
 
   #[Test]
   public function class_with_trait() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
     $class->body[]= new UseExpression(['\\B'], [], self::LINE);
     $this->assertParsed([$class], 'class A { use B; }');
   }
 
   #[Test]
   public function class_with_multiple_traits() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
     $class->body[]= new UseExpression(['\\B'], [], self::LINE);
     $class->body[]= new UseExpression(['\\C'], [], self::LINE);
     $this->assertParsed([$class], 'class A { use B; use C; }');
@@ -152,7 +152,7 @@ class TypesTest extends ParseTest {
 
   #[Test]
   public function class_with_comma_separated_traits() {
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
     $class->body[]= new UseExpression(['\\B', '\\C'], [], self::LINE);
     $this->assertParsed([$class], 'class A { use B, C; }');
   }
@@ -160,7 +160,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function class_with_trait_and_aliases() {
     $aliases= ['a' => ['as' => 'first'], '\\B::b' => ['as' => 'second'], '\\C::c' => ['insteadof' => '\\B']];
-    $class= new ClassDeclaration([], '\\A', null, [], [], [], null, self::LINE);
+    $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
     $class->body[]= new UseExpression(['\\B', '\\C'], $aliases, self::LINE + 1);
 
     $this->assertParsed([$class], 'class A {
@@ -175,7 +175,7 @@ class TypesTest extends ParseTest {
   #[Test]
   public function class_in_namespace() {
     $this->assertParsed(
-      [new NamespaceDeclaration('test', self::LINE), new ClassDeclaration([], '\\test\\A', null, [], [], [], null, self::LINE)],
+      [new NamespaceDeclaration('test', self::LINE), new ClassDeclaration([], '\\test\\A', null, [], [], null, null, self::LINE)],
       'namespace test; class A { }'
     );
   }

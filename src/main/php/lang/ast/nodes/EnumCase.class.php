@@ -7,10 +7,10 @@ class EnumCase extends Annotated implements Member {
   public function __construct($name, $expression, $annotations, $comment, $line= -1, $holder= null) {
     $this->name= $name;
     $this->expression= $expression;
-    $this->annotations= $annotations;
-    $this->line= $line;
+    $this->declared= $this->line= $line;
     $this->holder= $holder;
-    $comment === null || $this->attach($comment);
+    null === $annotations || $this->annotate($annotations);
+    null === $comment || $this->attach($comment);
   }
 
   /** @return string */
