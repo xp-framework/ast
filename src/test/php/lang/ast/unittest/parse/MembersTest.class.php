@@ -95,7 +95,7 @@ class MembersTest extends ParseTest {
   #[Test, Values('types')]
   public function method_with_typed_parameter($declaration, $expected) {
     $class= new ClassDeclaration([], '\\A', null, [], [], null, null, self::LINE);
-    $params= [new Parameter('param', $expected, null, false, false, null, null)];
+    $params= [new Parameter('param', $expected, null, false, false, null, null, null, self::LINE)];
     $class->declare(new Method(['public'], 'a', new Signature($params, null, self::LINE), [], null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { public function a('.$declaration.' $param) { } }');

@@ -6,15 +6,13 @@ abstract class TypeDeclaration extends Annotated {
   public function __construct($modifiers, $name, $body= [], $annotations= null, $comment= null, $line= -1) {
     $this->modifiers= $modifiers;
     $this->name= $name;
-    $this->declared= $this->line= $line;
     $this->body= [];
     foreach ($body as $lookup => $node) {
       $node->holder= $this->name;
       $this->body[$lookup]= $node;
     }
-    null === $annotations || $this->annotate($annotations);
-    null === $comment || $this->attach($comment);
 
+    parent::__construct($annotations, $comment, $line);
   }
 
   /** @return iterable */

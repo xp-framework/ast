@@ -3,9 +3,14 @@
 use lang\ast\Node;
 
 abstract class Annotated extends Node {
-  public $annotations;
+  public $declared, $annotations;
   public $comment= null;
-  public $declared= null;
+
+  public function __construct($annotations, $comment, $line) {
+    $this->declared= $this->line= $line;
+    null === $annotations || $this->annotate($annotations);
+    null === $comment || $this->attach($comment);
+  }
 
   /**
    * Attach a comment and modify line to include the comment.
