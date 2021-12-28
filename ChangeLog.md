@@ -6,8 +6,11 @@ XP AST ChangeLog
 ## 8.0.0 / ????-??-??
 
 * Implemented xp-framework/rfc#341: Drop XP 9 compatibility - @thekid
-* Merged PR #33: Refactor apidoc comments from bare strings to Comment
-  instances.
+* Merged PR #34: Refactor annotations from associative arrays to instances
+  of the `lang.ast.nodes.Annotations` class.
+  (@thekid)
+* Merged PR #33: Refactor apidoc comments from bare strings to instances
+  of the `lang.ast.nodes.Comment` class.
   (@thekid)
 
 ## 7.7.2 / 2021-12-08
