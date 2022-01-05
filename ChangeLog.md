@@ -5,6 +5,11 @@ XP AST ChangeLog
 
 ## 8.0.0 / ????-??-??
 
+This major release promotes annotations and comments to *Node* subclasses,
+making it easy to implement different emitter scenarios for them. For
+example, classes to be used with the XP Framework will have meta information
+attached to them, while others will not, reducing their dependencies.
+
 * Implemented xp-framework/rfc#341: Drop XP 9 compatibility - @thekid
 * Merged PR #34: Refactor annotations from associative arrays to instances
   of the `lang.ast.nodes.Annotations` class.
@@ -104,6 +109,10 @@ XP AST ChangeLog
 
 ## 7.0.0 / 2020-11-28
 
+This major release removes quite a bit of legacy: XP and Hack language
+annotations as well as support for curly braces as string or array offsets,
+bringing it in line with PHP 8.
+
 * Fixed multiple semicolons yielding syntax errors, skip them instead
   (@thekid)
 * Removed support for using curly braces as offset (e.g. `$value{0}`)
@@ -128,6 +137,9 @@ XP AST ChangeLog
   (@thekid)
 
 ## 6.0.0 / 2020-10-09
+
+This major release removes the starting `<?php` token from the stream of
+returned tokens: One less case to handle.
 
 * Merged PR #16: Omit start token from stream - @thekid
 
@@ -160,6 +172,11 @@ XP AST ChangeLog
 
 ## 5.0.0 / 2020-07-20
 
+This release integrates the parser into this library, making it usable
+in a standalone way to create ASTs from string and/or stream inputs.
+Now that the PHP project has decided on a final attribute syntax, this
+library also supports it.
+
 * Merged PR #8: Add support for match expression - @thekid
 * Added builtin support for null-safe instance operator `?->`, see
   https://wiki.php.net/rfc/nullsafe_operator & xp-framework/compiler#9
@@ -180,6 +197,9 @@ XP AST ChangeLog
 
 ## 4.0.0 / 2019-11-30
 
+This major release drops PHP 5 support - the minimum required PHP version
+is now 7.0.0. 
+
 * Dropped support for PHP 5.6, see xp-framework/rfc#334 - @thekid
 
 ## 3.0.3 / 2019-11-30
@@ -199,6 +219,9 @@ XP AST ChangeLog
 
 ## 3.0.0 / 2019-09-09
 
+This major release changes the transformation API: Functions are now
+passed the code generation process and the node they've registered for.
+
 * **Heads up:** Changed transformation API - functions must accept a
   reference to the code generation process as their first parameter.
   (@thekid)
@@ -208,6 +231,9 @@ XP AST ChangeLog
 * Merged PR #4: Add Node class replacing Element and Value - @thekid
 
 ## 2.0.0 / 2019-09-06
+
+This release overhauls the AST API greatly to make it more useable for
+creating syntax trees programmatically.
 
 * Merged PR #3: Allow multiple transformations per kind - @thekid
 * **Heads up:** Removed `Symbol` and `Node` classes, which belong to the
@@ -241,5 +267,7 @@ XP AST ChangeLog
 * Fixed nullable value types being emitted incorrectly - @thekid
 
 ## 1.0.0 / 2017-11-05
+
+This release forms the first as a separate library.
 
 * Extracted from XP Compiler, see xp-framework/compiler#22 - @thekid
