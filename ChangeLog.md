@@ -198,7 +198,7 @@ library also supports it.
 ## 4.0.0 / 2019-11-30
 
 This major release drops PHP 5 support - the minimum required PHP version
-is now 7.0.0. 
+is now 7.0.0.
 
 * Dropped support for PHP 5.6, see xp-framework/rfc#334 - @thekid
 
