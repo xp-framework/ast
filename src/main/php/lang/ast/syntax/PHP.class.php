@@ -388,7 +388,7 @@ class PHP extends Language {
       $signature= $this->signature($parse);
       $parse->expecting('=>', 'fn');
 
-      return new LambdaExpression(false, $signature, $this->expression($parse, 0), $token->line);
+      return new LambdaExpression($signature, $this->expression($parse, 0), false, $token->line);
     });
 
     $this->prefix('function', 0, function($parse, $token) {
@@ -421,7 +421,7 @@ class PHP extends Language {
         $parse->forward();
         $signature= $this->signature($parse);
         $parse->expecting('=>', 'fn');
-        return new LambdaExpression(true, $signature, $this->expression($parse, 0), $token->line);
+        return new LambdaExpression($signature, $this->expression($parse, 0), true, $token->line);
       } else {
         return new Literal($token->value, $token->line);
       }
@@ -1439,7 +1439,7 @@ class PHP extends Language {
     $statements= $this->statements($parse);
     $parse->expecting('}', 'function');
 
-    return new ClosureExpression($static, $signature, $use, $statements, $line);
+    return new ClosureExpression($signature, $use, $statements, $static, $line);
   }
 
   public function block($parse) {
