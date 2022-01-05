@@ -388,37 +388,11 @@ class PHP extends Language {
       $signature= $this->signature($parse);
       $parse->expecting('=>', 'fn');
 
-      return new LambdaExpression($signature, $this->expression($parse, 0), $token->line);
+      return new LambdaExpression(false, $signature, $this->expression($parse, 0), $token->line);
     });
 
     $this->prefix('function', 0, function($parse, $token) {
-      $signature= $this->signature($parse);
-
-      if ('use' === $parse->token->value) {
-        $parse->forward();
-        $parse->forward();
-        $use= [];
-        while (')' !== $parse->token->value) {
-          if ('&' === $parse->token->value) {
-            $parse->forward();
-            $use[]= '&'.$parse->token->value;
-          } else {
-            $use[]= $parse->token->value;
-          }
-          $parse->forward();
-          if (')' === $parse->token->value) break;
-          $parse->expecting(',', 'use list');
-        }
-        $parse->expecting(')', 'closure');
-      } else {
-        $use= null;
-      }
-
-      $parse->expecting('{', 'function');
-      $statements= $this->statements($parse);
-      $parse->expecting('}', 'function');
-
-      return new ClosureExpression($signature, $use, $statements, $token->line);
+      return $this->closure($parse, false);
     });
 
     $this->prefix('static', 0, function($parse, $token) {
@@ -440,8 +414,17 @@ class PHP extends Language {
           }
         }
         return new StaticLocals($init, $token->line);
+      } else if ('function' === $parse->token->value) {
+        $parse->forward();
+        return $this->closure($parse, true);
+      } else if ('fn' === $parse->token->value) {
+        $parse->forward();
+        $signature= $this->signature($parse);
+        $parse->expecting('=>', 'fn');
+        return new LambdaExpression(true, $signature, $this->expression($parse, 0), $token->line);
+      } else {
+        return new Literal($token->value, $token->line);
       }
-      return new Literal($token->value, $token->line);
     });
 
     $this->prefix('goto', 0, function($parse, $token) {
@@ -1426,6 +1409,37 @@ class PHP extends Language {
     }
 
     return new Signature($parameters, $return, $line);
+  }
+
+  public function closure($parse, $static) {
+    $line= $parse->token->line;
+    $signature= $this->signature($parse);
+
+    if ('use' === $parse->token->value) {
+      $parse->forward();
+      $parse->forward();
+      $use= [];
+      while (')' !== $parse->token->value) {
+        if ('&' === $parse->token->value) {
+          $parse->forward();
+          $use[]= '&'.$parse->token->value;
+        } else {
+          $use[]= $parse->token->value;
+        }
+        $parse->forward();
+        if (')' === $parse->token->value) break;
+        $parse->expecting(',', 'use list');
+      }
+      $parse->expecting(')', 'closure');
+    } else {
+      $use= null;
+    }
+
+    $parse->expecting('{', 'function');
+    $statements= $this->statements($parse);
+    $parse->expecting('}', 'function');
+
+    return new ClosureExpression($static, $signature, $use, $statements, $line);
   }
 
   public function block($parse) {

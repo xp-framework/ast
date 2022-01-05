@@ -15,8 +15,16 @@ class LambdasTest extends ParseTest {
   #[Test]
   public function short_closure() {
     $this->assertParsed(
-      [new LambdaExpression(new Signature([$this->parameter], null, self::LINE), $this->expression, self::LINE)],
+      [new LambdaExpression(false, new Signature([$this->parameter], null, self::LINE), $this->expression, self::LINE)],
       'fn($a) => $a + 1;'
+    );
+  }
+
+  #[Test]
+  public function static_closure() {
+    $this->assertParsed(
+      [new LambdaExpression(true, new Signature([$this->parameter], null, self::LINE), $this->expression, self::LINE)],
+      'static fn($a) => $a + 1;'
     );
   }
 
@@ -25,7 +33,7 @@ class LambdasTest extends ParseTest {
     $this->assertParsed(
       [new InvokeExpression(
         new Literal('execute', self::LINE),
-        [new LambdaExpression(new Signature([$this->parameter], null, self::LINE), $this->expression, self::LINE)],
+        [new LambdaExpression(false, new Signature([$this->parameter], null, self::LINE), $this->expression, self::LINE)],
         self::LINE
       )],
       'execute(fn($a) => $a + 1);'
@@ -36,6 +44,7 @@ class LambdasTest extends ParseTest {
   public function short_closure_with_block() {
     $this->assertParsed(
       [new LambdaExpression(
+        false,
         new Signature([$this->parameter], null, self::LINE),
         new Block([new ReturnStatement($this->expression, self::LINE)], self::LINE),
         self::LINE

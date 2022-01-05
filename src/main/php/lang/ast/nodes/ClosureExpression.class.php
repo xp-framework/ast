@@ -2,9 +2,10 @@
 
 class ClosureExpression extends Annotated {
   public $kind= 'closure';
-  public $signature, $use, $body;
+  public $static, $signature, $use, $body;
 
-  public function __construct($signature, $use, $body, $line= -1) {
+  public function __construct($static, $signature, $use, $body, $line= -1) {
+    $this->static= $static;
     $this->signature= $signature;
     $this->use= $use;
     $this->body= $body;
