@@ -3,13 +3,14 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 8.0.0 / ????-??-??
+## 8.0.0 / 2022-01-07
 
 This major release promotes annotations and comments to *Node* subclasses,
 making it easy to implement different emitter scenarios for them. For
 example, classes to be used with the XP Framework will have meta information
 attached to them, while others will not, reducing their dependencies.
 
+* Merged PR #35: Support static closures (`static fn() => ...`) - @thekid
 * Implemented xp-framework/rfc#341: Drop XP 9 compatibility - @thekid
 * Merged PR #34: Refactor annotations from associative arrays to instances
   of the `lang.ast.nodes.Annotations` class.
