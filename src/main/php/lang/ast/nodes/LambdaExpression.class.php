@@ -2,11 +2,12 @@
 
 class LambdaExpression extends Annotated {
   public $kind= 'lambda';
-  public $signature, $body;
+  public $static, $signature, $body;
 
-  public function __construct($signature, $body, $line= -1) {
+  public function __construct($signature, $body, $static= false, $line= -1) {
     $this->signature= $signature;
     $this->body= $body;
+    $this->static= $static;
     $this->line= $line;
   }
 
