@@ -875,7 +875,7 @@ class PHP extends Language {
           $parse->forward();
           if (',' === $parse->token->value) {
             $parse->forward();
-          } else if ('{' === $parse->token->value) {
+          } else if ('{' === $parse->token->value || 'permits' === $parse->token->value) {
             break;
           } else {
             $parse->expecting(', or {', 'interface parents');
@@ -883,9 +883,26 @@ class PHP extends Language {
         } while (true);
       }
 
+      $permits= [];
+      if ('permits' === $parse->token->value) {
+        $parse->forward();
+        do {
+          $permits[]= $parse->scope->resolve($parse->token->value);
+          $parse->forward();
+          if (',' === $parse->token->value) {
+            $parse->forward();
+          } else if ('{' === $parse->token->value) {
+            break;
+          } else {
+            $parse->expecting(', or {', 'permits list');
+          }
+        } while (true);
+      }
+
       $decl= new InterfaceDeclaration([], $name, $parents, [], null, $comment, $token->line);
       $parse->expecting('{', 'interface');
       $decl->body= $this->typeBody($parse, $decl->name);
+      $decl->permits= $permits;
       $parse->expecting('}', 'interface');
 
       return $decl;
@@ -1470,7 +1487,7 @@ class PHP extends Language {
         $parse->forward();
         if (',' === $parse->token->value) {
           $parse->forward();
-        } else if ('{' === $parse->token->value) {
+        } else if ('{' === $parse->token->value || 'permits' === $parse->token->value) {
           break;
         } else {
           $parse->expecting(', or {', 'interfaces list');
@@ -1478,9 +1495,26 @@ class PHP extends Language {
       } while (true);
     }
 
+    $permits= [];
+    if ('permits' === $parse->token->value) {
+      $parse->forward();
+      do {
+        $permits[]= $parse->scope->resolve($parse->token->value);
+        $parse->forward();
+        if (',' === $parse->token->value) {
+          $parse->forward();
+        } else if ('{' === $parse->token->value) {
+          break;
+        } else {
+          $parse->expecting(', or {', 'permits list');
+        }
+      } while (true);
+    }
+
     $decl= new ClassDeclaration($modifiers, $name, $parent, $implements, [], null, $comment, $line);
     $parse->expecting('{', 'class');
     $decl->body= $this->typeBody($parse, $decl->name);
+    $decl->permits= $permits;
     $parse->expecting('}', 'class');
 
     return $decl;

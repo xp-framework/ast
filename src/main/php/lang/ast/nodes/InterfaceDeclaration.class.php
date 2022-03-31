@@ -3,6 +3,7 @@
 class InterfaceDeclaration extends TypeDeclaration {
   public $kind= 'interface';
   public $parents;
+  public $permits= [];
 
   public function __construct(
     $modifiers,

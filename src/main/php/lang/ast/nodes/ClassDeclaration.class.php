@@ -3,6 +3,7 @@
 class ClassDeclaration extends TypeDeclaration {
   public $kind= 'class';
   public $parent, $implements;
+  public $permits= [];
 
   public function __construct(
     $modifiers,

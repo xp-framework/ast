@@ -7,7 +7,7 @@ class ArrayLiteralTest extends NodeTest {
 
   #[Test]
   public function can_create() {
-    new ArrayLiteral([]);
+    new ArrayLiteral();
   }
 
   #[Test]
@@ -37,5 +37,21 @@ class ArrayLiteralTest extends NodeTest {
   public function map_children() {
     $values= [[new Literal('"one"'), new Literal(1)]];
     Assert::equals([new Literal('"one"'), new Literal(1)], $this->childrenOf(new ArrayLiteral($values)));
+  }
+
+  #[Test]
+  public function append() {
+    Assert::equals(
+      [[null, new Literal(1)]],
+      (new ArrayLiteral())->append(new Literal(1))->values
+    );
+  }
+
+  #[Test]
+  public function add() {
+    Assert::equals(
+      [[new Literal('"one"'), new Literal(1)]],
+      (new ArrayLiteral())->add(new Literal('"one"'), new Literal(1))->values
+    );
   }
 }
