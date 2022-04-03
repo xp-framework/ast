@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.0.1 / 2022-04-03
+
+* Fixed resolving types starting with `namespace` keyword (examples 4 and
+  5 in https://www.php.net/manual/en/language.namespaces.nsconstants.php)
+  (@thekid)
+
 ## 8.0.0 / 2022-01-07
 
 This major release promotes annotations and comments to *Node* subclasses,

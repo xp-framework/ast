@@ -83,4 +83,19 @@ class ScopeTest {
     Assert::equals('\\Traversable', $s->resolve('Traversable'));
   }
 
+  #[Test]
+  public function resolve_namespace_keyword() {
+    $s= new Scope();
+    $s->package('test');
+
+    Assert::equals('\\test\\Date', $s->resolve('namespace\\Date'));
+  }
+
+  #[Test]
+  public function resolve_sub_namespace() {
+    $s= new Scope();
+    $s->package('test');
+
+    Assert::equals('\\test\\util\\Date', $s->resolve('namespace\\util\\Date'));
+  }
 }

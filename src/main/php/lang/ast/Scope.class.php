@@ -72,6 +72,8 @@ class Scope {
       return $name;
     } else if (isset($this->imports[$name])) {
       return $this->imports[$name];
+    } else if (0 === strncmp($name, 'namespace\\', 10)) {
+      return $this->package.'\\'.substr($name, 10);
     } else if ($this->package) {
       return $this->package.'\\'.$name;
     } else if ($this->parent) {
