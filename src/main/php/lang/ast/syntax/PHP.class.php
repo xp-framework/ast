@@ -821,6 +821,12 @@ class PHP extends Language {
       return $type;
     });
 
+    $this->stmt('readonly', function($parse, $token) {
+      $type= $this->statement($parse);
+      $type->modifiers[]= 'readonly';
+      return $type;
+    });
+
     $this->stmt('#[', function($parse, $token) {
       $annotations= $this->annotations($parse, 'annotations');
       return $this->statement($parse)->annotate($annotations);
