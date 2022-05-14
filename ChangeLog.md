@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.1.0 / 2022-05-14
+
+* Merged PR #37: Implement readonly modifier for classes - @thekid
+
 ## 8.0.1 / 2022-04-03
 
 * Fixed resolving types starting with `namespace` keyword (examples 4 and
