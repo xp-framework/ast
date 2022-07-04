@@ -386,9 +386,19 @@ class PHP extends Language {
 
     $this->prefix('fn', 0, function($parse, $token) {
       $signature= $this->signature($parse);
-      $parse->expecting('=>', 'fn');
 
-      return new LambdaExpression($signature, $this->expression($parse, 0), false, $token->line);
+      // Handle short closures with blocks vs. single-expression form
+      if ('{' === $parse->token->value) {
+        $parse->forward();
+        $statements= $this->statements($parse);
+        $parse->expecting('}', 'block');
+        $expr= new Block($statements, $token->line);
+      } else {
+        $parse->expecting('=>', 'fn');
+        $expr= $this->expression($parse, 0);
+      }
+
+      return new LambdaExpression($signature, $expr, false, $token->line);
     });
 
     $this->prefix('function', 0, function($parse, $token) {
