@@ -49,6 +49,20 @@ class LambdasTest extends ParseTest {
         false,
         self::LINE
       )],
+      'fn($a) { return $a + 1; };'
+    );
+  }
+
+  /** @deprecated */
+  #[Test]
+  public function short_closure_with_block_and_arrow() {
+    $this->assertParsed(
+      [new LambdaExpression(
+        new Signature([$this->parameter], null, self::LINE),
+        new Block([new ReturnStatement($this->expression, self::LINE)], self::LINE),
+        false,
+        self::LINE
+      )],
       'fn($a) => { return $a + 1; };'
     );
   }
