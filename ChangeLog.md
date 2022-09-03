@@ -3,6 +3,13 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.2.0 / 2022-09-03
+
+* Added support for PHP 8.2 `null`, `true` and `false` types, see:
+  https://wiki.php.net/rfc/null-false-standalone-types
+  https://wiki.php.net/rfc/true-type
+  (@thekid)
+
 ## 8.1.0 / 2022-05-14
 
 * Merged PR #37: Implement readonly modifier for classes - @thekid

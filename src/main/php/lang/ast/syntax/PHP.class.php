@@ -1174,6 +1174,9 @@ class PHP extends Language {
       'callable' => true,
       'iterable' => true,
       'object'   => true,
+      'null'     => true,
+      'false'    => true,
+      'true'     => true,
       'double'   => true,  // BC
     ];
 
