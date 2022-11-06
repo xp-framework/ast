@@ -62,7 +62,18 @@ use lang\ast\nodes\{
   YieldExpression,
   YieldFromExpression
 };
-use lang\ast\types\{IsArray, IsFunction, IsMap, IsUnion, IsIntersection, IsValue, IsNullable, IsGeneric, IsLiteral};
+use lang\ast\types\{
+  IsArray,
+  IsExpression,
+  IsFunction,
+  IsGeneric,
+  IsIntersection,
+  IsLiteral,
+  IsMap,
+  IsNullable,
+  IsUnion,
+  IsValue
+};
 use lang\ast\{Token, Language, Error};
 
 /**
@@ -305,10 +316,10 @@ class PHP extends Language {
     $this->prefix('new', 0, function($parse, $token) {
       if ('(' === $parse->token->value) {
         $parse->expecting('(', 'new type');
-        $type= $this->expression($parse, 0);
+        $type= new IsExpression($this->expression($parse, 0));
         $parse->expecting(')', 'new type');
       } else if ('variable' === $parse->token->kind) {
-        $type= $parse->token->value;
+        $type= new IsExpression(new Variable(substr($parse->token->value, 1)));
         $parse->forward();
       } else if ('class' === $parse->token->value) {
         $annotations= null;
@@ -320,8 +331,7 @@ class PHP extends Language {
         $parse->expecting('class', 'anonymous class annotations');
         $type= null;
       } else {
-        $type= $parse->scope->resolve($parse->token->value);
-        $parse->forward();
+        $type= $this->type($parse, false);
       }
 
       $parse->expecting('(', 'new arguments');
@@ -859,9 +869,7 @@ class PHP extends Language {
     $this->stmt('class', function($parse, $token) {
       $comment= $parse->comment;
       $parse->comment= null;
-
-      $name= $parse->scope->resolve($parse->token->value);
-      $parse->forward();
+      $name= $this->type($parse, false);
 
       return $this->class($parse, $name, $comment);
     });
@@ -869,16 +877,13 @@ class PHP extends Language {
     $this->stmt('interface', function($parse, $token) {
       $comment= $parse->comment;
       $parse->comment= null;
-
-      $name= $parse->scope->resolve($parse->token->value);
-      $parse->forward();
+      $name= $this->type($parse, false);
 
       $parents= [];
       if ('extends' === $parse->token->value) {
         $parse->forward();
         do {
-          $parents[]= $parse->scope->resolve($parse->token->value);
-          $parse->forward();
+          $parents[]= $this->type($parse, false);
           if (',' === $parse->token->value) {
             $parse->forward();
           } else if ('{' === $parse->token->value) {
@@ -900,9 +905,7 @@ class PHP extends Language {
     $this->stmt('trait', function($parse, $token) {
       $comment= $parse->comment;
       $parse->comment= null;
-
-      $name= $parse->scope->resolve($parse->token->value);
-      $parse->forward();
+      $name= $this->type($parse, false);
 
       $decl= new TraitDeclaration([], $name, [], null, $comment, $token->line);
       $parse->expecting('{', 'trait');
@@ -915,16 +918,13 @@ class PHP extends Language {
     $this->stmt('enum', function($parse, $token) {
       $comment= $parse->comment;
       $parse->comment= null;
-
-      $name= $parse->scope->resolve($parse->token->value);
-      $parse->forward();
+      $name= $this->type($parse, false);
 
       $implements= [];
       if ('implements' === $parse->token->value) {
         $parse->forward();
         do {
-          $implements[]= $parse->scope->resolve($parse->token->value);
-          $parse->forward();
+          $implements[]= $this->type($parse, false);
           if (',' === $parse->token->value) {
             $parse->forward();
             continue;
@@ -1227,7 +1227,7 @@ class PHP extends Language {
       if ('array' === $type) {
         return 1 === sizeof($components) ? new IsArray($components[0]) : new IsMap($components[0], $components[1]);
       } else {
-        return new IsGeneric($type, $components);
+        return new IsGeneric(new IsValue($type), $components);
       }
     }
 
@@ -1467,16 +1467,14 @@ class PHP extends Language {
     $parent= null;
     if ('extends' === $parse->token->value) {
       $parse->forward();
-      $parent= $parse->scope->resolve($parse->token->value);
-      $parse->forward();
+      $parent= $this->type($parse, false);
     }
 
     $implements= [];
     if ('implements' === $parse->token->value) {
       $parse->forward();
       do {
-        $implements[]= $parse->scope->resolve($parse->token->value);
-        $parse->forward();
+        $implements[]= $this->type($parse, false);
         if (',' === $parse->token->value) {
           $parse->forward();
         } else if ('{' === $parse->token->value) {

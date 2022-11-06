@@ -11,6 +11,7 @@ use lang\ast\nodes\{
   Literal,
   Variable
 };
+use lang\ast\types\IsValue;
 use unittest\{Assert, Test};
 
 /**
@@ -101,7 +102,7 @@ class InvokeTest extends ParseTest {
   #[Test]
   public function first_class_callable_object_creation() {
     $this->assertParsed(
-      [new CallableNewExpression(new NewExpression('\\T', null, self::LINE), self::LINE)],
+      [new CallableNewExpression(new NewExpression(new IsValue('\\T'), null, self::LINE), self::LINE)],
       'new T(...);'
     );
   }

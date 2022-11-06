@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\nodes\{ClassDeclaration, NamespaceDeclaration};
-use lang\ast\types\{Compiled, Reflection};
+use lang\ast\types\{Compiled, Reflection, IsValue};
 use lang\ast\{ParseTree, Scope};
 use unittest\{Assert, Test, Values};
 
@@ -55,7 +55,7 @@ class ParseTreeTest {
   public function types_in($package, $expected) {
     $scope= new Scope(null);
     $scope->package($package);
-    $class= new ClassDeclaration([], 'Test');
+    $class= new ClassDeclaration([], new IsValue('Test'));
 
     Assert::equals([$expected => $class], iterator_to_array((new ParseTree([$class], $scope))->types()));
   }

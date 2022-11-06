@@ -18,6 +18,7 @@ use lang\ast\nodes\{
   UnaryExpression,
   Variable
 };
+use lang\ast\types\{IsValue, IsExpression};
 use unittest\{Assert, Test, Values};
 
 class OperatorTest extends ParseTest {
@@ -138,7 +139,7 @@ class OperatorTest extends ParseTest {
   #[Test]
   public function new_type() {
     $this->assertParsed(
-      [new NewExpression('\\T', [], self::LINE)],
+      [new NewExpression(new IsValue('\\T'), [], self::LINE)],
       'new T();'
     );
   }
@@ -146,7 +147,7 @@ class OperatorTest extends ParseTest {
   #[Test]
   public function new_var() {
     $this->assertParsed(
-      [new NewExpression('$class', [], self::LINE)],
+      [new NewExpression(new IsExpression(new Variable('class')), [], self::LINE)],
       'new $class();'
     );
   }
@@ -154,7 +155,7 @@ class OperatorTest extends ParseTest {
   #[Test]
   public function new_expr() {
     $this->assertParsed(
-      [new NewExpression(new InvokeExpression(new Literal('factory', self::LINE), [], self::LINE), [], self::LINE)],
+      [new NewExpression(new IsExpression(new InvokeExpression(new Literal('factory', self::LINE), [], self::LINE)), [], self::LINE)],
       'new (factory())();'
     );
   }
@@ -162,14 +163,14 @@ class OperatorTest extends ParseTest {
   #[Test]
   public function new_type_with_args() {
     $this->assertParsed(
-      [new NewExpression('\\T', [new Variable('a', self::LINE), new Variable('b', self::LINE)], self::LINE)],
+      [new NewExpression(new IsValue('\\T'), [new Variable('a', self::LINE), new Variable('b', self::LINE)], self::LINE)],
       'new T($a, $b);'
     );
   }
 
   #[Test]
   public function new_anonymous_extends() {
-    $declaration= new ClassDeclaration([], null, '\\T', [], [], null, null, self::LINE);
+    $declaration= new ClassDeclaration([], null, new IsValue('\\T'), [], [], null, null, self::LINE);
     $this->assertParsed(
       [new NewClassExpression($declaration, [], self::LINE)],
       'new class() extends T { };'
@@ -178,7 +179,7 @@ class OperatorTest extends ParseTest {
 
   #[Test]
   public function new_anonymous_implements() {
-    $declaration= new ClassDeclaration([], null, null, ['\\A', '\\B'], [], null, null, self::LINE);
+    $declaration= new ClassDeclaration([], null, null, [new IsValue('\\A'), new IsValue('\\B')], [], null, null, self::LINE);
     $this->assertParsed(
       [new NewClassExpression($declaration, [], self::LINE)],
       'new class() implements A, B { };'

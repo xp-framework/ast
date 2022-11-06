@@ -1,6 +1,7 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\nodes\{ClassDeclaration, Method, Signature};
+use lang\ast\types\IsValue;
 use unittest\{Assert, Before, Test};
 
 class ClassTest {
@@ -13,7 +14,7 @@ class ClassTest {
 
   #[Test]
   public function method() {
-    $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
+    $fixture= new ClassDeclaration([], new IsValue('T'), null, [], [], null);
     $fixture->declare($this->method);
 
     Assert::equals($this->method, $fixture->method('toString'));
@@ -21,7 +22,7 @@ class ClassTest {
 
   #[Test]
   public function methods() {
-    $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
+    $fixture= new ClassDeclaration([], new IsValue('T'), null, [], [], null);
     $fixture->declare($this->method);
     
     Assert::equals(['toString' => $this->method], iterator_to_array($fixture->methods()));
@@ -31,7 +32,7 @@ class ClassTest {
   public function overwrite() {
     $overwritten= new Method([], 'toString', new Signature([], null), [], null, 'Overwritten');
 
-    $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
+    $fixture= new ClassDeclaration([], new IsValue('T'), null, [], [], null);
     $fixture->declare($this->method);
     $fixture->overwrite($overwritten);
 
@@ -42,7 +43,7 @@ class ClassTest {
   public function declare() {
     $overwritten= new Method([], 'toString', new Signature([], null), [], null, 'Overwritten');
 
-    $fixture= new ClassDeclaration([], 'Test', null, [], [], null);
+    $fixture= new ClassDeclaration([], new IsValue('T'), null, [], [], null);
     $fixture->declare($this->method);
     $fixture->declare($overwritten);
 

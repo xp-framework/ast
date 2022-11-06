@@ -1,6 +1,16 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{MatchExpression, MatchCondition, Literal, Variable, Block, ReturnStatement, ThrowExpression, NewExpression};
+use lang\ast\nodes\{
+  MatchExpression,
+  MatchCondition,
+  Literal,
+  Variable,
+  Block,
+  ReturnStatement,
+  ThrowExpression,
+  NewExpression
+};
+use lang\ast\types\IsValue;
 use unittest\{Assert, Test};
 
 class MatchExpressionTest extends ParseTest {
@@ -36,7 +46,7 @@ class MatchExpressionTest extends ParseTest {
 
   #[Test]
   public function match_with_throw_expression() {
-    $default= new ThrowExpression(new NewExpression('\Exception', [], self::LINE), self::LINE);
+    $default= new ThrowExpression(new NewExpression(new IsValue('\Exception'), [], self::LINE), self::LINE);
     $this->assertParsed(
       [new MatchExpression(new Variable('arg', self::LINE), [], $default, self::LINE)],
       'match ($arg) { default => throw new Exception() };'

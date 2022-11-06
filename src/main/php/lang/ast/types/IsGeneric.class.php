@@ -8,7 +8,7 @@ class IsGeneric extends Type {
   /**
    * Creates a new type
    *
-   * @param  string $base
+   * @param  parent $base
    * @param  parent[] $components
    */
   public function __construct($base, $components= []) {
