@@ -8,7 +8,7 @@ XP AST ChangeLog
 * Add support for generic wildcards such as `Filter<?>`, resolving
   ambiguity with nullable types
   (@thekid)
-* Resolve ambiguity between short open tag and nullables in generics,
+* Resolved ambiguity between short open tag and nullables in generics,
   e.g. `Filter<?int>`.
   (@thekid)
 
