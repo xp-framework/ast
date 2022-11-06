@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.1.0 / 2022-11-06
+
 * Add support for generic wildcards such as `Filter<?>`, resolving
   ambiguity with nullable types
   (@thekid)
