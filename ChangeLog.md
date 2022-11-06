@@ -3,8 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 9.0.0 / ????-??-??
+## 9.0.0 / 2022-11-06
 
+* Merged PR #40: Create generic member in `lang.ast.nodes.Signature`
+  (@thekid)
 * Merged PR #39: Refactor type declaration, parents, interfaces to
   `lang.ast.Type` instances
   (@thekid)
