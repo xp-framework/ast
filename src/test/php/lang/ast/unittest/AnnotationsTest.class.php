@@ -1,6 +1,7 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\nodes\{Annotation, Annotations, ClassDeclaration};
+use lang\ast\types\IsValue;
 use unittest\{Assert, Before, Test, Values};
 
 class AnnotationsTest {
@@ -94,25 +95,25 @@ class AnnotationsTest {
 
   #[Test]
   public function no_annotations_from_declaration() {
-    Assert::equals([], (new ClassDeclaration([], 'Test', null, [], [], null))->annotations());
+    Assert::equals([], (new ClassDeclaration([], new IsValue('T'), null, [], [], null))->annotations());
   }
 
   #[Test]
   public function no_annotation_from_declaration() {
-    Assert::null((new ClassDeclaration([], 'Test', null, [], [], null))->annotation(Test::class));
+    Assert::null((new ClassDeclaration([], new IsValue('T'), null, [], [], null))->annotation(Test::class));
   }
 
   #[Test]
   public function annotation_from_declaration() {
     Assert::equals(
       $this->annotation,
-      (new ClassDeclaration([], 'Test', null, [], [], new Annotations([Test::class => []])))->annotation(Test::class)
+      (new ClassDeclaration([], new IsValue('T'), null, [], [], new Annotations([Test::class => []])))->annotation(Test::class)
     );
   }
 
   #[Test]
   public function annotate_declaration() {
-    $declaration= new ClassDeclaration([], 'Test', null, [], [], new Annotations([Test::class => []]));
+    $declaration= new ClassDeclaration([], new IsValue('T'), null, [], [], new Annotations([Test::class => []]));
     Assert::equals(
       [Test::class => $this->annotation, Values::class => new Annotation(Values::class, [])],
       $declaration->annotate(new Annotation(Values::class, []))->annotations()
@@ -121,7 +122,7 @@ class AnnotationsTest {
 
   #[Test]
   public function annotate_declaration_without_annotations() {
-    $declaration= new ClassDeclaration([], 'Test', null, [], [], null);
+    $declaration= new ClassDeclaration([], new IsValue('T'), null, [], [], null);
     Assert::equals(
       [Test::class => $this->annotation],
       $declaration->annotate($this->annotation)->annotations()
@@ -130,7 +131,7 @@ class AnnotationsTest {
 
   #[Test]
   public function set_declarations_annotations() {
-    $declaration= new ClassDeclaration([], 'Test', null, [], [], null);
+    $declaration= new ClassDeclaration([], new IsValue('T'), null, [], [], null);
     Assert::equals(
       [Test::class => $this->annotation],
       $declaration->annotate(new Annotations([Test::class => []]))->annotations()

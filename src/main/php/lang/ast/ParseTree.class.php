@@ -52,7 +52,7 @@ class ParseTree implements Value {
    */
   public function types() {
     foreach ($this->children as $node) {
-      if ($node->is('@type')) yield $this->scope->resolve($node->name) => $node;
+      if ($node->is('@type')) yield $this->scope->resolve($node->name->literal()) => $node;
     }
   }
 

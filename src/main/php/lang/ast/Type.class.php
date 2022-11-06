@@ -5,7 +5,7 @@ use lang\Value;
 /**
  * Represents a type
  *
- * @test  xp://lang.ast.unittest.TypeTest
+ * @test  lang.ast.unittest.TypeTest
  */
 class Type implements Value {
   public $literal;
@@ -24,6 +24,9 @@ class Type implements Value {
     isset($map[$name]) && $name= $map[$name];
     return '?' === $this->literal[0] ? '?'.$name : $name;
   }
+
+  /** @return string */
+  public function __toString() { return $this->literal; }
 
   /** @return string */
   public function toString() { return nameof($this).'('.$this->name().')'; }

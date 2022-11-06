@@ -1,5 +1,7 @@
 <?php namespace lang\ast\nodes;
 
+use lang\ast\Type;
+
 abstract class TypeDeclaration extends Annotated {
   public $modifiers, $name, $body;
 
@@ -34,7 +36,7 @@ abstract class TypeDeclaration extends Annotated {
    * @return string
    */
   public function name() {
-    return substr($this->name, 1);
+    return substr($this->name->literal(), 1);
   }
 
   /**
@@ -43,7 +45,8 @@ abstract class TypeDeclaration extends Annotated {
    * @return string
    */
   public function declaration() {
-    return substr($this->name, strrpos($this->name, '\\') + 1);
+    $literal= $this->name->literal();
+    return substr($literal, strrpos($literal, '\\') + 1);
   }
 
   public function parent() { return null; }
