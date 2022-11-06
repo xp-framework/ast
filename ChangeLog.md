@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.0.0 / ????-??-??
+
+* Merged PR #39: Refactor type declaration, parents, interfaces to
+  `lang.ast.Type` instances
+  (@thekid)
+
 ## 8.2.0 / 2022-09-03
 
 * Added support for PHP 8.2 `null`, `true` and `false` types, see:
