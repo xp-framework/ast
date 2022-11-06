@@ -4,11 +4,12 @@ use lang\ast\Node;
 
 class Signature extends Node {
   public $kind= 'signature';
-  public $parameters, $returns;
+  public $parameters, $returns, $generic;
 
-  public function __construct($parameters= [], $returns= null, $line= -1) {
+  public function __construct($parameters= [], $returns= null, $generic= null, $line= -1) {
     $this->parameters= $parameters;
     $this->returns= $returns;
+    $this->generic= $generic;
     $this->line= $line;
   }
 
