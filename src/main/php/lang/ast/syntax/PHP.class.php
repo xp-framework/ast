@@ -1417,7 +1417,7 @@ class PHP extends Language {
       $return= null;
     }
 
-    return new Signature($parameters, $return, $line);
+    return new Signature($parameters, $return, null, $line);
   }
 
   public function closure($parse, $static) {

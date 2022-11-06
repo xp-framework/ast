@@ -23,7 +23,7 @@ class ClosuresTest extends ParseTest {
   #[Test]
   public function with_body() {
     $this->assertParsed(
-      [new ClosureExpression(new Signature([], null, self::LINE), null, [$this->returns], false, self::LINE)],
+      [new ClosureExpression(new Signature([], null, null, self::LINE), null, [$this->returns], false, self::LINE)],
       'function() { return $a + 1; };'
     );
   }
@@ -32,7 +32,7 @@ class ClosuresTest extends ParseTest {
   public function with_param() {
     $params= [new Parameter('a', null, null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new ClosureExpression(new Signature($params, null, self::LINE), null, [$this->returns], false, self::LINE)],
+      [new ClosureExpression(new Signature($params, null, null, self::LINE), null, [$this->returns], false, self::LINE)],
       'function($a) { return $a + 1; };'
     );
   }
@@ -40,7 +40,7 @@ class ClosuresTest extends ParseTest {
   #[Test]
   public function with_use_by_value() {
     $this->assertParsed(
-      [new ClosureExpression(new Signature([], null, self::LINE), ['$a', '$b'], [$this->returns], false, self::LINE)],
+      [new ClosureExpression(new Signature([], null, null, self::LINE), ['$a', '$b'], [$this->returns], false, self::LINE)],
       'function() use($a, $b) { return $a + 1; };'
     );
   }
@@ -48,7 +48,7 @@ class ClosuresTest extends ParseTest {
   #[Test]
   public function with_use_by_reference() {
     $this->assertParsed(
-      [new ClosureExpression(new Signature([], null, self::LINE), ['$a', '&$b'], [$this->returns], false, self::LINE)],
+      [new ClosureExpression(new Signature([], null, null, self::LINE), ['$a', '&$b'], [$this->returns], false, self::LINE)],
       'function() use($a, &$b) { return $a + 1; };'
     );
   }
@@ -56,7 +56,7 @@ class ClosuresTest extends ParseTest {
   #[Test]
   public function with_return_type() {
     $this->assertParsed(
-      [new ClosureExpression(new Signature([], new Type('int'), self::LINE), null, [$this->returns], false, self::LINE)],
+      [new ClosureExpression(new Signature([], new Type('int'), null, self::LINE), null, [$this->returns], false, self::LINE)],
       'function(): int { return $a + 1; };'
     );
   }
@@ -64,7 +64,7 @@ class ClosuresTest extends ParseTest {
   #[Test]
   public function with_nullable_return_type() {
     $this->assertParsed(
-      [new ClosureExpression(new Signature([], new Type('?int'), self::LINE), null, [$this->returns], false, self::LINE)],
+      [new ClosureExpression(new Signature([], new Type('?int'), null, self::LINE), null, [$this->returns], false, self::LINE)],
       'function(): ?int { return $a + 1; };'
     );
   }
@@ -72,7 +72,7 @@ class ClosuresTest extends ParseTest {
   #[Test]
   public function static_function() {
     $this->assertParsed(
-      [new ClosureExpression(new Signature([], null, self::LINE), null, [$this->returns], true, self::LINE)],
+      [new ClosureExpression(new Signature([], null, null, self::LINE), null, [$this->returns], true, self::LINE)],
       'static function() { return $a + 1; };'
     );
   }

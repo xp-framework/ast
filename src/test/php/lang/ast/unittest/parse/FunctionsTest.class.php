@@ -36,7 +36,7 @@ class FunctionsTest extends ParseTest {
   #[Test]
   public function empty_function_without_parameters() {
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [], self::LINE)],
       'function a() { }'
     );
   }
@@ -45,8 +45,8 @@ class FunctionsTest extends ParseTest {
   public function two_functions() {
     $this->assertParsed(
       [
-        new FunctionDeclaration('a', new Signature([], null, self::LINE), [], self::LINE),
-        new FunctionDeclaration('b', new Signature([], null, self::LINE), [], self::LINE)
+        new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [], self::LINE),
+        new FunctionDeclaration('b', new Signature([], null, null, self::LINE), [], self::LINE)
       ],
       'function a() { } function b() { }'
     );
@@ -56,7 +56,7 @@ class FunctionsTest extends ParseTest {
   public function with_parameter($name) {
     $params= [new Parameter($name, null, null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature($params, null, null, self::LINE), [], self::LINE)],
       'function a($'.$name.') { }'
     );
   }
@@ -65,7 +65,7 @@ class FunctionsTest extends ParseTest {
   public function with_reference_parameter() {
     $params= [new Parameter('param', null, null, true, false, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature($params, null, null, self::LINE), [], self::LINE)],
       'function a(&$param) { }'
     );
   }
@@ -74,7 +74,7 @@ class FunctionsTest extends ParseTest {
   public function dangling_comma_in_parameter_lists() {
     $params= [new Parameter('param', null, null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature($params, null, null, self::LINE), [], self::LINE)],
       'function a($param, ) { }'
     );
   }
@@ -83,7 +83,7 @@ class FunctionsTest extends ParseTest {
   public function with_typed_parameter($declaration, $expected) {
     $params= [new Parameter('param', $expected, null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature($params, null, null, self::LINE), [], self::LINE)],
       'function a('.$declaration.' $param) { }'
     );
   }
@@ -92,7 +92,7 @@ class FunctionsTest extends ParseTest {
   public function with_nullable_typed_parameter() {
     $params= [new Parameter('param', new IsNullable(new IsLiteral('string')), null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature($params, null, null, self::LINE), [], self::LINE)],
       'function a(?string $param) { }'
     );
   }
@@ -101,7 +101,7 @@ class FunctionsTest extends ParseTest {
   public function with_variadic_parameter() {
     $params= [new Parameter('param', null, null, false, true, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature($params, null, null, self::LINE), [], self::LINE)],
       'function a(... $param) { }'
     );
   }
@@ -110,7 +110,7 @@ class FunctionsTest extends ParseTest {
   public function with_optional_parameter() {
     $params= [new Parameter('param', null, new Literal('null', self::LINE), false, false, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature($params, null, null, self::LINE), [], self::LINE)],
       'function a($param= null) { }'
     );
   }
@@ -119,7 +119,7 @@ class FunctionsTest extends ParseTest {
   public function with_parameter_named_function() {
     $params= [new Parameter('function', null, null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature($params, null, null, self::LINE), [], self::LINE)],
       'function a($function, ) { }'
     );
   }
@@ -128,7 +128,7 @@ class FunctionsTest extends ParseTest {
   public function with_typed_parameter_named_function() {
     $params= [new Parameter('function', new IsFunction([], new IsLiteral('void')), null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature($params, null, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature($params, null, null, self::LINE), [], self::LINE)],
       'function a((function(): void) $function) { }'
     );
   }
@@ -136,7 +136,7 @@ class FunctionsTest extends ParseTest {
   #[Test, Values('types')]
   public function with_return_type($declaration, $expected) {
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], $expected, self::LINE), [], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], $expected, null, self::LINE), [], self::LINE)],
       'function a(): '.$declaration.' { }'
     );
   }
@@ -145,7 +145,7 @@ class FunctionsTest extends ParseTest {
   public function generator() {
     $yield= new YieldExpression(null, null, self::LINE);
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [$yield], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [$yield], self::LINE)],
       'function a() { yield; }'
     );
   }
@@ -154,7 +154,7 @@ class FunctionsTest extends ParseTest {
   public function generator_with_value() {
     $yield= new YieldExpression(null, new Literal('1', self::LINE), self::LINE);
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [$yield], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [$yield], self::LINE)],
       'function a() { yield 1; }'
     );
   }
@@ -163,7 +163,7 @@ class FunctionsTest extends ParseTest {
   public function generator_with_key_and_value() {
     $yield= new YieldExpression(new Literal('"number"', self::LINE), new Literal('1', self::LINE), self::LINE);
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [$yield], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [$yield], self::LINE)],
       'function a() { yield "number" => 1; }'
     );
   }
@@ -172,7 +172,7 @@ class FunctionsTest extends ParseTest {
   public function generator_delegation() {
     $yield= new YieldFromExpression(new ArrayLiteral([], self::LINE), self::LINE);
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [$yield], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [$yield], self::LINE)],
       'function a() { yield from []; }'
     );
   }
@@ -186,7 +186,7 @@ class FunctionsTest extends ParseTest {
       self::LINE
     );
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [$yield], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [$yield], self::LINE)],
       'function a() { $value= yield; }'
     );
   }
@@ -200,7 +200,7 @@ class FunctionsTest extends ParseTest {
       self::LINE
     );
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [$yield], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [$yield], self::LINE)],
       'function a() { $value= yield (1); }'
     );
   }
@@ -215,7 +215,7 @@ class FunctionsTest extends ParseTest {
       self::LINE
     );
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [$yield], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [$yield], self::LINE)],
       'function a() { $value= (yield); }'
     );
   }
@@ -229,7 +229,7 @@ class FunctionsTest extends ParseTest {
       self::LINE
     );
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [$yield], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [$yield], self::LINE)],
       $declaration
     );
   }
@@ -243,7 +243,7 @@ class FunctionsTest extends ParseTest {
       self::LINE
     );
     $this->assertParsed(
-      [new FunctionDeclaration('a', new Signature([], null, self::LINE), [$yield], self::LINE)],
+      [new FunctionDeclaration('a', new Signature([], null, null, self::LINE), [$yield], self::LINE)],
       $declaration
     );
   }
