@@ -66,6 +66,14 @@ class TypeTest {
     );
   }
 
+  #[Test]
+  public function generic_nullable() {
+    Assert::equals(
+      new IsGeneric(new IsValue('Filter'), [new IsNullable(new IsLiteral('int'))]),
+      $this->parse('Filter<?int>')
+    );
+  }
+
   #[Test, Values(['self', 'static', 'parent', 'Value', '\\lang\\Value',])]
   public function values($t) {
     Assert::equals(new IsValue($t), $this->parse($t));

@@ -1208,6 +1208,12 @@ class PHP extends Language {
       return null;
     }
 
+    // Resolve ambiguity between short open tag and nullables as in <?int>
+    if ('<?' === $parse->token->value) {
+      $parse->queue[]= new Token(self::symbol('?'), '(operator)', '?');
+      $parse->token->value= '<';
+    }
+
     if ('<' === $parse->token->value) {
       $parse->forward();
       $components= [];

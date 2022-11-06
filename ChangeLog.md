@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Resolve ambiguity between short open tag and nullables in generics,
+  e.g. `Filter<?int>`.
+  (@thekid)
+
 ## 9.0.0 / 2022-11-06
 
 * Merged PR #40: Create generic member in `lang.ast.nodes.Signature`
