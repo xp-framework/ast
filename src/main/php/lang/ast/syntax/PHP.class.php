@@ -1218,16 +1218,26 @@ class PHP extends Language {
       $parse->forward();
       $components= [];
       do {
-        $components[]= $this->type($parse, false);
-        if (',' === $parse->token->value) {
+
+        // Resolve ambiguity between generic placeholders and nullable
+        if ('?' === $parse->token->value) {
           $parse->forward();
-        } else if ('>' === $parse->token->symbol->id) {
+          if (',' === $parse->token->value || '>' === $parse->token->value) {
+            $components[]= new IsLiteral('?');
+          } else {
+            $components[]= new IsNullable($this->type($parse, false));
+          }
+        } else {
+          $components[]= $this->type($parse, false);
+        }
+
+        if ('>' === $parse->token->symbol->id) {
           break;
         } else if ('>>' === $parse->token->value) {
           $parse->queue[]= $parse->token= new Token(self::symbol('>'));
           break;
         }
-      } while (true);
+      } while (',' === $parse->token->value && true | $parse->forward());
       $parse->expecting('>', 'type');
 
       if ('array' === $type) {

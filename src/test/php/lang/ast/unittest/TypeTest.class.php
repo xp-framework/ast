@@ -74,6 +74,30 @@ class TypeTest {
     );
   }
 
+  #[Test]
+  public function generic_wildcard() {
+    Assert::equals(
+      new IsGeneric(new IsValue('Filter'), [new IsLiteral('?')]),
+      $this->parse('Filter<?>')
+    );
+  }
+
+  #[Test]
+  public function generic_wildcard_with_concrete_type() {
+    Assert::equals(
+      new IsGeneric(new IsValue('Filter'), [new IsLiteral('?'), new IsLiteral('int')]),
+      $this->parse('Filter<?, int>')
+    );
+  }
+
+  #[Test]
+  public function generic_concrete_type_with_wildcard() {
+    Assert::equals(
+      new IsGeneric(new IsValue('Filter'), [new IsLiteral('int'), new IsLiteral('?')]),
+      $this->parse('Filter<int, ?>')
+    );
+  }
+
   #[Test, Values(['self', 'static', 'parent', 'Value', '\\lang\\Value',])]
   public function values($t) {
     Assert::equals(new IsValue($t), $this->parse($t));
