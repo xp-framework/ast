@@ -1227,7 +1227,7 @@ class PHP extends Language {
       if ('array' === $type) {
         return 1 === sizeof($components) ? new IsArray($components[0]) : new IsMap($components[0], $components[1]);
       } else {
-        return new IsGeneric($type, $components);
+        return new IsGeneric(new IsValue($type), $components);
       }
     }
 

@@ -44,12 +44,26 @@ class TypeTest {
 
   #[Test, Values(['int', 'string'])]
   public function generic_list($t) {
-    Assert::equals(new IsGeneric('List', [new IsLiteral($t)]), $this->parse('List<'.$t.'>'));
+    Assert::equals(
+      new IsGeneric(new IsValue('List'), [new IsLiteral($t)]),
+      $this->parse('List<'.$t.'>')
+    );
   }
 
   #[Test, Values(['int', 'string'])]
   public function generic_map($t) {
-    Assert::equals(new IsGeneric('Map', [new IsLiteral('string'), new IsLiteral($t)]), $this->parse('Map<string, '.$t.'>'));
+    Assert::equals(
+      new IsGeneric(new IsValue('Map'), [new IsLiteral('string'), new IsLiteral($t)]),
+      $this->parse('Map<string, '.$t.'>')
+    );
+  }
+
+  #[Test]
+  public function nested_generic() {
+    Assert::equals(
+      new IsGeneric(new IsValue('Filter'), [new IsGeneric(new IsValue('Set'), [new IsLiteral('T')])]),
+      $this->parse('Filter<Set<T>>')
+    );
   }
 
   #[Test, Values(['self', 'static', 'parent', 'Value', '\\lang\\Value',])]
