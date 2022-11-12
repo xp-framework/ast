@@ -23,4 +23,10 @@ class DestructuringTest extends ParseTest {
     $b= [null, new Variable('b', self::LINE)];
     $this->assertParsed([new ArrayLiteral([$a, [null, null], $b], self::LINE)], $input);
   }
+
+  #[Test, Values(['[$a,];', 'list($a,);'])]
+  public function trailing_comma($input) {
+    $a= [null, new Variable('a', self::LINE)];
+    $this->assertParsed([new ArrayLiteral([$a], self::LINE)], $input);
+  }
 }
