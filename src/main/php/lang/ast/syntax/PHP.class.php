@@ -293,13 +293,18 @@ class PHP extends Language {
     $this->prefix('[', 0, function($parse, $token) {
       $values= [];
       while (']' !== $parse->token->value) {
-        $expr= $this->expression($parse, 0);
 
-        if ('=>' === $parse->token->value) {
-          $parse->forward();
-          $values[]= [$expr, $this->expression($parse, 0)];
+        if (',' === $parse->token->value) {
+          $values[]= [null, null];
         } else {
-          $values[]= [null, $expr];
+          $expr= $this->expression($parse, 0);
+
+          if ('=>' === $parse->token->value) {
+            $parse->forward();
+            $values[]= [$expr, $this->expression($parse, 0)];
+          } else {
+            $values[]= [null, $expr];
+          }
         }
 
         if (']' === $parse->token->value) {

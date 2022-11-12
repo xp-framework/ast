@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{ArrayLiteral, Literal};
+use lang\ast\nodes\{ArrayLiteral, Literal, Variable};
 use unittest\{Assert, Test, Values};
 
 class LiteralsTest extends ParseTest {
@@ -80,5 +80,24 @@ class LiteralsTest extends ParseTest {
   public function dangling_comma_in_key_value_map() {
     $pair= [new Literal('"key"', self::LINE), new Literal('"value"', self::LINE)];
     $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], '["key" => "value", ];');
+  }
+
+  #[Test]
+  public function empty_element_at_start_in_short_list() {
+    $a= [null, new Variable('a', self::LINE)];
+    $this->assertParsed([new ArrayLiteral([[null, null], $a], self::LINE)], '[, $a];');
+  }
+
+  #[Test]
+  public function empty_element_at_end_in_short_list() {
+    $a= [null, new Variable('a', self::LINE)];
+    $this->assertParsed([new ArrayLiteral([$a, [null, null]], self::LINE)], '[$a, , ];');
+  }
+
+  #[Test]
+  public function empty_element_between_in_short_list() {
+    $a= [null, new Variable('a', self::LINE)];
+    $b= [null, new Variable('b', self::LINE)];
+    $this->assertParsed([new ArrayLiteral([$a, [null, null], $b], self::LINE)], '[$a, , $b];');
   }
 }
