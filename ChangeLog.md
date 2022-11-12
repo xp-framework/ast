@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.0 / 2022-11-12
+
 * Added support for omitting expressions in destructuring assignments,
   e.g. `list($a, , $b)= $expr` or `[, $a]= $expr`.
   (@thekid)
