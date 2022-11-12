@@ -291,31 +291,12 @@ class PHP extends Language {
     });
 
     $this->prefix('[', 0, function($parse, $token) {
-      $values= [];
-      while (']' !== $parse->token->value) {
+      return new ArrayLiteral($this->list($parse, ']', 'array literal'), $token->line);
+    });
 
-        if (',' === $parse->token->value) {
-          $values[]= [null, null];
-        } else {
-          $expr= $this->expression($parse, 0);
-
-          if ('=>' === $parse->token->value) {
-            $parse->forward();
-            $values[]= [$expr, $this->expression($parse, 0)];
-          } else {
-            $values[]= [null, $expr];
-          }
-        }
-
-        if (']' === $parse->token->value) {
-          break;
-        } else {
-          $parse->expecting(',', 'array literal');
-        }
-      }
-
-      $parse->expecting(']', 'array literal');
-      return new ArrayLiteral($values, $token->line);
+    $this->prefix('list', 0, function($parse, $token) {
+      $parse->expecting('(', 'list assignment');
+      return new ArrayLiteral($this->list($parse, ')', 'list assignment'), $token->line);
     });
 
     $this->prefix('new', 0, function($parse, $token) {
@@ -1112,6 +1093,30 @@ class PHP extends Language {
         $holder
       );
     });
+  }
+
+  public function list($parse, $end, $kind) {
+    $values= [];
+    while ($end !== $parse->token->value) {
+      if (',' === $parse->token->value) {
+        $values[]= [null, null];
+      } else {
+        $expr= $this->expression($parse, 0);
+
+        if ('=>' === $parse->token->value) {
+          $parse->forward();
+          $values[]= [$expr, $this->expression($parse, 0)];
+        } else {
+          $values[]= [null, $expr];
+        }
+      }
+
+      if ($end === $parse->token->value) break;
+      $parse->expecting(',', $kind);
+    }
+
+    $parse->expecting($end, $kind);
+    return $values;
   }
 
   public function type($parse, $optional= true) {

@@ -3,9 +3,13 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Added support for omitting expressions in destructuring assignments,
+  e.g. `list($a, , $b)= $expr` or `[, $a]= $expr`.
+  (@thekid)
+
 ## 9.1.0 / 2022-11-06
 
-* Add support for generic wildcards such as `Filter<?>`, resolving
+* Added support for generic wildcards such as `Filter<?>`, resolving
   ambiguity with nullable types
   (@thekid)
 * Resolved ambiguity between short open tag and nullables in generics,
