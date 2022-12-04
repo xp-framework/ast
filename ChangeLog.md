@@ -3,6 +3,13 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.1 / 2022-12-04
+
+* Fixed type parsing in type casts:
+  - Arrays, maps and generics with nullables, e.g. `(array<?int>)$v`
+  - Intersection and union types, e.g. `(int|string)$v`.
+  (@thekid)
+
 ## 9.2.0 / 2022-11-12
 
 * Added support for omitting expressions in destructuring assignments,

@@ -243,13 +243,7 @@ class PHP extends Language {
     //
     // Resolve by looking ahead after the closing ")"
     $this->prefix('(', 0, function($parse, $token) {
-      static $types= [
-        '<'        => true,
-        '>'        => true,
-        ','        => true,
-        '?'        => true,
-        ':'        => true
-      ];
+      static $types= ['<' => 1, '>' => 1, '<<' => 1, '>>' => 1, ',' => 1, '?' => 1, '<?' => 1, ':' => 1, '|' => 1, '&' => 1];
 
       $skipped= [$token, $parse->token];
       $cast= true;
@@ -267,10 +261,11 @@ class PHP extends Language {
       }
       $parse->queue= $parse->queue ? array_merge($skipped, $parse->queue) : $skipped;
 
+
       if ($cast && ('operator' !== $parse->token->kind || '(' === $parse->token->value || '[' === $parse->token->value)) {
         $parse->forward();
         $parse->expecting('(', 'cast');
-        $type= $this->type0($parse, false);
+        $type= $this->type($parse, false);
         $parse->expecting(')', 'cast');
 
         return new CastExpression($type, $this->expression($parse, 0), $token->line);
@@ -1220,7 +1215,7 @@ class PHP extends Language {
 
     // Resolve ambiguity between short open tag and nullables as in <?int>
     if ('<?' === $parse->token->value) {
-      $parse->queue[]= new Token(self::symbol('?'), '(operator)', '?');
+      array_unshift($parse->queue, new Token(self::symbol('?'), '(operator)', '?'));
       $parse->token->value= '<';
     }
 
@@ -1244,7 +1239,7 @@ class PHP extends Language {
         if ('>' === $parse->token->symbol->id) {
           break;
         } else if ('>>' === $parse->token->value) {
-          $parse->queue[]= $parse->token= new Token(self::symbol('>'));
+          array_unshift($parse->queue, $parse->token= new Token(self::symbol('>')));
           break;
         }
       } while (',' === $parse->token->value && true | $parse->forward());
