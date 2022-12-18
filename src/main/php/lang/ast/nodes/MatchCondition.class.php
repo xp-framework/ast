@@ -9,9 +9,10 @@ class MatchCondition extends Node {
   public $kind= 'condition';
   public $expressions, $body;
 
-  public function __construct($expressions, $body) {
+  public function __construct($expressions, $body, $line= -1) {
     $this->expressions= $expressions;
     $this->body= $body;
+    $this->line= $line;
   }
 
   /** @return iterable */

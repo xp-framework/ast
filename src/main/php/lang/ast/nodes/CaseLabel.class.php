@@ -11,9 +11,10 @@ class CaseLabel extends Node {
   public $kind= 'case';
   public $expression, $body;
 
-  public function __construct($expression, $body) {
+  public function __construct($expression, $body, $line= -1) {
     $this->expression= $expression;
     $this->body= $body;
+    $this->line= $line;
   }
 
   /** @return iterable */
