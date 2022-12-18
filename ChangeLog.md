@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.2 / 2022-12-18
+
+* Fixed line numbers for match conditions, case labels and catch
+  statements
+  (@thekid)
+
 ## 9.2.1 / 2022-12-04
 
 * Fixed type parsing in type casts:
