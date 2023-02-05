@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed cloning of `lang.ast.Language` instances - @thekid
+
 ## 9.2.2 / 2022-12-18
 
 * Fixed line numbers for match conditions, case labels and catch

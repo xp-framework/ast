@@ -1,5 +1,6 @@
 <?php namespace lang\ast\unittest;
 
+use lang\IllegalStateException;
 use lang\ast\{Language, Tokens, Errors};
 use unittest\{Assert, Before, Expect, Test};
 
@@ -39,5 +40,18 @@ class LanguageTest {
   #[Test, Expect(class: Errors::class, withMessage: '/Missing semicolon/')]
   public function missing_semicolon() {
     (new Language())->parse(new Tokens('test'))->tree();
+  }
+
+  #[Test]
+  public function cloning() {
+    $fixture= new Language();
+    $fixture->prefix('test', 0, $this->parse['test']);
+
+    $cloned= clone $fixture;
+    $cloned->prefix('test', 0, function() {
+      throw new IllegalStateException('Cannot parse tests');
+    });
+
+    Assert::equals([['test' => 'one']], $fixture->parse(new Tokens('test one;'))->tree()->children());
   }
 }

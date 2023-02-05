@@ -15,6 +15,13 @@ class Language {
 
   public $symbols= [];
 
+  /** @return void */
+  public function __clone() {
+    foreach ($this->symbols as $id => $symbol) {
+      $this->symbols[$id]= clone $symbol;
+    }
+  }
+
   public function symbol($id, $lbp= 0) {
     if (isset($this->symbols[$id])) {
       $symbol= $this->symbols[$id];
