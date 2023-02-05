@@ -8,8 +8,9 @@ use lang\reflect\Package;
  * Base class for input languages
  *
  * @see  lang.ast.syntax.PHP
+ * @test lang.ast.unittest.LanguageTest
  */
-abstract class Language {
+class Language {
   private static $instance= [];
 
   public $symbols= [];
