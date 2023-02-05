@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.3 / 2023-02-05
+
 * Fixed cloning of `lang.ast.Language` instances - @thekid
 
 ## 9.2.2 / 2022-12-18
