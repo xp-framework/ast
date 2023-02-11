@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed endless loop with syntax errors in `new` - @thekid
+
 ## 9.2.3 / 2023-02-05
 
 * Fixed cloning of `lang.ast.Language` instances - @thekid

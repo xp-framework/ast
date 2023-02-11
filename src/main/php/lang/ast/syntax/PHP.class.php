@@ -312,7 +312,7 @@ class PHP extends Language {
         $parse->expecting('class', 'anonymous class annotations');
         $type= null;
       } else {
-        $type= $this->type($parse, false);
+        if (null === ($type= $this->type($parse, false))) return $parse->token;
       }
 
       $parse->expecting('(', 'new arguments');

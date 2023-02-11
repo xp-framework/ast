@@ -103,4 +103,12 @@ class ErrorsTest extends ParseTest {
       $this->parse('use util\{Date Dates};')
     );
   }
+
+  #[Test]
+  public function new_curly() {
+    $this->assertError(
+      'Expected "type name", have "{" in type',
+      $this->parse('new {$class}();')
+    );
+  }
 }
