@@ -32,7 +32,7 @@ class StartTokensTest extends ParseTest {
     );
   }
 
-  #[Test, Expect(class: Errors::class, message: 'Unexpected syntax hh, expecting php in <?')]
+  #[Test, Expect(class: Errors::class, message: '/Unexpected syntax hh, expecting php in <\\?/')]
   public function hack() {
     $this->parse('<?hh namespace test;')->tree();
   }

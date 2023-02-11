@@ -145,7 +145,7 @@ class ConditionalTest extends ParseTest {
     );
   }
 
-  #[Test, Expect(class: Errors::class, message: 'Unexpected (end)')]
+  #[Test, Expect(class: Errors::class, message: '/Unexpected \(end\)/')]
   public function unclosed_statement_list() {
     $this->parse('if ($condition) { action1();')->stream()->current();
   }

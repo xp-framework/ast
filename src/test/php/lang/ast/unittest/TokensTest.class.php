@@ -2,7 +2,7 @@
 
 use lang\FormatException;
 use lang\ast\{Language, Tokens};
-use test\{Assert, Expect, Test, Values};
+use test\{Assert, Before, Expect, Test, Values};
 
 class TokensTest {
   private $language;
