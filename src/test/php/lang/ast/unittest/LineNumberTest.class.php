@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest;
 
-use lang\ast\{Tokens, Language};
-use unittest\{Assert, Test};
+use lang\ast\{Language, Tokens};
+use test\{Assert, Test};
 
 class LineNumberTest {
   private $language;

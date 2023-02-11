@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{Block, InvokeExpression, Literal};
-use unittest\{Assert, Test};
+use test\{Assert, Test};
 
 class BlocksTest extends ParseTest {
 

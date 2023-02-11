@@ -2,7 +2,7 @@
 
 use lang\ast\types\{IsArray, IsGeneric, IsLiteral, IsMap, IsNullable, IsValue};
 use lang\ast\{Language, Tokens, Type};
-use unittest\{Assert, Test, Values};
+use test\{Assert, Test, Values};
 
 class TypeTest {
 

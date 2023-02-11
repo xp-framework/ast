@@ -1,8 +1,8 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Errors;
-use lang\ast\nodes\{NamespaceDeclaration, Directives, Literal};
-use unittest\{Assert, Test};
+use lang\ast\nodes\{Directives, Literal, NamespaceDeclaration};
+use test\{Assert, Expect, Test};
 
 class StartTokensTest extends ParseTest {
 
@@ -32,7 +32,7 @@ class StartTokensTest extends ParseTest {
     );
   }
 
-  #[Test, Expect(class: Errors::class, withMessage: 'Unexpected syntax hh, expecting php in <?')]
+  #[Test, Expect(class: Errors::class, message: 'Unexpected syntax hh, expecting php in <?')]
   public function hack() {
     $this->parse('<?hh namespace test;')->tree();
   }

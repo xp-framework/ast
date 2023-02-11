@@ -2,7 +2,7 @@
 
 use lang\ast\Errors;
 use lang\ast\nodes\{CaseLabel, IfStatement, InvokeExpression, Literal, MatchCondition, MatchExpression, ScopeExpression, SwitchStatement, Variable};
-use unittest\{Assert, Before, Test};
+use test\{Assert, Before, Expect, Test};
 
 class ConditionalTest extends ParseTest {
   private $blocks;
@@ -145,7 +145,7 @@ class ConditionalTest extends ParseTest {
     );
   }
 
-  #[Test, Expect(class: Errors::class, withMessage: 'Unexpected (end)')]
+  #[Test, Expect(class: Errors::class, message: 'Unexpected (end)')]
   public function unclosed_statement_list() {
     $this->parse('if ($condition) { action1();')->stream()->current();
   }

@@ -1,8 +1,8 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{CastExpression, Variable};
-use lang\ast\types\{IsArray, IsLiteral, IsMap, IsNullable, IsValue, IsGeneric, IsFunction, IsUnion, IsIntersection};
-use unittest\{Assert, Test, Values};
+use lang\ast\types\{IsArray, IsFunction, IsGeneric, IsIntersection, IsLiteral, IsMap, IsNullable, IsUnion, IsValue};
+use test\{Assert, Test, Values};
 
 class CastTest extends ParseTest {
 
@@ -36,7 +36,7 @@ class CastTest extends ParseTest {
     yield ['Map<string, Value>', new IsGeneric(new IsValue('Map'), [new IsLiteral('string'), new IsValue('Value')])];
   }
 
-  #[Test, Values('types')]
+  #[Test, Values(from: 'types')]
   public function simple($type, $expected) {
     $this->assertParsed(
       [new CastExpression($expected, new Variable('a', self::LINE), self::LINE)],
@@ -44,7 +44,7 @@ class CastTest extends ParseTest {
     );
   }
 
-  #[Test, Values('types')]
+  #[Test, Values(from: 'types')]
   public function array_of($type, $expected) {
     $this->assertParsed(
       [new CastExpression(new IsArray($expected), new Variable('a', self::LINE), self::LINE)],
@@ -52,7 +52,7 @@ class CastTest extends ParseTest {
     );
   }
 
-  #[Test, Values('types')]
+  #[Test, Values(from: 'types')]
   public function map_of($type, $expected) {
     $this->assertParsed(
       [new CastExpression(new IsMap(new IsLiteral('string'), $expected), new Variable('a', self::LINE), self::LINE)],
@@ -60,7 +60,7 @@ class CastTest extends ParseTest {
     );
   }
 
-  #[Test, Values('types')]
+  #[Test, Values(from: 'types')]
   public function union_of($type, $expected) {
     $this->assertParsed(
       [new CastExpression(new IsUnion([new IsLiteral('string'), $expected]), new Variable('a', self::LINE), self::LINE)],
@@ -68,7 +68,7 @@ class CastTest extends ParseTest {
     );
   }
 
-  #[Test, Values('types')]
+  #[Test, Values(from: 'types')]
   public function intersection_of($type, $expected) {
     $this->assertParsed(
       [new CastExpression(new IsIntersection([new IsLiteral('string'), $expected]), new Variable('a', self::LINE), self::LINE)],

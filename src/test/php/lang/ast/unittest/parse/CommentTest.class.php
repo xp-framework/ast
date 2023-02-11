@@ -1,8 +1,8 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{Annotations, ClassDeclaration, Comment, Constant, Property, Method, Signature, Literal};
+use lang\ast\nodes\{Annotations, ClassDeclaration, Comment, Constant, Literal, Method, Property, Signature};
 use lang\ast\types\IsValue;
-use unittest\{Assert, Test};
+use test\{Assert, Test};
 
 class CommentTest extends ParseTest {
 

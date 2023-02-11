@@ -15,7 +15,7 @@ use lang\ast\nodes\{
   YieldFromExpression
 };
 use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion, IsValue};
-use unittest\{Assert, Test, Values};
+use test\{Assert, Test, Values};
 
 class FunctionsTest extends ParseTest {
 
@@ -79,7 +79,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[Test, Values('types')]
+  #[Test, Values(from: 'types')]
   public function with_typed_parameter($declaration, $expected) {
     $params= [new Parameter('param', $expected, null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(
@@ -133,7 +133,7 @@ class FunctionsTest extends ParseTest {
     );
   }
 
-  #[Test, Values('types')]
+  #[Test, Values(from: 'types')]
   public function with_return_type($declaration, $expected) {
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], $expected, null, self::LINE), [], self::LINE)],

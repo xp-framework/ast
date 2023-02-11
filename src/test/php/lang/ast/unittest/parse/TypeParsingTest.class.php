@@ -1,8 +1,8 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\types\{IsLiteral, IsArray, IsMap, IsValue, IsFunction, IsGeneric, IsNullable, IsUnion, IsIntersection};
+use lang\ast\types\{IsArray, IsFunction, IsGeneric, IsIntersection, IsLiteral, IsMap, IsNullable, IsUnion, IsValue};
 use lang\ast\{Language, Parse, Tokens};
-use unittest\{Assert, Test, Values};
+use test\{Assert, Test, Values};
 
 class TypeParsingTest {
 
@@ -76,37 +76,37 @@ class TypeParsingTest {
     Assert::equals(new IsValue($declaration), $this->parse($declaration));
   }
 
-  #[Test, Values('arrays')]
+  #[Test, Values(from: 'arrays')]
   public function array_type($declaration, $component) {
     Assert::equals(new IsArray($component), $this->parse($declaration));
   }
 
-  #[Test, Values('maps')]
+  #[Test, Values(from: 'maps')]
   public function map_type($declaration, $key, $value) {
     Assert::equals(new IsMap($key, $value), $this->parse($declaration));
   }
 
-  #[Test, Values('generics')]
+  #[Test, Values(from: 'generics')]
   public function generic_type($declaration, $base, $components) {
     Assert::equals(new IsGeneric($base, $components), $this->parse($declaration));
   }
 
-  #[Test, Values('functions')]
+  #[Test, Values(from: 'functions')]
   public function function_type($declaration, $arguments, $returns) {
     Assert::equals(new IsFunction($arguments, $returns), $this->parse($declaration));
   }
 
-  #[Test, Values('unions')]
+  #[Test, Values(from: 'unions')]
   public function union_type($declaration, $components) {
     Assert::equals(new IsUnion($components), $this->parse($declaration));
   }
 
-  #[Test, Values('intersections')]
+  #[Test, Values(from: 'intersections')]
   public function intersection_type($declaration, $components) {
     Assert::equals(new IsIntersection($components), $this->parse($declaration));
   }
 
-  #[Test, Values('nullables')]
+  #[Test, Values(from: 'nullables')]
   public function nullable_type($declaration, $type) {
     Assert::equals(new IsNullable($type), $this->parse($declaration));
   }

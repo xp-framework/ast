@@ -12,7 +12,7 @@ use lang\ast\nodes\{
   Literal
 };
 use lang\ast\types\IsValue;
-use unittest\{Assert, Expect, Test};
+use test\{Assert, Expect, Test};
 
 class TypesTest extends ParseTest {
 
@@ -181,17 +181,17 @@ class TypesTest extends ParseTest {
     );
   }
 
-  #[Test, Expect(['class' => Errors::class, 'withMessage' => 'Cannot redeclare method b()'])]
+  #[Test, Expect(class: Errors::class, message: '/Cannot redeclare method b\(\)/')]
   public function cannot_redeclare_method() {
     $this->parse('class A { public function b() { } public function b() { }}')->tree();
   }
 
-  #[Test, Expect(['class' => Errors::class, 'withMessage' => 'Cannot redeclare property $b'])]
+  #[Test, Expect(class: Errors::class, message: '/Cannot redeclare property \$b/')]
   public function cannot_redeclare_property() {
     $this->parse('class A { public $b; private $b; }')->tree();
   }
 
-  #[Test, Expect(['class' => Errors::class, 'withMessage' => 'Cannot redeclare constant B'])]
+  #[Test, Expect(class: Errors::class, message: '/Cannot redeclare constant B/')]
   public function cannot_redeclare_constant() {
     $this->parse('class A { const B = 1; const B = 3; }')->tree();
   }
