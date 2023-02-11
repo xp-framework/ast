@@ -1,6 +1,7 @@
 <?php namespace lang\ast\nodes;
 
 use lang\ast\Type;
+use lang\ast\types\IsGeneric;
 
 abstract class TypeDeclaration extends Annotated {
   public $modifiers, $name, $body;
@@ -45,7 +46,7 @@ abstract class TypeDeclaration extends Annotated {
    * @return string
    */
   public function declaration() {
-    $literal= $this->name->literal();
+    $literal= $this->name instanceof IsGeneric ? $this->name->base->literal() : $this->name->literal();
     return substr($literal, strrpos($literal, '\\') + 1);
   }
 
