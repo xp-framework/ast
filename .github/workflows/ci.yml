@@ -52,8 +52,7 @@ jobs:
     - name: Install dependencies
       run: >
         curl -sSL https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/e/entrypoint/xp-run-8.6.1.sh > xp-run &&
-        COMPOSER_ROOT_VERSION=$(grep '^##' ChangeLog.md | grep -v '?' | head -1 | cut -d ' ' -f 2) composer install --prefer-dist &&
-        echo "vendor/autoload.php" > composer.pth
+        sh composer.sh
 
     - name: Run test suite
       run: sh xp-run xp.test.Runner src/test/php
