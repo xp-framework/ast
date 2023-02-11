@@ -17,14 +17,20 @@ class IsGeneric extends Type {
   }
 
   /** @return string */
-  public function literal() { return literal($this->name()); }
+  public function literal() {
+    $c= '';
+    foreach ($this->components as $type) {
+      $c.= ', '.$type->name();
+    }
+    return literal($this->base.'<'.substr($c, 2).'>');
+  }
 
   /** @return string */
   public function name() {
-    $n= '';
+    $c= '';
     foreach ($this->components as $type) {
-      $n.= ', '.$type->name();
+      $c.= ', '.$type->name();
     }
-    return strtr(ltrim($this->base, '\\'), '\\', '.').'<'.substr($n, 2).'>';
+    return strtr(ltrim($this->base, '\\'), '\\', '.').'<'.substr($c, 2).'>';
   }
 }

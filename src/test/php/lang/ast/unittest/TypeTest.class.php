@@ -112,4 +112,12 @@ class TypeTest {
   public function name($literal, $name) {
     Assert::equals($name, (new Type($literal))->name());
   }
+
+  #[Test]
+  public function generic_literal_is_fully_qualified() {
+    Assert::equals(
+      "\\util\\Map\xb7\xb7\xfestring\xb8util\xa6Filter\xb7\xb7util\xa6Date",
+      $this->parse('\\util\\Map<string,\\util\Filter<\\util\\Date>>')->literal()
+    );
+  }
 }

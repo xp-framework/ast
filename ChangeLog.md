@@ -3,6 +3,9 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed `lang.ast.types.IsGeneric::literal()` not returning a fully
+  qualified type name
+  (@thekid)
 * Fixed endless loop with syntax errors in `new` - @thekid
 
 ## 9.2.3 / 2023-02-05
