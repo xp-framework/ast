@@ -52,7 +52,7 @@ jobs:
     - name: Install dependencies
       run: >
         curl -sSL https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/e/entrypoint/xp-run-8.6.1.sh > xp-run &&
-        sh composer.sh
+        sh .github/workflows/composer.sh
 
     - name: Run test suite
       run: sh xp-run xp.test.Runner src/test/php
