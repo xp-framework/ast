@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.4 / 2023-02-12
+
+* Merged PR #41: Migrate to new testing library - @thekid
+* Fixed `lang.ast.nodes.TypeDeclaration::declaration()` for generics
+  (@thekid)
 * Fixed `lang.ast.types.IsGeneric::literal()` not returning a fully
   qualified type name
   (@thekid)
