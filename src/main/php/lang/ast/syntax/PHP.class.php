@@ -1116,6 +1116,11 @@ class PHP extends Language {
   }
 
   public function type($parse, $optional= true) {
+    if ('@' === $parse->token->value) {
+      $parse->forward();
+      return new IsUnchecked($this->type($parse, false));
+    }
+
     $t= $this->type0($parse, $optional);
 
     // Check for union and intersection types (which cannot be mixed
@@ -1339,12 +1344,7 @@ class PHP extends Language {
         $promote= null;
       }
 
-      if ('@' === $parse->token->value) {
-        $parse->forward();
-        $type= new IsUnchecked($this->type($parse));
-      } else {
-        $type= $this->type($parse);
-      }
+      $type= $this->type($parse);
 
       if ('...' !== $parse->token->value) {
         $variadic= false;
