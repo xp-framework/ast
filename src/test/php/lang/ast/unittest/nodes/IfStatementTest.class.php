@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\{IfStatement, Variable};
-use unittest\{Assert, Before, Test};
+use test\{Assert, Before, Test};
 
 class IfStatementTest extends NodeTest {
   private $condition;

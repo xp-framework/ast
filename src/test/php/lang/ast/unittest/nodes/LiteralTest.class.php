@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\Literal;
-use unittest\{Assert, Test};
+use test\{Assert, Test};
 
 class LiteralTest extends NodeTest {
 

@@ -2,7 +2,7 @@
 
 use lang\ast\{Language, Parse, Tokens};
 use text\StringTokenizer;
-use unittest\Assert;
+use test\Assert;
 
 abstract class ParseTest {
   const LINE = 1;

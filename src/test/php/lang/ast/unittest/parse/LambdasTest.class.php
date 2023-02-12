@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{BinaryExpression, InvokeExpression, LambdaExpression, Literal, Parameter, ReturnStatement, Signature, Variable, Block};
-use unittest\{Assert, Before, Test};
+use lang\ast\nodes\{BinaryExpression, Block, InvokeExpression, LambdaExpression, Literal, Parameter, ReturnStatement, Signature, Variable};
+use test\{Assert, Before, Test};
 
 class LambdasTest extends ParseTest {
   private $expression, $parameter;

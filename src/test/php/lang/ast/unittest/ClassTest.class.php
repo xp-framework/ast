@@ -2,7 +2,7 @@
 
 use lang\ast\nodes\{ClassDeclaration, Method, Signature};
 use lang\ast\types\IsValue;
-use unittest\{Assert, Before, Test};
+use test\{Assert, Before, Test};
 
 class ClassTest {
   private $method;

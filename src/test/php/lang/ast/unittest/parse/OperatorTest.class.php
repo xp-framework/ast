@@ -18,8 +18,8 @@ use lang\ast\nodes\{
   UnaryExpression,
   Variable
 };
-use lang\ast\types\{IsValue, IsExpression};
-use unittest\{Assert, Test, Values};
+use lang\ast\types\{IsExpression, IsValue};
+use test\{Assert, Test, Values};
 
 class OperatorTest extends ParseTest {
 

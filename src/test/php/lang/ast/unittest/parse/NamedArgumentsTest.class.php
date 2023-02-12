@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{InstanceExpression, InvokeExpression, Literal, Variable};
-use unittest\{Assert, Test};
+use test\{Assert, Test};
 
 /**
  * Named argumwents

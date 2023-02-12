@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\nodes;
 
 use lang\ast\nodes\{CaseLabel, Literal, SwitchStatement, Variable};
-use unittest\{Assert, Test};
+use test\{Assert, Test};
 
 class SwitchStatementTest extends NodeTest {
   private $expression;

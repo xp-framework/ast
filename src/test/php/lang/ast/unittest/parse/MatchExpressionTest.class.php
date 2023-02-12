@@ -11,7 +11,7 @@ use lang\ast\nodes\{
   NewExpression
 };
 use lang\ast\types\IsValue;
-use unittest\{Assert, Test};
+use test\{Assert, Test};
 
 class MatchExpressionTest extends ParseTest {
 

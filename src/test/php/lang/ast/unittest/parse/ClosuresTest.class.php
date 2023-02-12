@@ -2,7 +2,7 @@
 
 use lang\ast\nodes\{BinaryExpression, ClosureExpression, Literal, Parameter, ReturnStatement, Signature, Variable};
 use lang\ast\{FunctionType, Type};
-use unittest\{Assert, Before, Test};
+use test\{Assert, Before, Test};
 
 class ClosuresTest extends ParseTest {
   private $returns;

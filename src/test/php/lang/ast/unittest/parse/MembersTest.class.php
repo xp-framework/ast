@@ -16,7 +16,7 @@ use lang\ast\nodes\{
   Parameter
 };
 use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion, IsValue};
-use unittest\{Assert, Test, Values};
+use test\{Assert, Test, Values};
 
 class MembersTest extends ParseTest {
 
@@ -92,7 +92,7 @@ class MembersTest extends ParseTest {
     $this->assertParsed([$class], 'class A { private const T = 1; }');
   }
 
-  #[Test, Values('types')]
+  #[Test, Values(from: 'types')]
   public function method_with_typed_parameter($declaration, $expected) {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $params= [new Parameter('param', $expected, null, false, false, null, null, null, self::LINE)];
@@ -101,7 +101,7 @@ class MembersTest extends ParseTest {
     $this->assertParsed([$class], 'class A { public function a('.$declaration.' $param) { } }');
   }
 
-  #[Test, Values('types')]
+  #[Test, Values(from: 'types')]
   public function method_with_return_type($declaration, $expected) {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], $expected, null, self::LINE), [], null, null, self::LINE));

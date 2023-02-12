@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{ArrayLiteral, Literal};
-use unittest\{Assert, Test, Values};
+use test\{Assert, Test, Values};
 
 class LiteralsTest extends ParseTest {
 

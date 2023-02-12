@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{Literal, OffsetExpression, StaticLocals, Variable};
-use unittest\{Assert, Test, Values};
+use test\{Assert, Test, Values};
 
 class VariablesTest extends ParseTest {
 

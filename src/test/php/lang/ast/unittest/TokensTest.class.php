@@ -2,7 +2,7 @@
 
 use lang\FormatException;
 use lang\ast\{Language, Tokens};
-use unittest\{Assert, Expect, Test, Values};
+use test\{Assert, Before, Expect, Test, Values};
 
 class TokensTest {
   private $language;
@@ -38,7 +38,7 @@ class TokensTest {
     $this->assertTokens([['string' => $input]], new Tokens($input));
   }
 
-  #[Test, Expect(class: FormatException::class, withMessage: '/Unclosed string literal/'), Values(['"', "'", '"Test', "'Test"])]
+  #[Test, Expect(class: FormatException::class, message: '/Unclosed string literal/'), Values(['"', "'", '"Test', "'Test"])]
   public function unclosed_string_literals($input) {
     (new Tokens($input))->iterator($this->language)->current();
   }

@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\Scope;
-use unittest\{Assert, Test};
+use test\{Assert, Test};
 
 class ScopeTest {
 

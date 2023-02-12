@@ -2,7 +2,7 @@
 
 use lang\IllegalArgumentException;
 use lang\ast\nodes\{CatchStatement, Variable};
-use unittest\{Assert, Before, Test};
+use test\{Assert, Before, Test};
 
 class CatchStatementTest extends NodeTest {
   private $types;

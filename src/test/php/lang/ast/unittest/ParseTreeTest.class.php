@@ -1,9 +1,9 @@
 <?php namespace lang\ast\unittest;
 
 use lang\ast\nodes\{ClassDeclaration, NamespaceDeclaration};
-use lang\ast\types\{Compiled, Reflection, IsValue};
+use lang\ast\types\{Compiled, IsValue, Reflection};
 use lang\ast\{ParseTree, Scope};
-use unittest\{Assert, Test, Values};
+use test\{Assert, Test, Values};
 
 class ParseTreeTest {
 

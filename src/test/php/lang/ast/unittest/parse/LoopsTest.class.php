@@ -1,7 +1,22 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{Assignment, BinaryExpression, BreakStatement, ContinueStatement, DoLoop, ForLoop, ForeachLoop, GotoStatement, InvokeExpression, Label, Literal, UnaryExpression, Variable, WhileLoop};
-use unittest\{Assert, Before, Test};
+use lang\ast\nodes\{
+  Assignment,
+  BinaryExpression,
+  BreakStatement,
+  ContinueStatement,
+  DoLoop,
+  ForLoop,
+  ForeachLoop,
+  GotoStatement,
+  InvokeExpression,
+  Label,
+  Literal,
+  UnaryExpression,
+  Variable,
+  WhileLoop
+};
+use test\{Assert, Before, Test};
 
 class LoopsTest extends ParseTest {
   private $loop;

@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{Annotated, ArrayLiteral, Literal};
-use unittest\{Assert, Test, Values};
+use test\{Assert, Test, Values};
 
 /** @see https://wiki.php.net/rfc/shorter_attribute_syntax_change */
 class AttributesTest extends ParseTest {
@@ -160,75 +160,75 @@ class AttributesTest extends ParseTest {
   }
 
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_function($attributes, $expected) {
     $tree= $this->parse($attributes.' function fixture() { }')->tree();
     $this->assertAnnotated($expected, $tree->children()[0]);
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_anonymous_class($attributes, $expected) {
     $tree= $this->parse('new '.$attributes.' class() { };')->tree();
     $this->assertAnnotated($expected, $tree->children()[0]->definition);
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_closure($attributes, $expected) {
     $tree= $this->parse($attributes.' function() { };')->tree();
     $this->assertAnnotated($expected, $tree->children()[0]);
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_lambda($attributes, $expected) {
     $tree= $this->parse($attributes.' fn() => true;')->tree();
     $this->assertAnnotated($expected, $tree->children()[0]);
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_class($attributes, $expected) {
     $this->assertAnnotated($expected, $this->type($attributes.' class T { }'));
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_trait($attributes, $expected) {
     $this->assertAnnotated($expected, $this->type($attributes.' trait T { }'));
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_interface($attributes, $expected) {
     $this->assertAnnotated($expected, $this->type($attributes.' interface T { }'));
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_enum($attributes, $expected) {
     $this->assertAnnotated($expected, $this->type($attributes.' enum T { }'));
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_constant($attributes, $expected) {
     $type= $this->type('class T { '.$attributes.' const FIXTURE = 1; }');
     $this->assertAnnotated($expected, $type->constant('FIXTURE'));
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_property($attributes, $expected) {
     $type= $this->type('class T { '.$attributes.' public $fixture; }');
     $this->assertAnnotated($expected, $type->property('fixture'));
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_method($attributes, $expected) {
     $type= $this->type('class T { '.$attributes.' public function fixture() { } }');
     $this->assertAnnotated($expected, $type->method('fixture'));
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_parameter($attributes, $expected) {
     $type= $this->type('class T { public function fixture('.$attributes.' $p) { } }');
     $this->assertAnnotated($expected, $type->method('fixture')->signature->parameters[0]);
   }
 
-  #[Test, Values('attributes')]
+  #[Test, Values(from: 'attributes')]
   public function on_enum_case($attributes, $expected) {
     $type= $this->type('enum T { '.$attributes.' case ONE; }');
     $this->assertAnnotated($expected, $type->case('ONE'));
