@@ -71,6 +71,7 @@ use lang\ast\types\{
   IsLiteral,
   IsMap,
   IsNullable,
+  IsUnchecked,
   IsUnion,
   IsValue
 };
@@ -1338,7 +1339,12 @@ class PHP extends Language {
         $promote= null;
       }
 
-      $type= $this->type($parse);
+      if ('@' === $parse->token->value) {
+        $parse->forward();
+        $type= new IsUnchecked($this->type($parse));
+      } else {
+        $type= $this->type($parse);
+      }
 
       if ('...' !== $parse->token->value) {
         $variadic= false;
