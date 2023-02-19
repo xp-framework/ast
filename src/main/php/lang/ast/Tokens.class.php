@@ -5,9 +5,9 @@ use io\{Path, File};
 use lang\FormatException;
 
 /**
- * Tokenize code.
+ * Tokenizes code.
  *
- * @test  xp://lang.ast.unittest.TokensTest
+ * @test  lang.ast.unittest.TokensTest
  */
 class Tokens {
   const DELIMITERS = " \r\n\t'\$\"=,;.:?!(){}[]#+-*/|&^@%~<>";
@@ -128,11 +128,28 @@ class Tokens {
         }
       } else if (0 === strcspn($token, '0123456789')) {
         if ('.' === ($t= $next(self::DELIMITERS))) {
-          yield new Token($language->symbol('(literal)'), 'decimal', str_replace('_', '', $token).$t.$next(self::DELIMITERS), $line);
+          $number= 'decimal';
+          $token.= '.'.$next(self::DELIMITERS);
         } else {
           null === $t || $offset-= strlen($t);
-          yield new Token($language->symbol('(literal)'), 'integer', str_replace('_', '', $token), $line);
+          $number= 'integer';
         }
+
+        // Check for exponentation notation with + and -
+        number: $e= strcspn($token, 'eE');
+        if ($e === strlen($token) - 1) {
+          $number= 'decimal';
+          $t= $next(self::DELIMITERS);
+          if ('-' === $t || '+' === $t) {
+            $token.= $t.$next(self::DELIMITERS);
+          } else {
+            null === $t || $offset-= strlen($t);
+          }
+        } else if ($e < strlen($token)) {
+          $number= 'decimal';
+        }
+
+        yield new Token($language->symbol('(literal)'), $number, str_replace('_', '', $token), $line);
       } else if (isset(self::OPERATORS[$token])) {
 
         // Resolve .5 (a floating point number) vs `.`, the concatenation operator
@@ -140,8 +157,9 @@ class Tokens {
         if ('.' === $token) {
           $t= $next(self::DELIMITERS);
           if (0 === strcspn($t, '0123456789')) {
-            yield new Token($language->symbol('(literal)'), 'decimal', ".$t", $line);
-            continue;
+            $token= ".$t";
+            $number= 'decimal';
+            goto number;
           }
           $offset-= strlen($t);
         } else if ('/' === $token) {

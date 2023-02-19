@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed issue #43: Exponent notation - @thekid
+
 ## 9.2.4 / 2023-02-12
 
 * Merged PR #41: Migrate to new testing library - @thekid

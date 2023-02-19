@@ -48,9 +48,30 @@ class TokensTest {
     $this->assertTokens([['integer' => str_replace('_', '', $input)]], new Tokens($input));
   }
 
-  #[Test, Values(['0.0', '6.1', '.5', '107_925_284.88'])]
+  #[Test, Values(['0.0', '6.1', '.5', '107_925_284.88', '.5_000_1'])]
   public function float_literal($input) {
     $this->assertTokens([['decimal' => str_replace('_', '', $input)]], new Tokens($input));
+  }
+
+  #[Test, Values(['1.2e3', '1.23015e+3', '12.3015e+02', '7E10', '7E+10', '7E-10', '.5E+1', '1_200E-1'])]
+  public function decimal_with_exponent($input) {
+    $this->assertTokens([['decimal' => str_replace('_', '', $input)]], new Tokens($input));
+  }
+
+  #[Test, Values(['1.2', '.5', '1.2e3', '1.23015e+3', '12.3015e+02', '7E10', '7E+10', '7E-10', '.5E+1', '1_200E-1'])]
+  public function plus_1_without_space($input) {
+    $this->assertTokens(
+      [['decimal' => str_replace('_', '', $input)], ['operator' => '+'], ['integer' => '1']],
+      new Tokens($input.'+1')
+    );
+  }
+
+  #[Test, Values(['1.2', '.5', '1.2e3', '1.23015e+3', '12.3015e+02', '7E10', '7E+10', '7E-10', '.5E+1', '1_200E-1'])]
+  public function minus_1_without_space($input) {
+    $this->assertTokens(
+      [['decimal' => str_replace('_', '', $input)], ['operator' => '-'], ['integer' => '1']],
+      new Tokens($input.'-1')
+    );
   }
 
   #[Test, Values(['$a', '$_', '$input'])]
