@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.6 / 2023-02-19
+
 * Fixed relative type names with namespace imports - @thekid
 
 ## 9.2.5 / 2023-02-19
