@@ -42,6 +42,15 @@ class ScopeTest {
   }
 
   #[Test]
+  public function resolve_relative_with_namespace_import() {
+    $s= new Scope();
+    $s->package('test');
+    $s->import('lang\\ast');
+
+    Assert::equals('\\lang\\ast\\Parse', $s->resolve('ast\\Parse'));
+  }
+
+  #[Test]
   public function resolve_imported_in_package() {
     $s= new Scope();
     $s->package('test');

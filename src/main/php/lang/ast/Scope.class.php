@@ -5,7 +5,8 @@ use lang\ast\types\{Compiled, Reflection};
 /**
  * Scope with package and imports
  *
- * @test  xp://lang.unittest.ast.ScopeTest
+ * @see   https://www.php.net/manual/en/language.namespaces.importing.php
+ * @test  lang.unittest.ast.ScopeTest
  */
 class Scope {
   private static $defaults= [
@@ -77,8 +78,14 @@ class Scope {
       return $this->imports[$name];
     } else if (0 === strncmp($name, 'namespace\\', 10)) {
       return $this->package.'\\'.substr($name, 10);
-    } else if ($this->package) {
+    } else if ($this->package && false === ($p= strpos($name, '\\'))) {
       return $this->package.'\\'.$name;
+    } else if ($this->package) {
+      $ns= substr($name, 0, $p);
+      return isset($this->imports[$ns])
+        ? $this->imports[$ns].substr($name, $p)
+        : $this->package.'\\'.$name
+      ;
     } else if ($this->parent) {
       return $this->parent->resolve($name);
     } else {

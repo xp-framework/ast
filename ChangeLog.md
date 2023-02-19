@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed relative type names with namespace imports - @thekid
+
 ## 9.2.5 / 2023-02-19
 
 * Fixed issue #43: Exponent notation - @thekid
