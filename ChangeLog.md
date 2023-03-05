@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.2.7 / 2023-03-05
+
+* Fixed various expressions inside braces - @thekid
+
 ## 9.2.6 / 2023-02-19
 
 * Fixed relative type names with namespace imports - @thekid
