@@ -160,7 +160,7 @@ class PHP extends Language {
             return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $token->line);
           }
 
-          $parse->queue[]= $parse->token;
+          array_unshift($parse->queue, $parse->token);
           $parse->token= $dots;
         }
 
@@ -184,7 +184,7 @@ class PHP extends Language {
           return new CallableExpression($left, $token->line);
         }
 
-        $parse->queue[]= $parse->token;
+        array_unshift($parse->queue, $parse->token);
         $parse->token= $dots;
       }
 
@@ -261,7 +261,6 @@ class PHP extends Language {
       }
       $parse->queue= $parse->queue ? array_merge($skipped, $parse->queue) : $skipped;
 
-
       if ($cast && ('operator' !== $parse->token->kind || '(' === $parse->token->value || '[' === $parse->token->value)) {
         $parse->forward();
         $parse->expecting('(', 'cast');
@@ -336,7 +335,7 @@ class PHP extends Language {
           return new CallableNewExpression($new, $token->line);
         }
 
-        $parse->queue[]= $parse->token;
+        array_unshift($parse->queue, $parse->token);
         $parse->token= $dots;
       }
 
@@ -359,7 +358,7 @@ class PHP extends Language {
       } else {
         $expr= $this->expression($parse, 0);
         if ('operator' === $expr->kind) {
-          $parse->queue[]= $parse->token;
+          array_unshift($parse->queue, $parse->token);
           $parse->token= $expr;
           return new YieldExpression(null, null, $token->line);
         } else if ('=>' === $parse->token->value) {
@@ -1133,7 +1132,7 @@ class PHP extends Language {
 
         // Solve ambiguity `T1&T2` vs. `T1 &$param`
         if ('variable' === $parse->token->kind) {
-          $parse->queue[]= $parse->token;
+          array_unshift($parse->queue, $parse->token);
           $parse->token= $token;
           return $t;
         }
