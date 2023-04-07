@@ -22,6 +22,7 @@ use lang\ast\nodes\{
   EchoStatement,
   EnumCase,
   EnumDeclaration,
+  Expression,
   ForLoop,
   ForeachLoop,
   FunctionDeclaration,
@@ -1147,8 +1148,14 @@ class PHP extends Language {
 
   private function member($parse) {
     if ('{' === $parse->token->value) {
+      $line= $parse->token->line;
       $parse->forward();
-      $expr= $this->expression($parse, 0);
+      $expr= new Expression($this->expression($parse, 0), false, $line);
+      $parse->expecting('}', 'dynamic member');
+    } else if ('${' === $parse->token->value) {
+      $line= $parse->token->line;
+      $parse->forward();
+      $expr= new Expression($this->expression($parse, 0), true, $line);
       $parse->expecting('}', 'dynamic member');
     } else if ('variable' === $parse->token->kind) {
       $expr= new Variable(substr($parse->token->value, 1), $parse->token->line);
