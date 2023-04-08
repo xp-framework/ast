@@ -4,10 +4,11 @@ use lang\ast\Node;
 
 class Variable extends Node {
   public $kind= 'variable';
-  public $name;
+  public $pointer, $const;
 
-  public function __construct($name, $line= -1) {
-    $this->name= $name;
+  public function __construct($pointer, $line= -1) {
+    $this->pointer= $pointer;
+    $this->const= is_string($pointer);
     $this->line= $line;
   }
 }

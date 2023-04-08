@@ -147,7 +147,7 @@ class OperatorTest extends ParseTest {
   #[Test]
   public function new_var() {
     $this->assertParsed(
-      [new NewExpression(new IsExpression(new Variable('class')), [], self::LINE)],
+      [new NewExpression(new IsExpression(new Variable('class', self::LINE)), [], self::LINE)],
       'new $class();'
     );
   }

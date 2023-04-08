@@ -5,6 +5,7 @@ use lang\ast\nodes\{
   Annotations,
   ClassDeclaration,
   Constant,
+  Expression,
   InstanceExpression,
   InvokeExpression,
   Literal,
@@ -145,22 +146,54 @@ class MembersTest extends ParseTest {
 
   #[Test]
   public function dynamic_instance_property_access_via_variable_expression() {
+    $member= new Expression(new Variable('member', self::LINE), self::LINE);
     $this->assertParsed(
-      [new InstanceExpression(new Variable('a', self::LINE), new Variable('member', self::LINE), self::LINE)],
+      [new InstanceExpression(new Variable('a', self::LINE), $member, self::LINE)],
       '$a->{$member};'
     );
   }
 
   #[Test]
+  public function dynamic_class_property_access_via_variable_expression() {
+    $member= new Variable(new Expression(new Variable('member', self::LINE), self::LINE), self::LINE);
+    $this->assertParsed(
+      [new ScopeExpression('self', $member, self::LINE)],
+      'self::${$member};'
+    );
+  }
+
+  #[Test]
   public function dynamic_instance_property_access_via_complex_expression() {
-    $member= new InvokeExpression(
-      new InstanceExpression(new Variable('field', self::LINE), new Literal('get', self::LINE), self::LINE),
-      [new Variable('instance', self::LINE)],
+    $member= new Expression(
+      new InvokeExpression(
+        new InstanceExpression(new Variable('field', self::LINE), new Literal('get', self::LINE), self::LINE),
+        [new Variable('instance', self::LINE)],
+        self::LINE
+      ),
       self::LINE
     );
     $this->assertParsed(
       [new InstanceExpression(new Variable('a', self::LINE), $member, self::LINE)],
       '$a->{$field->get($instance)};'
+    );
+  }
+
+  #[Test]
+  public function dynamic_class_property_access_via_complex_expression() {
+    $member= new Variable(
+      new Expression(
+        new InvokeExpression(
+          new InstanceExpression(new Variable('field', self::LINE), new Literal('get', self::LINE), self::LINE),
+          [new Variable('instance', self::LINE)],
+          self::LINE
+        ),
+        self::LINE
+      ),
+      self::LINE
+    );
+    $this->assertParsed(
+      [new ScopeExpression('self', $member, self::LINE)],
+      'self::${$field->get($instance)};'
     );
   }
 

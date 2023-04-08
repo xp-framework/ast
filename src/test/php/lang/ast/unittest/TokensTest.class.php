@@ -76,7 +76,15 @@ class TokensTest {
 
   #[Test, Values(['$a', '$_', '$input'])]
   public function variables($input) {
-    $this->assertTokens([['variable' => $input]], new Tokens($input));
+    $this->assertTokens([['variable' => '$'], ['name' => substr($input, 1)]], new Tokens($input));
+  }
+
+  #[Test]
+  public function dynamic_variable() {
+    $this->assertTokens(
+      [['variable' => '$'], ['variable' => '$'], ['name' => 'var']],
+      new Tokens('$$var')
+    );
   }
 
   #[Test, Values(['+', '-', '*', '/', '**', '==', '!=', '<=', '>=', '<=>', '===', '!==', '=>', '->',])]

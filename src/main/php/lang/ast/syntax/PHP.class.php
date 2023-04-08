@@ -22,6 +22,7 @@ use lang\ast\nodes\{
   EchoStatement,
   EnumCase,
   EnumDeclaration,
+  Expression,
   ForLoop,
   ForeachLoop,
   FunctionDeclaration,
@@ -299,8 +300,8 @@ class PHP extends Language {
         $type= new IsExpression($this->expression($parse, 0));
         $parse->expecting(')', 'new type');
       } else if ('variable' === $parse->token->kind) {
-        $type= new IsExpression(new Variable(substr($parse->token->value, 1)));
         $parse->forward();
+        $type= new IsExpression($this->variable($parse, 1000));
       } else if ('class' === $parse->token->value) {
         $annotations= null;
         $type= null;
@@ -389,7 +390,8 @@ class PHP extends Language {
       if ('variable' === $parse->token->kind) {
         $init= [];
         while (';' !== $parse->token->value) {
-          $variable= substr($parse->token->value, 1);
+          $parse->forward();
+          $variable= $parse->token->value;
           $parse->forward();
 
           if ('=' === $parse->token->value) {
@@ -463,7 +465,7 @@ class PHP extends Language {
     });
 
     $this->prefix('(variable)', 0, function($parse, $token) {
-      return new Variable(substr($token->value, 1), $token->line);
+      return $this->variable($parse, 0);
     });
 
     $this->prefix('(literal)', 0, function($parse, $token) {
@@ -765,7 +767,8 @@ class PHP extends Language {
           $variable= null;
           $parse->forward();
         } else {
-          $variable= substr($parse->token->value, 1);
+          $parse->forward();
+          $variable= $parse->token->value;
           $parse->forward();
           $parse->expecting(')', 'catch');
         }
@@ -1045,7 +1048,7 @@ class PHP extends Language {
       $parse->expecting(';', 'constant declaration');
     });
 
-    $this->body('@variable', function($parse, &$body, $meta, $modifiers, $holder) {
+    $this->body('$', function($parse, &$body, $meta, $modifiers, $holder) {
       $this->properties($parse, $body, $meta, $modifiers, null, $holder);
     });
 
@@ -1145,14 +1148,34 @@ class PHP extends Language {
     return $t;
   }
 
+  private function variable($parse, $rbp) {
+    $line= $parse->token->line;
+
+    // Constant vs. dynamic variables: $name, $$name, ${<expr>}
+    if ('name' === $parse->token->kind) {
+      $ptr= $parse->token->value;
+      $parse->forward();
+    } else if ('variable' === $parse->token->kind) {
+      $ptr= $this->expression($parse, $rbp);
+    } else {
+      $parse->expecting('{', 'variable expression');
+      $expr= $this->expression($parse, 0);
+      $parse->expecting('}', 'variable expression');
+      $ptr= new Expression($expr, $line);
+    }
+
+    return new Variable($ptr, $line);
+  }
+
   private function member($parse) {
     if ('{' === $parse->token->value) {
+      $line= $parse->token->line;
       $parse->forward();
-      $expr= $this->expression($parse, 0);
+      $expr= new Expression($this->expression($parse, 0), $line);
       $parse->expecting('}', 'dynamic member');
     } else if ('variable' === $parse->token->kind) {
-      $expr= new Variable(substr($parse->token->value, 1), $parse->token->line);
       $parse->forward();
+      $expr= $this->variable($parse, 0);
     } else if ('name' === $parse->token->kind) {
       $expr= new Literal($parse->token->value, $parse->token->line);
       $parse->forward();
@@ -1263,15 +1286,15 @@ class PHP extends Language {
       $line= $parse->token->line;
 
       // Untyped `$a` vs. typed `int $a`
-      if ('variable' === $parse->token->kind) {
-        $name= $parse->token->value;
-      } else {
+      if ('variable' !== $parse->token->kind) {
         $type= $this->type($parse, false);
-        $name= $parse->token->value;
       }
+      $parse->forward();
+      $name= $parse->token->value;
 
-      if (isset($body[$name])) {
-        $parse->raise('Cannot redeclare property '.$name);
+      $lookup= '$'.$name;
+      if (isset($body[$lookup])) {
+        $parse->raise('Cannot redeclare property '.$lookup);
       }
 
       $parse->forward();
@@ -1281,7 +1304,7 @@ class PHP extends Language {
       } else {
         $expr= null;
       }
-      $body[$name]= new Property($modifiers, substr($name, 1), $type, $expr, $annotations, $comment, $line, $holder);
+      $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line, $holder);
 
       if (',' === $parse->token->value) {
         $parse->forward();
@@ -1357,6 +1380,7 @@ class PHP extends Language {
         $byref= false;
       }
 
+      $parse->forward();
       $name= $parse->token->value;
       $parse->forward();
 
@@ -1365,7 +1389,7 @@ class PHP extends Language {
         $parse->forward();
         $default= $this->expression($parse, 0);
       }
-      $parameters[]= new Parameter(substr($name, 1), $type, $default, $byref, $variadic, $promote, $annotations, null, $line);
+      $parameters[]= new Parameter($name, $type, $default, $byref, $variadic, $promote, $annotations, null, $line);
 
       if (')' === $parse->token->value) {
         break;
@@ -1451,9 +1475,11 @@ class PHP extends Language {
       while (')' !== $parse->token->value) {
         if ('&' === $parse->token->value) {
           $parse->forward();
-          $use[]= '&'.$parse->token->value;
+          $parse->forward();
+          $use[]= '&$'.$parse->token->value;
         } else {
-          $use[]= $parse->token->value;
+          $parse->forward();
+          $use[]= '$'.$parse->token->value;
         }
         $parse->forward();
         if (')' === $parse->token->value) break;
