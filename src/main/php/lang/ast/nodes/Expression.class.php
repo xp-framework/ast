@@ -4,11 +4,10 @@ use lang\ast\Node;
 
 class Expression extends Node {
   public $kind= 'expression';
-  public $variable, $inline;
+  public $inline;
 
-  public function __construct($inline, $variable, $line= -1) {
+  public function __construct($inline, $line= -1) {
     $this->inline= $inline;
-    $this->variable= $variable;
     $this->line= $line;
   }
 

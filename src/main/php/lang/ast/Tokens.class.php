@@ -118,7 +118,7 @@ class Tokens {
         yield new Token($language->symbol('(literal)'), 'string', $string, $line);
         $line+= substr_count($string, "\n");
       } else if ('$' === $token) {
-        yield new Token($language->symbol('(variable)'), 'variable', '$'.$next(self::DELIMITERS), $line);
+        yield new Token($language->symbol('(variable)'), 'variable', '$', $line);
       } else if ('#' === $token) {
         $t= $next(self::DELIMITERS);
         if ('[' === $t) {

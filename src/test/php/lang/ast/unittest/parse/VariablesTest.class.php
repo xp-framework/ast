@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{Literal, OffsetExpression, StaticLocals, Variable};
+use lang\ast\nodes\{Expression, Literal, OffsetExpression, StaticLocals, Variable};
 use test\{Assert, Test, Values};
 
 class VariablesTest extends ParseTest {
@@ -10,6 +10,46 @@ class VariablesTest extends ParseTest {
     $this->assertParsed(
       [new Variable($name, self::LINE)],
       '$'.$name.';'
+    );
+  }
+
+  #[Test]
+  public function dynamic_variable() {
+    $this->assertParsed(
+      [new Variable(new Variable('v', self::LINE), self::LINE)],
+      '$$v;'
+    );
+  }
+
+  #[Test]
+  public function nested_dynamic_variable() {
+    $this->assertParsed(
+      [new Variable(new Variable(new Variable('v', self::LINE), self::LINE), self::LINE)],
+      '$$$v;'
+    );
+  }
+
+  #[Test]
+  public function nested_nested_dynamic_variable() {
+    $this->assertParsed(
+      [new Variable(new Variable(new Variable(new Variable('v', self::LINE), self::LINE), self::LINE), self::LINE)],
+      '$$$$v;'
+    );
+  }
+
+  #[Test]
+  public function variable_expression() {
+    $this->assertParsed(
+      [new Variable(new Expression(new Variable('v', self::LINE), self::LINE), self::LINE)],
+      '${$v};'
+    );
+  }
+
+  #[Test]
+  public function nested_variable_expression() {
+    $this->assertParsed(
+      [new Variable(new Variable(new Expression(new Variable('v', self::LINE), self::LINE), self::LINE), self::LINE)],
+      '$${$v};'
     );
   }
 
