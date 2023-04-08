@@ -3,6 +3,16 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 10.0.0 / 2023-04-08
+
+* **Heads up:** Instances of `lang.ast.nodes.Variable` can contain
+  the name *as well as* other variables or expressions. The *name*
+  property is renamed to *pointer* to reflect this change.
+  (@thekid)
+* Merged PR #44: Parse expressions like `$this->{$member}` into
+  `lang.ast.nodes.Expression` instances.
+  (@thekid)
+
 ## 9.2.7 / 2023-03-05
 
 * Fixed various expressions inside braces - @thekid
