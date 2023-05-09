@@ -1343,7 +1343,7 @@ class PHP extends Language {
             $parse->expecting('}', 'field hook');
           }
 
-          $body[$lookup]->hooks[$hook]= new Hook($hook, $lookup, $expr, $argument, $line);
+          $body[$lookup]->hooks[$hook]= new Hook($hook, $name, $expr, $argument, $line);
         }
 
         $parse->forward();
