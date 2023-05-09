@@ -3,6 +3,7 @@
 use lang\ast\Type;
 use lang\ast\nodes\{
   Annotations,
+  Block,
   ClassDeclaration,
   Constant,
   Expression,
@@ -11,6 +12,7 @@ use lang\ast\nodes\{
   Literal,
   Method,
   Property,
+  ReturnStatement,
   ScopeExpression,
   Signature,
   Variable,
@@ -126,6 +128,28 @@ class MembersTest extends ParseTest {
     $class->declare(new Method(['public'], 'a', new Signature([], null, null, self::LINE), [], $annotations, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { #[Test, Ignore("Not implemented")] public function a() { } }');
+  }
+
+  #[Test]
+  public function property_with_get_and_set_hooks() {
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
+    $return= new ReturnStatement(new Literal('"Hello"', self::LINE), self::LINE);
+    $prop->hooks['get']= new Block([$return], self::LINE);
+    $prop->hooks['set']= new Block([], self::LINE);
+    $class->declare($prop);
+
+    $this->assertParsed([$class], 'class A { public $a { get { return "Hello"; } set { } } }');
+  }
+
+  #[Test]
+  public function property_with_short_get_hook() {
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
+    $prop->hooks['get']= new Literal('"Hello"', self::LINE);
+    $class->declare($prop);
+
+    $this->assertParsed([$class], 'class A { public $a { get => "Hello"; } }');
   }
 
   #[Test]

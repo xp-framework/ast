@@ -1282,7 +1282,7 @@ class PHP extends Language {
     $parse->comment= null;
     $annotations= $meta[DETAIL_ANNOTATIONS] ?? null;
 
-    while (';' !== $parse->token->value) {
+    do {
       $line= $parse->token->line;
 
       // Untyped `$a` vs. typed `int $a`
@@ -1304,13 +1304,40 @@ class PHP extends Language {
       } else {
         $expr= null;
       }
+
       $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line, $holder);
 
-      if (',' === $parse->token->value) {
+      // Check for property hooks
+      if (';' === $parse->token->value) {
         $parse->forward();
+        return;
+      } else if (',' === $parse->token->value) {
+        $parse->forward();
+        continue;
+      } else if ('{' === $parse->token->value) {
+        $parse->forward();
+        do {
+          $hook= $parse->token->value;
+          $parse->forward();
+
+          if ('=>' === $parse->token->value) {
+            $parse->forward();
+            $body[$lookup]->hooks[$hook]= $this->expression($parse, 0);
+          } else if ('{' === $parse->token->value) {
+            $line= $parse->token->line;
+            $parse->forward();
+            $body[$lookup]->hooks[$hook]= new Block($this->statements($parse), $line);
+          } else if ('}' === $parse->token->value) {
+            break;
+          }
+        } while (null !== $parse->token->value);
+
+        $parse->forward();
+        return;
+      } else {
+        $parse->expecting(';, , or {', 'field');
       }
-    }
-    $parse->expecting(';', 'field declaration');
+    } while (null !== $parse->token->value);
   }
 
   /** Parses PHP 8 attributes (#[Test]) */
