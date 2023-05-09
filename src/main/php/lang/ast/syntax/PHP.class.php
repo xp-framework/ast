@@ -27,6 +27,7 @@ use lang\ast\nodes\{
   ForeachLoop,
   FunctionDeclaration,
   GotoStatement,
+  Hook,
   IfStatement,
   InstanceExpression,
   InstanceOfExpression,
@@ -1316,21 +1317,34 @@ class PHP extends Language {
         continue;
       } else if ('{' === $parse->token->value) {
         $parse->forward();
-        do {
+
+        while ('}' !== $parse->token->value) {
           $hook= $parse->token->value;
           $parse->forward();
 
+          if ('(' === $parse->token->value) {
+            $parse->forward();
+            $parse->expecting('(variable)', 'field hook');
+            $argument= $parse->token->value;
+            $parse->forward();
+            $parse->expecting(')', 'field hook');
+          } else {
+            $argument= null;
+          }
+
+          $line= $parse->token->line;
           if ('=>' === $parse->token->value) {
             $parse->forward();
-            $body[$lookup]->hooks[$hook]= $this->expression($parse, 0);
+            $expr= $this->expression($parse, 0);
+            $parse->expecting(';', 'field hook');
           } else if ('{' === $parse->token->value) {
-            $line= $parse->token->line;
             $parse->forward();
-            $body[$lookup]->hooks[$hook]= new Block($this->statements($parse), $line);
-          } else if ('}' === $parse->token->value) {
-            break;
+            $expr= new Block($this->statements($parse), $line);
+            $parse->expecting('}', 'field hook');
           }
-        } while (null !== $parse->token->value);
+
+          $body[$lookup]->hooks[$hook]= new Hook($hook, $lookup, $expr, $argument, $line);
+        }
 
         $parse->forward();
         return;
