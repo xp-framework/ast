@@ -155,6 +155,16 @@ class MembersTest extends ParseTest {
   }
 
   #[Test]
+  public function property_with_abbreviated_get_hook() {
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
+    $prop->hooks['get']= new Hook([], 'get', 'a', new Literal('"Hello"', self::LINE), null, self::LINE, new IsValue('\\A'));
+    $class->declare($prop);
+
+    $this->assertParsed([$class], 'class A { public $a => "Hello"; }');
+  }
+
+  #[Test]
   public function property_with_typed_hook() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);

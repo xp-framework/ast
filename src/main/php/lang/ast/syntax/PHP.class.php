@@ -1315,6 +1315,13 @@ class PHP extends Language {
       } else if (',' === $parse->token->value) {
         $parse->forward();
         continue;
+      } else if ('=>' === $parse->token->value) {
+        $parse->forward();
+        $expr= $this->expression($parse, 0);
+        $parse->expecting(';', 'field hook');
+
+        $body[$lookup]->hooks['get']= new Hook([], 'get', $name, $expr, null, $line, $holder);
+        return;
       } else if ('{' === $parse->token->value) {
         $parse->forward();
 
