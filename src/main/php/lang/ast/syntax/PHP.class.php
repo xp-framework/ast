@@ -1324,12 +1324,46 @@ class PHP extends Language {
 
           if ('(' === $parse->token->value) {
             $parse->forward();
-            $parse->expecting('(variable)', 'field hook');
-            $argument= $parse->token->value;
+
+            if ('#[' === $parse->token->value) {
+              $parse->forward();
+              $annotations= $this->annotations($parse, 'parameter annotations');
+            } else {
+              $annotations= null;
+            }
+
+            $line= $parse->token->line;
+            $type= $this->type($parse);
+
+            if ('...' === $parse->token->value) {
+              $variadic= true;
+              $parse->forward();
+            } else {
+              $variadic= false;
+            }
+
+            if ('&' === $parse->token->value) {
+              $byref= true;
+              $parse->forward();
+            } else {
+              $byref= false;
+            }
+
             $parse->forward();
+            $param= $parse->token->value;
+            $parse->forward();
+
+            if ('=' === $parse->token->value) {
+              $parse->forward();
+              $default= $this->expression($parse, 0);
+            } else {
+              $default= null;
+            }
+
+            $parameter= new Parameter($param, $type, $default, $byref, $variadic, null, $annotations, null, $line);
             $parse->expecting(')', 'field hook');
           } else {
-            $argument= null;
+            $parameter= null;
           }
 
           $line= $parse->token->line;
@@ -1343,7 +1377,7 @@ class PHP extends Language {
             $parse->expecting('}', 'field hook');
           }
 
-          $body[$lookup]->hooks[$hook]= new Hook($hook, $name, $expr, $argument, $line);
+          $body[$lookup]->hooks[$hook]= new Hook($hook, $name, $expr, $parameter, $line);
         }
 
         $parse->forward();

@@ -4,13 +4,13 @@ use lang\ast\Node;
 
 class Hook extends Node {
   public $kind= 'hook';
-  public $type, $field, $expression, $argument;
+  public $type, $field, $expression, $parameter;
 
-  public function __construct($type, $field, $expression, $argument= null, $line= -1) {
+  public function __construct($type, $field, $expression, $parameter= null, $line= -1) {
     $this->type= $type;
     $this->field= $field;
     $this->expression= $expression;
-    $this->argument= $argument;
+    $this->parameter= $parameter;
     $this->line= $line;
   }
 }
