@@ -1319,6 +1319,13 @@ class PHP extends Language {
         $parse->forward();
 
         while ('}' !== $parse->token->value) {
+          if ('final' === $parse->token->value) {
+            $modifiers= ['final'];
+            $parse->forward();
+          } else {
+            $modifiers= [];
+          }
+
           $hook= $parse->token->value;
           $parse->forward();
 
@@ -1377,7 +1384,7 @@ class PHP extends Language {
             $parse->expecting('}', 'field hook');
           }
 
-          $body[$lookup]->hooks[$hook]= new Hook($hook, $name, $expr, $parameter, $line);
+          $body[$lookup]->hooks[$hook]= new Hook($modifiers, $hook, $name, $expr, $parameter, $line);
         }
 
         $parse->forward();

@@ -137,8 +137,8 @@ class MembersTest extends ParseTest {
     $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
     $return= new ReturnStatement(new Literal('"Hello"', self::LINE), self::LINE);
     $parameter= new Parameter('value', null, null, false, false, null, null, null, self::LINE);
-    $prop->hooks['get']= new Hook('get', 'a', new Block([$return], self::LINE), null, self::LINE);
-    $prop->hooks['set']= new Hook('set', 'a', new Block([], self::LINE), $parameter, self::LINE);
+    $prop->hooks['get']= new Hook([], 'get', 'a', new Block([$return], self::LINE), null, self::LINE);
+    $prop->hooks['set']= new Hook([], 'set', 'a', new Block([], self::LINE), $parameter, self::LINE);
     $class->declare($prop);
 
     $this->assertParsed([$class], 'class A { public $a { get { return "Hello"; } set($value) { } } }');
@@ -148,7 +148,7 @@ class MembersTest extends ParseTest {
   public function property_with_short_get_hook() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
-    $prop->hooks['get']= new Hook('get', 'a', new Literal('"Hello"', self::LINE), null, self::LINE);
+    $prop->hooks['get']= new Hook([], 'get', 'a', new Literal('"Hello"', self::LINE), null, self::LINE);
     $class->declare($prop);
 
     $this->assertParsed([$class], 'class A { public $a { get => "Hello"; } }');
@@ -159,10 +159,21 @@ class MembersTest extends ParseTest {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
     $parameter= new Parameter('value', new IsLiteral('string'), null, false, false, null, null, null, self::LINE);
-    $prop->hooks['set']= new Hook('set', 'a', new Block([], self::LINE), $parameter, self::LINE);
+    $prop->hooks['set']= new Hook([], 'set', 'a', new Block([], self::LINE), $parameter, self::LINE);
     $class->declare($prop);
 
     $this->assertParsed([$class], 'class A { public $a { set(string $value) { } } }');
+  }
+
+  #[Test]
+  public function property_with_final_hook() {
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
+    $parameter= new Parameter('value', new IsLiteral('string'), null, false, false, null, null, null, self::LINE);
+    $prop->hooks['set']= new Hook(['final'], 'set', 'a', new Block([], self::LINE), $parameter, self::LINE);
+    $class->declare($prop);
+
+    $this->assertParsed([$class], 'class A { public $a { final set(string $value) { } } }');
   }
 
   #[Test]
