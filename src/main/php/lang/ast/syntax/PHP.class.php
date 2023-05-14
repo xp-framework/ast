@@ -1352,20 +1352,6 @@ class PHP extends Language {
             $line= $parse->token->line;
             $type= $this->type($parse);
 
-            if ('...' === $parse->token->value) {
-              $variadic= true;
-              $parse->forward();
-            } else {
-              $variadic= false;
-            }
-
-            if ('&' === $parse->token->value) {
-              $byref= true;
-              $parse->forward();
-            } else {
-              $byref= false;
-            }
-
             $parse->forward();
             $param= $parse->token->value;
             $parse->forward();
@@ -1377,7 +1363,7 @@ class PHP extends Language {
               $default= null;
             }
 
-            $parameter= new Parameter($param, $type, $default, $byref, $variadic, null, $annotations, null, $line);
+            $parameter= new Parameter($param, $type, $default, false, false, null, $annotations, null, $line);
             $parse->expecting(')', 'field hook');
           } else {
             $parameter= null;
