@@ -187,6 +187,17 @@ class MembersTest extends ParseTest {
   }
 
   #[Test]
+  public function property_with_abstract_hook() {
+    $class= new ClassDeclaration(['abstract'], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
+    $parameter= new Parameter('value', new IsLiteral('string'), null, false, false, null, null, null, self::LINE);
+    $prop->hooks['set']= new Hook(['abstract'], 'set', 'a', null, $parameter, self::LINE, new IsValue('\\A'));
+    $class->declare($prop);
+
+    $this->assertParsed([$class], 'abstract class A { public $a { abstract set(string $value); } }');
+  }
+
+  #[Test]
   public function instance_property_access() {
     $this->assertParsed(
       [new InstanceExpression(new Variable('a', self::LINE), new Literal('member', self::LINE), self::LINE)],

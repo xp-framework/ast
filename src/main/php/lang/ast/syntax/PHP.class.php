@@ -1329,6 +1329,9 @@ class PHP extends Language {
           if ('final' === $parse->token->value) {
             $modifiers= ['final'];
             $parse->forward();
+          } else if ('abstract' === $parse->token->value) {
+            $modifiers= ['abstract'];
+            $parse->forward();
           } else {
             $modifiers= [];
           }
@@ -1389,6 +1392,9 @@ class PHP extends Language {
             $parse->forward();
             $expr= new Block($this->statements($parse), $line);
             $parse->expecting('}', 'field hook');
+          } else if (';' === $parse->token->value) {
+            $parse->forward();
+            $expr= null;
           }
 
           $body[$lookup]->hooks[$hook]= new Hook($modifiers, $hook, $name, $expr, $parameter, $line, $holder);
