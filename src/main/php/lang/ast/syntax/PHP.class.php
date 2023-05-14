@@ -1318,7 +1318,7 @@ class PHP extends Language {
       } else if ('=>' === $parse->token->value) {
         $parse->forward();
         $expr= $this->expression($parse, 0);
-        $parse->expecting(';', 'field hook');
+        $parse->expecting(';', 'property hook');
 
         $body[$lookup]->hooks['get']= new Hook([], 'get', $name, $expr, null, $line, $holder);
         return;
@@ -1364,7 +1364,7 @@ class PHP extends Language {
             }
 
             $parameter= new Parameter($param, $type, $default, false, false, null, $annotations, null, $line);
-            $parse->expecting(')', 'field hook');
+            $parse->expecting(')', 'property hook parameters');
           } else {
             $parameter= null;
           }
@@ -1373,11 +1373,11 @@ class PHP extends Language {
           if ('=>' === $parse->token->value) {
             $parse->forward();
             $expr= $this->expression($parse, 0);
-            $parse->expecting(';', 'field hook');
+            $parse->expecting(';', 'property hook');
           } else if ('{' === $parse->token->value) {
             $parse->forward();
             $expr= new Block($this->statements($parse), $line);
-            $parse->expecting('}', 'field hook');
+            $parse->expecting('}', 'property hook');
           } else if (';' === $parse->token->value) {
             $parse->forward();
             $expr= null;
@@ -1389,7 +1389,7 @@ class PHP extends Language {
         $parse->forward();
         return;
       } else {
-        $parse->expecting(';, , or {', 'field');
+        $parse->expecting(';, , or {', 'property');
       }
     } while (null !== $parse->token->value);
   }
