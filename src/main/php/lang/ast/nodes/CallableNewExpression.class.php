@@ -12,5 +12,5 @@ class CallableNewExpression extends Node {
   }
 
   /** @return iterable */
-  public function children() { return [$this->type]; }
+  public function children() { return [&$this->type]; }
 }

@@ -17,7 +17,5 @@ class ReturnStatement extends Node {
   }
 
   /** @return iterable */
-  public function children() {
-    return $this->expression ? [$this->expression] : [];
-  }
+  public function children() { return $this->expression ? [&$this->expression] : []; }
 }
