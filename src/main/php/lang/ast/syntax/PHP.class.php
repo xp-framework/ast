@@ -826,10 +826,9 @@ class PHP extends Language {
     });
 
     $this->stmt('function', function($parse, $token) {
-      $name= $parse->token->value;
 
       // Function expression used as statement (e.g. for pure side-effects!)
-      if ('(' === $name) {
+      if ('(' === $parse->token->value) {
         $parse->queue= [$parse->token];
         $parse->token= new Token($this->symbol('function'));
         $parse->token->line= $token->line;
@@ -840,8 +839,17 @@ class PHP extends Language {
         return $expr;
       }
 
+      if ('&' === $parse->token->value) {
+        $byref= true;
+        $parse->forward();
+      } else {
+        $byref= false;
+      }
+
+      $name= $parse->token->value;
       $parse->forward();
-      $signature= $this->signature($parse);
+
+      $signature= $this->signature($parse, $byref);
       $parse->expecting('{', 'function');
       $statements= $this->statements($parse);
       $parse->expecting('}', 'function');
@@ -1058,6 +1066,13 @@ class PHP extends Language {
       $line= $parse->token->line;
 
       $parse->forward();
+      if ('&' === $parse->token->value) {
+        $byref= true;
+        $parse->forward();
+      } else {
+        $byref= false;
+      }
+
       $name= $parse->token->value;
       $lookup= $name.'()';
       if (isset($body[$lookup])) {
@@ -1065,7 +1080,7 @@ class PHP extends Language {
       }
 
       $parse->forward();
-      $signature= $this->signature($parse);
+      $signature= $this->signature($parse, $byref);
 
       if ('{' === $parse->token->value) {          // Regular body
         $parse->forward();
@@ -1448,7 +1463,7 @@ class PHP extends Language {
     return $body;
   }
 
-  public function signature($parse) {
+  public function signature($parse, $byref= false) {
     $line= $parse->token->line;
     $parse->expecting('(', 'signature');
     $parameters= $this->parameters($parse);
@@ -1461,7 +1476,7 @@ class PHP extends Language {
       $return= null;
     }
 
-    return new Signature($parameters, $return, null, $line);
+    return new Signature($parameters, $return, $byref, $line);
   }
 
   public function closure($parse, $static) {
