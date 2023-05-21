@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 10.1.0 / 2023-05-21
+
+* Merged PR #46: Implement returning by reference from methods - @thekid
+
 ## 10.0.0 / 2023-04-08
 
 * **Heads up:** Instances of `lang.ast.nodes.Variable` can contain
