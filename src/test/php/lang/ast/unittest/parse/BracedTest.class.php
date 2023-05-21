@@ -66,7 +66,7 @@ class BracedTest extends ParseTest {
     $signature= new Signature(
       [new Parameter('arg', new IsValue('\\T'), null, true, false, null, null, null, self::LINE)],
       null,
-      null,
+      false,
       self::LINE
     );
     $this->assertParsed(
