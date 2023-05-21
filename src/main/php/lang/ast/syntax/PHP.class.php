@@ -1320,7 +1320,7 @@ class PHP extends Language {
         $expr= $this->expression($parse, 0);
         $parse->expecting(';', 'property hook');
 
-        $body[$lookup]->hooks['get']= new Hook([], 'get', $name, $expr, null, $line, $holder);
+        $body[$lookup]->hooks['get']= new Hook([], 'get', $expr, false, null, $line, $holder);
         return;
       } else if ('{' === $parse->token->value) {
         $parse->forward();
@@ -1334,6 +1334,13 @@ class PHP extends Language {
             $parse->forward();
           } else {
             $modifiers= [];
+          }
+
+          if ('&' === $parse->token->value) {
+            $byref= true;
+            $parse->forward();
+          } else {
+            $byref= false;
           }
 
           $hook= $parse->token->value;
@@ -1383,7 +1390,7 @@ class PHP extends Language {
             $expr= null;
           }
 
-          $body[$lookup]->hooks[$hook]= new Hook($modifiers, $hook, $name, $expr, $parameter, $line, $holder);
+          $body[$lookup]->hooks[$hook]= new Hook($modifiers, $hook, $expr, $byref, $parameter, $line, $holder);
         }
 
         $parse->forward();
