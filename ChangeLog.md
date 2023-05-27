@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 10.2.0 / 2023-05-27
+
+* Merged PR #47: Remove holder property for members - @thekid
+
 ## 10.1.0 / 2023-05-21
 
 * Merged PR #46: Implement returning by reference from methods - @thekid
