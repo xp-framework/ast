@@ -944,7 +944,7 @@ class PHP extends Language {
       return $decl;
     });
 
-    $this->body('case', function($parse, &$body, $meta, $modifiers, $holder) {
+    $this->body('case', function($parse, &$body, $meta, $modifiers) {
       $comment= $parse->comment;
       $parse->comment= null;
 
@@ -961,13 +961,13 @@ class PHP extends Language {
           $expr= null;
         }
 
-        $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? null, $comment, $line, $holder);
+        $body[$name]= new EnumCase($name, $expr, $meta[DETAIL_ANNOTATIONS] ?? null, $comment, $line);
       } while (',' === $parse->token->value && true | $parse->forward());
 
       $parse->expecting(';', 'case');
     });
 
-    $this->body('use', function($parse, &$body, $meta, $modifiers, $holder) {
+    $this->body('use', function($parse, &$body, $meta, $modifiers) {
       $line= $parse->token->line;
 
       $parse->forward();
@@ -1009,7 +1009,7 @@ class PHP extends Language {
       $body[]= new UseExpression($types, $aliases, $line);
     });
 
-    $this->body('const', function($parse, &$body, $meta, $modifiers, $holder) {
+    $this->body('const', function($parse, &$body, $meta, $modifiers) {
       $comment= $parse->comment;
       $parse->comment= null;
       $parse->forward();
@@ -1046,8 +1046,7 @@ class PHP extends Language {
           $this->expression($parse, 0),
           $meta[DETAIL_ANNOTATIONS] ?? null,
           $comment,
-          $line,
-          $holder
+          $line
         );
         if (',' === $parse->token->value) {
           $parse->forward();
@@ -1056,11 +1055,11 @@ class PHP extends Language {
       $parse->expecting(';', 'constant declaration');
     });
 
-    $this->body('$', function($parse, &$body, $meta, $modifiers, $holder) {
-      $this->properties($parse, $body, $meta, $modifiers, null, $holder);
+    $this->body('$', function($parse, &$body, $meta, $modifiers) {
+      $this->properties($parse, $body, $meta, $modifiers, null);
     });
 
-    $this->body('function', function($parse, &$body, $meta, $modifiers, $holder) {
+    $this->body('function', function($parse, &$body, $meta, $modifiers) {
       $comment= $parse->comment;
       $parse->comment= null;
       $line= $parse->token->line;
@@ -1101,8 +1100,7 @@ class PHP extends Language {
         $statements,
         $meta[DETAIL_ANNOTATIONS] ?? null,
         $comment,
-        $line,
-        $holder
+        $line
       );
     });
   }
@@ -1292,7 +1290,7 @@ class PHP extends Language {
     return isset($literal[$type]) ? new IsLiteral($type) : new IsValue($type);
   }
 
-  private function properties($parse, &$body, $meta, $modifiers, $type, $holder) {
+  private function properties($parse, &$body, $meta, $modifiers, $type) {
     $comment= $parse->comment;
     $parse->comment= null;
     $annotations= $meta[DETAIL_ANNOTATIONS] ?? null;
@@ -1319,7 +1317,7 @@ class PHP extends Language {
       } else {
         $expr= null;
       }
-      $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line, $holder);
+      $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line);
 
       if (',' === $parse->token->value) {
         $parse->forward();
@@ -1423,7 +1421,7 @@ class PHP extends Language {
     $this->body[$id]= $func->bindTo($this, static::class);
   }
 
-  public function typeBody($parse, $holder) {
+  public function typeBody($parse) {
     static $modifier= [
       'private'   => true,
       'protected' => true,
@@ -1442,14 +1440,14 @@ class PHP extends Language {
         $modifiers[]= $parse->token->value;
         $parse->forward();
       } else if ($f= $this->body[$parse->token->value] ?? $this->body['@'.$parse->token->kind] ?? null) {
-        $f($parse, $body, $meta, $modifiers, $holder);
+        $f($parse, $body, $meta, $modifiers);
         $modifiers= [];
         $meta= [];
       } else if ('#[' === $parse->token->value) {
         $parse->forward();
         $meta[DETAIL_ANNOTATIONS]= $this->annotations($parse, 'member annotations');
       } else if ($type= $this->type($parse)) {
-        $this->properties($parse, $body, $meta, $modifiers, $type, $holder);
+        $this->properties($parse, $body, $meta, $modifiers, $type);
         $modifiers= [];
         $meta= [];
       } else {
