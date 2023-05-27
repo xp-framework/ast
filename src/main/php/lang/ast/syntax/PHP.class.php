@@ -887,7 +887,7 @@ class PHP extends Language {
 
       $decl= new InterfaceDeclaration([], $name, $parents, [], null, $comment, $token->line);
       $parse->expecting('{', 'interface');
-      $decl->body= $this->typeBody($parse, $decl->name);
+      $decl->body= $this->typeBody($parse);
       $parse->expecting('}', 'interface');
 
       return $decl;
@@ -900,7 +900,7 @@ class PHP extends Language {
 
       $decl= new TraitDeclaration([], $name, [], null, $comment, $token->line);
       $parse->expecting('{', 'trait');
-      $decl->body= $this->typeBody($parse, $decl->name);
+      $decl->body= $this->typeBody($parse);
       $parse->expecting('}', 'trait');
 
       return $decl;
@@ -938,7 +938,7 @@ class PHP extends Language {
 
       $decl= new EnumDeclaration([], $name, $base, $implements, [], null, $comment, $token->line);
       $parse->expecting('{', 'enum');
-      $decl->body= $this->typeBody($parse, $decl->name);
+      $decl->body= $this->typeBody($parse);
       $parse->expecting('}', 'enum');
 
       return $decl;
@@ -1546,7 +1546,7 @@ class PHP extends Language {
 
     $decl= new ClassDeclaration($modifiers, $name, $parent, $implements, [], null, $comment, $line);
     $parse->expecting('{', 'class');
-    $decl->body= $this->typeBody($parse, $decl->name);
+    $decl->body= $this->typeBody($parse);
     $parse->expecting('}', 'class');
 
     return $decl;
