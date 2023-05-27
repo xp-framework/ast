@@ -9,12 +9,7 @@ abstract class TypeDeclaration extends Annotated {
   public function __construct($modifiers, $name, $body= [], $annotations= null, $comment= null, $line= -1) {
     $this->modifiers= $modifiers;
     $this->name= $name;
-    $this->body= [];
-    foreach ($body as $lookup => $node) {
-      $node->holder= $this->name;
-      $this->body[$lookup]= $node;
-    }
-
+    $this->body= $body;
     parent::__construct($annotations, $comment, $line);
   }
 
@@ -71,7 +66,6 @@ abstract class TypeDeclaration extends Annotated {
     $lookup= $member->lookup();
     if (isset($this->body[$lookup])) return false;
 
-    $member->holder= $this->name;
     $this->body[$lookup]= $member;
     return true;
   }
@@ -86,7 +80,6 @@ abstract class TypeDeclaration extends Annotated {
     $lookup= $member->lookup();
     $overwritten= isset($this->body[$lookup]);
 
-    $member->holder= $this->name;
     $this->body[$lookup]= $member;
     return $overwritten;
   }
