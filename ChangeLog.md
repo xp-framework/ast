@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 10.2.1 / 2023-06-03
+
+* Fix trailing commas in annotation lists - @thekid
+
 ## 10.2.0 / 2023-05-27
 
 * Merged PR #47: Remove holder property for members - @thekid
