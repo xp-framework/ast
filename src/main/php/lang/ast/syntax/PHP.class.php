@@ -1319,9 +1319,7 @@ class PHP extends Language {
       }
       $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line);
 
-      if (',' === $parse->token->value) {
-        $parse->forward();
-      }
+      if (',' === $parse->token->value) $parse->forward();
     }
     $parse->expecting(';', 'field declaration');
   }
@@ -1330,7 +1328,7 @@ class PHP extends Language {
   private function annotations($parse, $context) {
     $annotations= new Annotations([], $parse->token->line);
 
-    do {
+    while ('name' === $parse->token->kind) {
       $name= ltrim($parse->scope->resolve($parse->token->value), '\\');
       $parse->forward();
 
@@ -1341,7 +1339,9 @@ class PHP extends Language {
       } else {
         $annotations->add(new Annotation($name, [], $parse->token->line));
       }
-    } while (',' === $parse->token->value && true | $parse->forward());
+
+      if (',' === $parse->token->value) $parse->forward();
+    }
     $parse->expecting(']', $context);
 
     return $annotations;
