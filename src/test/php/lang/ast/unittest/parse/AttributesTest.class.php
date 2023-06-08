@@ -136,6 +136,14 @@ class AttributesTest extends ParseTest {
   }
 
   #[Test]
+  public function trailing_comma() {
+    $this->assertAnnotated(
+      ['Author' => [new Literal('"Test"', self::LINE)]],
+      $this->type('#[Author("Test"), ] class T { }')
+    );
+  }
+
+  #[Test]
   public function name_resolved_to_namespace() {
     $this->assertAnnotated(
       ['example\\Test' => []],

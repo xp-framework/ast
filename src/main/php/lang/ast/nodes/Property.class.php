@@ -2,16 +2,14 @@
 
 class Property extends Annotated implements Member {
   public $kind= 'property';
-  public $name, $modifiers, $expression, $type, $holder;
+  public $name, $modifiers, $expression, $type;
   public $hooks= null;
 
-  public function __construct($modifiers, $name, $type, $expression= null, $annotations= null, $comment= null, $line= -1, $holder= null) {
+  public function __construct($modifiers, $name, $type, $expression= null, $annotations= null, $comment= null, $line= -1) {
     $this->modifiers= $modifiers;
     $this->name= $name;
     $this->type= $type;
     $this->expression= $expression;
-    $this->holder= $holder;
-
     parent::__construct($annotations, $comment, $line);
   }
 
