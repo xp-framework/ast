@@ -50,35 +50,35 @@ class LiteralsTest extends ParseTest {
     $this->assertParsed([new Literal('"Test"', self::LINE)], '"Test";');
   }
 
-  #[Test]
-  public function empty_array() {
-    $this->assertParsed([new ArrayLiteral([], self::LINE)], '[];');
+  #[Test, Values(['[];', ['array();']])]
+  public function empty_array($declaration) {
+    $this->assertParsed([new ArrayLiteral([], self::LINE)], $declaration);
   }
 
-  #[Test]
-  public function int_array() {
+  #[Test, Values(['[1, 2];', ['array(1, 2);']])]
+  public function int_array($declaration) {
     $pairs= [
       [null, new Literal('1', self::LINE)],
       [null, new Literal('2', self::LINE)]
     ];
-    $this->assertParsed([new ArrayLiteral($pairs, self::LINE)], '[1, 2];');
+    $this->assertParsed([new ArrayLiteral($pairs, self::LINE)], $declaration);
   }
 
-  #[Test]
-  public function key_value_map() {
+  #[Test, Values(['["key" => "value"];', ['array("key" => "value");']])]
+  public function key_value_map($declaration) {
     $pair= [new Literal('"key"', self::LINE), new Literal('"value"', self::LINE)];
-    $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], '["key" => "value"];');
+    $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], $declaration);
   }
 
-  #[Test]
-  public function dangling_comma_in_array() {
+  #[Test, Values(['[1, ];', 'array(1, );'])]
+  public function dangling_comma_in_array($declaration) {
     $pair= [null, new Literal('1', self::LINE)];
-    $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], '[1, ];');
+    $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], $declaration);
   }
 
-  #[Test]
-  public function dangling_comma_in_key_value_map() {
+  #[Test, Values(['["key" => "value", ];', 'array("key" => "value", );'])]
+  public function dangling_comma_in_key_value_map($declaration) {
     $pair= [new Literal('"key"', self::LINE), new Literal('"value"', self::LINE)];
-    $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], '["key" => "value", ];');
+    $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], $declaration);
   }
 }

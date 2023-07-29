@@ -289,6 +289,11 @@ class PHP extends Language {
       return new ArrayLiteral($this->list($parse, ']', 'array literal'), $token->line);
     });
 
+    $this->prefix('array', 0, function($parse, $token) {
+      $parse->expecting('(', 'array');
+      return new ArrayLiteral($this->list($parse, ')', 'array literal'), $token->line);
+    });
+
     $this->prefix('list', 0, function($parse, $token) {
       $parse->expecting('(', 'list assignment');
       return new ArrayLiteral($this->list($parse, ')', 'list assignment'), $token->line);

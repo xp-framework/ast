@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 10.2.2 / 2023-07-29
+
+* Fixed legacy `array()` syntax being parsed into an invocation instead
+  of an array literal
+  (@thekid)
+
 ## 10.2.1 / 2023-06-03
 
 * Fix trailing commas in annotation lists - @thekid
