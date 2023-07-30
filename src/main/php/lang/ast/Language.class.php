@@ -2,7 +2,7 @@
 
 use lang\ast\nodes\{Assignment, BinaryExpression, Literal, UnaryExpression};
 use lang\ast\syntax\Extension;
-use lang\reflect\Package;
+use lang\{ClassLoader, XPClass};
 
 /**
  * Base class for input languages
@@ -155,8 +155,14 @@ class Language {
    * @return iterable
    */
   public function extensions() {
-    foreach (Package::forName(strtr(strtolower(static::class), '\\', '.'))->getClasses() as $class) {
-      if ($class->isSubclassOf(Extension::class)) yield $class->newInstance();
+    $offset= -strlen(\xp::CLASS_FILE_EXT);
+    $cl= ClassLoader::getDefault();
+    $package= strtr(strtolower(static::class), '\\', '.');
+    foreach ($cl->packageContents($package) as $item) {
+      if (0 === substr_compare($item, \xp::CLASS_FILE_EXT, $offset)) {
+        $class= $cl->loadClass($package.'.'.substr($item, 0, $offset));
+        if ($class->isSubclassOf(Extension::class)) yield $class->newInstance();
+      }
     }
   }
 
@@ -179,7 +185,7 @@ class Language {
    */
   public static function named($name) {
     if (!isset(self::$instance[$name])) {
-      self::$instance[$name]= Package::forName('lang.ast.syntax')->loadClass($name)->newInstance();
+      self::$instance[$name]= XPClass::forName('lang.ast.syntax.'.$name)->newInstance();
     }
     return self::$instance[$name];
   }
