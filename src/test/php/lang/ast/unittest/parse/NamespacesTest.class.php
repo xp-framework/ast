@@ -84,4 +84,20 @@ class NamespacesTest extends ParseTest {
       'use lang\\ast\\{Parse as P};'
     );
   }
+
+  #[Test]
+  public function use_function() {
+    $this->assertParsed(
+      [new UseStatement('function', ['strncmp' => null], self::LINE)],
+      'use function strncmp;'
+    );
+  }
+
+  #[Test]
+  public function use_const() {
+    $this->assertParsed(
+      [new UseStatement('const', ['MODIFIER_STATIC' => null], self::LINE)],
+      'use const MODIFIER_STATIC;'
+    );
+  }
 }
