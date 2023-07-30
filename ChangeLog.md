@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Refactored code base to use the class loading mechanism instead of the
+  *Package* class from `lang.reflect`. See xp-framework/rfc#338
+  (@thekid)
+
 ## 10.2.2 / 2023-07-29
 
 * Fixed legacy `array()` syntax being parsed into an invocation instead
