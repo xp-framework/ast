@@ -3,6 +3,7 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed `Signature::insert()` - @thekid
 * Refactored code base to use the class loading mechanism instead of the
   *Package* class from `lang.reflect`. See xp-framework/rfc#338
   (@thekid)
