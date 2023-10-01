@@ -26,6 +26,7 @@ use lang\ast\nodes\{
   ForLoop,
   ForeachLoop,
   FunctionDeclaration,
+  Generic,
   GotoStatement,
   IfStatement,
   InstanceExpression,
@@ -1186,6 +1187,8 @@ class PHP extends Language {
   }
 
   private function member($parse) {
+    static $skip= ['<' => 1, '<?' => 1, '>' => 1, '>>' => 1, ',' => 1];
+
     if ('{' === $parse->token->value) {
       $line= $parse->token->line;
       $parse->forward();
@@ -1197,12 +1200,78 @@ class PHP extends Language {
     } else if ('name' === $parse->token->kind) {
       $expr= new Literal($parse->token->value, $parse->token->line);
       $parse->forward();
+
+      // Resolve ambiguity involving generic method invocations:
+      //
+      // - $this->member<?string>()
+      // - $this->member<string>()
+      // - $this->member < PHP_VERSION
+      // - $this->member < time()
+      // - test($this->member<string, string>($arg))
+      // - test($this->member < CONST, CONST > $arg)
+      //
+      // Look ahead until `>` followed by `(`
+      if ('<' === $parse->token->value || '<?' === $parse->token->value) {
+        $skipped= [];
+        while ('name' === $parse->token->kind || isset($skip[$parse->token->value])) {
+          $skipped[]= $parse->token;
+          $parse->forward();
+        }
+
+        $last= $skipped[sizeof($skipped) - 1]->value;
+        $generic= '(' === $parse->token->value && ('>' === $last || '>>' === $last);
+
+        $skipped[]= $parse->token;
+        $parse->token= array_shift($skipped);
+        array_unshift($parse->queue, ...$skipped);
+
+        // \util\cmd\Console::writeLine($generic, ' && ', $parse->queue);
+        if ($generic) return new Generic($expr->expression, $this->generic($parse), $expr->line);
+      }
     } else {
       $parse->expecting('an expression in curly braces, a name or a variable', 'member');
       $expr= new Literal($parse->token->value, $parse->token->line);
       $parse->forward();
     }
     return $expr;
+  }
+
+  private function generic($parse) {
+
+    // Handle `T<?C>` - generics with a nullable component type
+    if ('<?' === $parse->token->value) {
+      array_unshift($parse->queue, new Token(self::symbol('?'), '(operator)', '?'));
+      $parse->forward();
+    } else if ('<' === $parse->token->value) {
+      $parse->forward();
+    } else {
+      return null;
+    }
+
+    $components= [];
+    do {
+      // Resolve ambiguity between generic placeholders and nullable
+      if ('?' === $parse->token->value) {
+        $parse->forward();
+        if (',' === $parse->token->value || '>' === $parse->token->value) {
+          $components[]= new IsLiteral('?');
+        } else {
+          $components[]= new IsNullable($this->type($parse, false));
+        }
+      } else {
+        $components[]= $this->type($parse, false);
+      }
+
+      if ('>' === $parse->token->symbol->id) {
+        break;
+      } else if ('>>' === $parse->token->value) {
+        array_unshift($parse->queue, $parse->token= new Token(self::symbol('>')));
+        break;
+      }
+    } while (',' === $parse->token->value && true | $parse->forward());
+
+    $parse->expecting('>', 'generic');
+    return $components;
   }
 
   private function type0($parse, $optional) {
@@ -1253,38 +1322,7 @@ class PHP extends Language {
       return null;
     }
 
-    // Resolve ambiguity between short open tag and nullables as in <?int>
-    if ('<?' === $parse->token->value) {
-      array_unshift($parse->queue, new Token(self::symbol('?'), '(operator)', '?'));
-      $parse->token->value= '<';
-    }
-
-    if ('<' === $parse->token->value) {
-      $parse->forward();
-      $components= [];
-      do {
-
-        // Resolve ambiguity between generic placeholders and nullable
-        if ('?' === $parse->token->value) {
-          $parse->forward();
-          if (',' === $parse->token->value || '>' === $parse->token->value) {
-            $components[]= new IsLiteral('?');
-          } else {
-            $components[]= new IsNullable($this->type($parse, false));
-          }
-        } else {
-          $components[]= $this->type($parse, false);
-        }
-
-        if ('>' === $parse->token->symbol->id) {
-          break;
-        } else if ('>>' === $parse->token->value) {
-          array_unshift($parse->queue, $parse->token= new Token(self::symbol('>')));
-          break;
-        }
-      } while (',' === $parse->token->value && true | $parse->forward());
-      $parse->expecting('>', 'type');
-
+    if ($components= $this->generic($parse)) {
       if ('array' === $type) {
         return 1 === sizeof($components) ? new IsArray($components[0]) : new IsMap($components[0], $components[1]);
       } else {
@@ -1467,19 +1505,21 @@ class PHP extends Language {
   }
 
   public function signature($parse, $byref= false) {
-    $line= $parse->token->line;
+    $signature= new Signature();
+    $signature->byref= $byref;
+    $signature->line= $parse->token->line;
+    $signature->generic= $this->generic($parse);
+
     $parse->expecting('(', 'signature');
-    $parameters= $this->parameters($parse);
+    $signature->parameters= $this->parameters($parse);
     $parse->expecting(')', 'signature');
 
     if (':' === $parse->token->value) {
       $parse->forward();
-      $return= $this->type($parse);
-    } else {
-      $return= null;
+      $signature->returns= $this->type($parse);
     }
 
-    return new Signature($parameters, $return, $byref, $line);
+    return $signature;
   }
 
   public function closure($parse, $static) {

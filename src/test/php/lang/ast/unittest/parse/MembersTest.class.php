@@ -137,6 +137,17 @@ class MembersTest extends ParseTest {
   }
 
   #[Test]
+  public function generic_method() {
+    $signature= new Signature([], null, false, self::LINE);
+    $signature->generic= [new IsValue('T')];
+
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $class->declare(new Method(['public'], 'a', $signature, [], null, null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { public function a<T>() { } }');
+  }
+
+  #[Test]
   public function instance_property_access() {
     $this->assertParsed(
       [new InstanceExpression(new Variable('a', self::LINE), new Literal('member', self::LINE), self::LINE)],

@@ -332,4 +332,42 @@ class OperatorTest extends ParseTest {
       ';; $a= 1 ;;; $b= 2;'
     );
   }
+
+  #[Test]
+  public function member_smaller_than_generic_call_ambiguity() {
+    $this->assertParsed(
+      [new BinaryExpression(
+        new InstanceExpression(new Variable('this', self::LINE), new Literal('test', self::LINE), self::LINE),
+        '<',
+        new Literal('THRESHOLD', self::LINE),
+        self::LINE
+      )],
+      '$this->test < THRESHOLD;'
+    );
+  }
+
+  #[Test]
+  public function arguments_with_constants_and_smaller_greater_generic_ambiguity() {
+    $this->assertParsed(
+      [new InvokeExpression(
+        new Literal('test', self::LINE),
+        [
+          new BinaryExpression(
+            new InstanceExpression(new Variable('this', self::LINE), new Literal('test', self::LINE), self::LINE),
+            '<',
+            new Literal('THRESHOLD', self::LINE),
+            self::LINE
+          ),
+          new BinaryExpression(
+            new Literal('THRESHOLD', self::LINE),
+            '>',
+            new Literal('1', self::LINE),
+            self::LINE
+          )
+        ],
+        self::LINE
+      )],
+      'test($this->test < THRESHOLD, THRESHOLD > 1);'
+    );
+  }
 }
