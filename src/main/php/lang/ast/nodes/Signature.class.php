@@ -6,6 +6,7 @@ use lang\ast\Node;
 class Signature extends Node {
   public $kind= 'signature';
   public $parameters, $returns, $byref;
+  public $generic= null;
 
   public function __construct($parameters= [], $returns= null, $byref= false, $line= -1) {
     $this->parameters= $parameters;
