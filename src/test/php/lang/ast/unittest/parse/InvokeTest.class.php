@@ -106,4 +106,30 @@ class InvokeTest extends ParseTest {
       'new T(...);'
     );
   }
+
+  #[Test]
+  public function chained_invocation_spanning_multiple_lines() {
+    $expr= new InvokeExpression(
+      new InstanceExpression(
+        new InvokeExpression(
+          new InstanceExpression(
+            new Variable('this', self::LINE),
+            new Literal('test', self::LINE + 1),
+            self::LINE + 1
+          ),
+          [],
+          self::LINE + 1
+        ),
+        new Literal('chained', self::LINE + 2),
+        self::LINE + 2
+      ),
+      [],
+      self::LINE + 2
+    );
+
+    $this->assertParsed([$expr], '$this
+      ->test()
+      ->chained()
+    ;');
+  }
 }
