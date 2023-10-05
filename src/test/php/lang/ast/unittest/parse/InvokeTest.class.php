@@ -115,16 +115,16 @@ class InvokeTest extends ParseTest {
           new InstanceExpression(
             new Variable('this', self::LINE),
             new Literal('test', self::LINE + 1),
-            self::LINE + 1
+            self::LINE
           ),
           [],
-          self::LINE + 1
+          self::LINE
         ),
         new Literal('chained', self::LINE + 2),
-        self::LINE + 2
+        self::LINE
       ),
       [],
-      self::LINE + 2
+      self::LINE
     );
 
     $this->assertParsed([$expr], '$this
