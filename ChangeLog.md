@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 10.3.0 / 2023-10-06
+
+* Merged PR #49: Record starting line numbers for multi-line nodes
+  (@thekid)
+
 ## 10.2.3 / 2023-10-01
 
 * Fixed `Signature::insert()` - @thekid
