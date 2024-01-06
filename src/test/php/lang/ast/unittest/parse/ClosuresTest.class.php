@@ -46,6 +46,14 @@ class ClosuresTest extends ParseTest {
   }
 
   #[Test]
+  public function with_use_and_return() {
+    $this->assertParsed(
+      [new ClosureExpression(new Signature([], new Type('int'), false, self::LINE), ['$a'], [$this->returns], false, self::LINE)],
+      'function() use($a): int { return $a + 1; };'
+    );
+  }
+
+  #[Test]
   public function with_use_by_reference() {
     $this->assertParsed(
       [new ClosureExpression(new Signature([], null, false, self::LINE), ['$a', '&$b'], [$this->returns], false, self::LINE)],

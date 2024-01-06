@@ -1484,7 +1484,10 @@ class PHP extends Language {
 
   public function closure($parse, $static) {
     $line= $parse->token->line;
-    $signature= $this->signature($parse);
+
+    $parse->expecting('(', 'signature');
+    $parameters= $this->parameters($parse);
+    $parse->expecting(')', 'signature');
 
     if ('use' === $parse->token->value) {
       $parse->forward();
@@ -1508,11 +1511,18 @@ class PHP extends Language {
       $use= null;
     }
 
+    if (':' === $parse->token->value) {
+      $parse->forward();
+      $return= $this->type($parse);
+    } else {
+      $return= null;
+    }
+
     $parse->expecting('{', 'function');
     $statements= $this->statements($parse);
     $parse->expecting('}', 'function');
 
-    return new ClosureExpression($signature, $use, $statements, $static, $line);
+    return new ClosureExpression(new Signature($parameters, $return, false, $line), $use, $statements, $static, $line);
   }
 
   public function block($parse) {

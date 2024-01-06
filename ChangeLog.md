@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Fixed parsing captures and return types for closures - @thekid
+
 ## 10.3.0 / 2023-10-06
 
 * Merged PR #49: Record starting line numbers for multi-line nodes
