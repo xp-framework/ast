@@ -3,6 +3,7 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Added PHP 8.4 to the test matrix - @thekid
 * Fixed parsing captures and return types for closures - @thekid
 
 ## 10.3.0 / 2023-10-06
