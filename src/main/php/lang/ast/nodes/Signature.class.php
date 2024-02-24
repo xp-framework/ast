@@ -2,6 +2,7 @@
 
 use lang\ast\Node;
 
+/** @test lang.ast.unittest.nodes.SignatureTest */
 class Signature extends Node {
   public $kind= 'signature';
   public $parameters, $returns, $byref;
@@ -21,11 +22,7 @@ class Signature extends Node {
     if (0 === $offset) {
       array_unshift($this->parameters, $p);
     } else {
-      $this->parameters[]= array_merge(
-        array_slice($this->parameters, 0, $p),
-        [$p],
-        array_slice($this->parameters, $p)
-      );
+      array_splice($this->parameters, $offset, 0, [$p]);
     }
   }
 }

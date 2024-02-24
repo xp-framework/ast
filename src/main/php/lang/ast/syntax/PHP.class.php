@@ -129,18 +129,18 @@ class PHP extends Language {
     $this->infix('instanceof', 110, function($parse, $token, $left) {
       $type= $this->expression($parse, 110);
       if ($type instanceof Literal) {
-        return new InstanceOfExpression($left, $parse->scope->resolve($type->expression), $token->line);
+        return new InstanceOfExpression($left, $parse->scope->resolve($type->expression), $left->line);
       } else {
-        return new InstanceOfExpression($left, $type, $token->line);
+        return new InstanceOfExpression($left, $type, $left->line);
       }
     });
 
     $this->infix('->', 100, function($parse, $token, $left) {
-      return new InstanceExpression($left, $this->member($parse), $token->line);
+      return new InstanceExpression($left, $this->member($parse), $left->line);
     });
 
     $this->infix('?->', 100, function($parse, $node, $left) {
-      $value= new InstanceExpression($left, $this->member($parse), $node->line);
+      $value= new InstanceExpression($left, $this->member($parse), $left->line);
       $value->kind= 'nullsafeinstance';
       return $value;
     });
@@ -159,7 +159,7 @@ class PHP extends Language {
           $parse->forward();
           if (')' === $parse->token->value) {
             $parse->forward();
-            return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $token->line);
+            return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $left->line);
           }
 
           array_unshift($parse->queue, $parse->token);
@@ -171,7 +171,7 @@ class PHP extends Language {
         $expr= new InvokeExpression($expr, $arguments, $token->line);
       }
 
-      return new ScopeExpression($scope, $expr, $token->line);
+      return new ScopeExpression($scope, $expr, $left->line);
     });
 
     $this->infix('(', 100, function($parse, $token, $left) {
@@ -183,7 +183,7 @@ class PHP extends Language {
         $parse->forward();
         if (')' === $parse->token->value) {
           $parse->forward();
-          return new CallableExpression($left, $token->line);
+          return new CallableExpression($left, $left->line);
         }
 
         array_unshift($parse->queue, $parse->token);
@@ -192,7 +192,7 @@ class PHP extends Language {
 
       $arguments= $this->arguments($parse);
       $parse->expecting(')', 'invoke expression');
-      return new InvokeExpression($left, $arguments, $token->line);
+      return new InvokeExpression($left, $arguments, $left->line);
     });
 
     $this->infix('[', 100, function($parse, $token, $left) {
@@ -204,14 +204,14 @@ class PHP extends Language {
         $parse->expecting(']', 'offset access');
       }
 
-      return new OffsetExpression($left, $expr, $token->line);
+      return new OffsetExpression($left, $expr, $left->line);
     });
 
     $this->infix('?', 80, function($parse, $token, $left) {
       $when= $this->expression($parse, 0);
       $parse->expecting(':', 'ternary');
       $else= $this->expression($parse, 0);
-      return new TernaryExpression($left, $when, $else, $token->line);
+      return new TernaryExpression($left, $when, $else, $left->line);
     });
 
     $this->prefix('@', 90);
@@ -288,6 +288,11 @@ class PHP extends Language {
 
     $this->prefix('[', 0, function($parse, $token) {
       return new ArrayLiteral($this->list($parse, ']', 'array literal'), $token->line);
+    });
+
+    $this->prefix('array', 0, function($parse, $token) {
+      $parse->expecting('(', 'array');
+      return new ArrayLiteral($this->list($parse, ')', 'array literal'), $token->line);
     });
 
     $this->prefix('list', 0, function($parse, $token) {
@@ -1569,7 +1574,10 @@ class PHP extends Language {
 
   public function closure($parse, $static) {
     $line= $parse->token->line;
-    $signature= $this->signature($parse);
+
+    $parse->expecting('(', 'signature');
+    $parameters= $this->parameters($parse);
+    $parse->expecting(')', 'signature');
 
     if ('use' === $parse->token->value) {
       $parse->forward();
@@ -1593,11 +1601,18 @@ class PHP extends Language {
       $use= null;
     }
 
+    if (':' === $parse->token->value) {
+      $parse->forward();
+      $return= $this->type($parse);
+    } else {
+      $return= null;
+    }
+
     $parse->expecting('{', 'function');
     $statements= $this->statements($parse);
     $parse->expecting('}', 'function');
 
-    return new ClosureExpression($signature, $use, $statements, $static, $line);
+    return new ClosureExpression(new Signature($parameters, $return, false, $line), $use, $statements, $static, $line);
   }
 
   public function block($parse) {

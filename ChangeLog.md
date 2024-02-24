@@ -3,6 +3,29 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 10.3.1 / 2024-01-06
+
+* Added PHP 8.4 to the test matrix - @thekid
+* Fixed parsing captures and return types for closures - @thekid
+
+## 10.3.0 / 2023-10-06
+
+* Merged PR #49: Record starting line numbers for multi-line nodes
+  (@thekid)
+
+## 10.2.3 / 2023-10-01
+
+* Fixed `Signature::insert()` - @thekid
+* Refactored code base to use the class loading mechanism instead of the
+  *Package* class from `lang.reflect`. See xp-framework/rfc#338
+  (@thekid)
+
+## 10.2.2 / 2023-07-29
+
+* Fixed legacy `array()` syntax being parsed into an invocation instead
+  of an array literal
+  (@thekid)
+
 ## 10.2.1 / 2023-06-03
 
 * Fix trailing commas in annotation lists - @thekid
