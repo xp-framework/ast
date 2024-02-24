@@ -13,9 +13,9 @@ class InvokeExpression extends Node {
   }
 
   /** @return iterable */
-  public function children() {
+  public function &children() {
     yield $this->expression;
-    foreach ($this->arguments as $element) {
+    foreach ($this->arguments as &$element) {
       yield $element;
     }
   }

@@ -18,11 +18,11 @@ class CaseLabel extends Node {
   }
 
   /** @return iterable */
-  public function children() {
+  public function &children() {
     if (null !== $this->expression) {
       yield $this->expression;
     }
-    foreach ($this->body as $node) {
+    foreach ($this->body as &$node) {
       yield $node;
     }
   }

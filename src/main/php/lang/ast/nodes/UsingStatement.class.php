@@ -13,11 +13,11 @@ class UsingStatement extends Node {
   }
 
   /** @return iterable */
-  public function children() {
-    foreach ($this->arguments as $element) {
+  public function &children() {
+    foreach ($this->arguments as &$element) {
       yield $element;
     }
-    foreach ($this->body as $element) {
+    foreach ($this->body as &$element) {
       yield $element;
     }
   }

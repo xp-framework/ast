@@ -15,17 +15,17 @@ class ForLoop extends Node {
   }
 
   /** @return iterable */
-  public function children() {
-    foreach ($this->initialization as $element) {
+  public function &children() {
+    foreach ($this->initialization as &$element) {
       yield $element;
     }
-    foreach ($this->condition as $element) {
+    foreach ($this->condition as &$element) {
       yield $element;
     }
-    foreach ($this->loop as $element) {
+    foreach ($this->loop as &$element) {
       yield $element;
     }
-    foreach ($this->body as $element) {
+    foreach ($this->body as &$element) {
       yield $element;
     }
   }

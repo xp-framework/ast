@@ -70,8 +70,8 @@ class Annotations extends Node implements IteratorAggregate {
   }
 
   /** @return iterable */
-  public function children() {
-    foreach ($this->named as $annotation) {
+  public function &children() {
+    foreach ($this->named as &$annotation) {
       yield $annotation;
     }
   }

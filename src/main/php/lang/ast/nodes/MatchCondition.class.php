@@ -16,8 +16,8 @@ class MatchCondition extends Node {
   }
 
   /** @return iterable */
-  public function children() {
-    foreach ($this->expressions as $expression) {
+  public function &children() {
+    foreach ($this->expressions as &$expression) {
       yield $expression;
     }
     yield $this->body;

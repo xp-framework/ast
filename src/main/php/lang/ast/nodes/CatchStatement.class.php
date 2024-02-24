@@ -18,9 +18,5 @@ class CatchStatement extends Node {
   }
 
   /** @return iterable */
-  public function children() {
-    foreach ($this->body as $element) {
-      yield $element;
-    }
-  }
+  public function children() { return $this->body; }
 }
