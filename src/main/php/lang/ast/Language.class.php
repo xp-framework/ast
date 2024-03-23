@@ -173,7 +173,7 @@ class Language {
    * @param  ?lang.ast.Scope $scope
    * @return lang.ast.Parse
    */
-  public function parse($tokens, Scope $scope= null) {
+  public function parse($tokens, ?Scope $scope= null) {
     return new Parse($this, $tokens, $scope);
   }
 

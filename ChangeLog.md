@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.0.0 / 2024-03-23
+
+* Made this library compatible with XP 12, droppping support for all but
+  the latest PHP 7 version. Minimum PHP version required is now **7.4**!
+  (@thekid)
+
 ## 10.3.1 / 2024-01-06
 
 * Added PHP 8.4 to the test matrix - @thekid

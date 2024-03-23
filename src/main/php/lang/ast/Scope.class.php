@@ -36,7 +36,7 @@ class Scope {
   public $imports= [];
   public $types= [];
 
-  public function __construct(self $parent= null) {
+  public function __construct(?self $parent= null) {
     $this->parent= $parent;
   }
 
