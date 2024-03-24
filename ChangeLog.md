@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.0.1 / 2024-03-24
+
+* Fixed `%=` (modulo-assignment) operator - @thekid
+
 ## 11.0.0 / 2024-03-23
 
 * Merged PR #51: Logical Operators and Assignment Expressions - @thekid
