@@ -42,6 +42,7 @@ use lang\ast\nodes\{
   NullSafeInstanceExpression,
   OffsetExpression,
   Parameter,
+  PipeExpression,
   Property,
   ReturnStatement,
   ScopeExpression,
@@ -171,6 +172,16 @@ class PHP extends Language {
       }
 
       return new ScopeExpression($scope, $expr, $left->line);
+    });
+
+    $this->infix('|>', 90, function($parse, $token, $left) {
+      return new PipeExpression($left, $this->expression($parse, 90), $left->line);
+    });
+
+    $this->infix('?|>', 90, function($parse, $node, $left) {
+      $value= new PipeExpression($left, $this->expression($parse, 90), $left->line);
+      $value->kind= 'nullsafepipe';
+      return $value;
     });
 
     $this->infix('(', 100, function($parse, $token, $left) {
