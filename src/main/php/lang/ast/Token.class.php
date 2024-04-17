@@ -11,12 +11,12 @@ class Token implements Value {
   /**
    * Creates a new node
    *
-   * @param lang.ast.Symbol $symbol
-   * @param string $kind
-   * @param var $value
-   * @param int $line
+   * @param  ?lang.ast.Symbol $symbol
+   * @param  string $kind
+   * @param  var $value
+   * @param  int $line
    */
-  public function __construct(Symbol $symbol= null, $kind= null, $value= null, $line= -1) {
+  public function __construct(?Symbol $symbol= null, $kind= null, $value= null, $line= -1) {
     $this->symbol= $symbol;
     $this->kind= $kind;
     $this->value= $value;

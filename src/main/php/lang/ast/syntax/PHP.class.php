@@ -232,11 +232,14 @@ class PHP extends Language {
     $this->assignment('-=');
     $this->assignment('*=');
     $this->assignment('/=');
+    $this->assignment('%=');
     $this->assignment('.=');
     $this->assignment('**=');
     $this->assignment('>>=');
     $this->assignment('<<=');
     $this->assignment('??=');
+    $this->assignment('&&=');
+    $this->assignment('||=');
 
     // This is ambiguous:
     //
