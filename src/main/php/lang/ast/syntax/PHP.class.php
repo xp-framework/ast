@@ -1350,9 +1350,6 @@ class PHP extends Language {
           if ('final' === $parse->token->value) {
             $modifiers= ['final'];
             $parse->forward();
-          } else if ('abstract' === $parse->token->value) {
-            $modifiers= ['abstract'];
-            $parse->forward();
           } else {
             $modifiers= [];
           }
