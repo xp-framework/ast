@@ -13,9 +13,9 @@ class DoLoop extends Node {
   }
 
   /** @return iterable */
-  public function children() {
+  public function &children() {
     yield $this->expression;
-    foreach ($this->body as $element) {
+    foreach ($this->body as &$element) {
       yield $element;
     }
   }

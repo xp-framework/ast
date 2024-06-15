@@ -27,6 +27,7 @@ use lang\ast\nodes\{
   ForeachLoop,
   FunctionDeclaration,
   GotoStatement,
+  Hook,
   IfStatement,
   InstanceExpression,
   InstanceOfExpression,
@@ -1303,7 +1304,7 @@ class PHP extends Language {
     $parse->comment= null;
     $annotations= $meta[DETAIL_ANNOTATIONS] ?? null;
 
-    while (';' !== $parse->token->value) {
+    do {
       $line= $parse->token->line;
 
       // Untyped `$a` vs. typed `int $a`
@@ -1325,11 +1326,97 @@ class PHP extends Language {
       } else {
         $expr= null;
       }
+
       $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line);
 
-      if (',' === $parse->token->value) $parse->forward();
-    }
-    $parse->expecting(';', 'field declaration');
+      // Check for property hooks
+      if (';' === $parse->token->value) {
+        $parse->forward();
+        return;
+      } else if (',' === $parse->token->value) {
+        $parse->forward();
+        continue;
+      } else if ('=>' === $parse->token->value) {
+        $parse->forward();
+        $expr= $this->expression($parse, 0);
+        $parse->expecting(';', 'property hook');
+
+        $body[$lookup]->hooks['get']= new Hook([], 'get', $expr, false, null, $line);
+        return;
+      } else if ('{' === $parse->token->value) {
+        $parse->forward();
+
+        while ('}' !== $parse->token->value) {
+          if ('final' === $parse->token->value) {
+            $modifiers= ['final'];
+            $parse->forward();
+          } else {
+            $modifiers= [];
+          }
+
+          if ('&' === $parse->token->value) {
+            $byref= true;
+            $parse->forward();
+          } else {
+            $byref= false;
+          }
+
+          $hook= $parse->token->value;
+          $parse->forward();
+
+          if ('(' === $parse->token->value) {
+            $parse->forward();
+
+            if ('#[' === $parse->token->value) {
+              $parse->forward();
+              $annotations= $this->annotations($parse, 'parameter annotations');
+            } else {
+              $annotations= null;
+            }
+
+            $line= $parse->token->line;
+            $type= $this->type($parse);
+
+            $parse->forward();
+            $param= $parse->token->value;
+            $parse->forward();
+
+            if ('=' === $parse->token->value) {
+              $parse->forward();
+              $default= $this->expression($parse, 0);
+            } else {
+              $default= null;
+            }
+
+            $parameter= new Parameter($param, $type, $default, false, false, null, $annotations, null, $line);
+            $parse->expecting(')', 'property hook parameters');
+          } else {
+            $parameter= null;
+          }
+
+          $line= $parse->token->line;
+          if ('=>' === $parse->token->value) {
+            $parse->forward();
+            $expr= $this->expression($parse, 0);
+            $parse->expecting(';', 'property hook');
+          } else if ('{' === $parse->token->value) {
+            $parse->forward();
+            $expr= new Block($this->statements($parse), $line);
+            $parse->expecting('}', 'property hook');
+          } else if (';' === $parse->token->value) {
+            $parse->forward();
+            $expr= null;
+          }
+
+          $body[$lookup]->hooks[$hook]= new Hook($modifiers, $hook, $expr, $byref, $parameter, $line);
+        }
+
+        $parse->forward();
+        return;
+      } else {
+        $parse->expecting(';, , or {', 'property');
+      }
+    } while (null !== $parse->token->value);
   }
 
   /** Parses PHP 8 attributes (#[Test]) */
