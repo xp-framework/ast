@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.1.0 / 2024-06-15
+
+* Merged PR #45: Implement property hooks syntax - @thekid
+
 ## 11.0.1 / 2024-03-24
 
 * Fixed `%=` (modulo-assignment) operator - @thekid
