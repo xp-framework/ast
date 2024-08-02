@@ -19,7 +19,7 @@ use lang\ast\nodes\{
   Variable,
   Parameter
 };
-use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion, IsValue};
+use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion, IsValue, IsGeneric};
 use test\{Assert, Test, Values};
 
 class MembersTest extends ParseTest {
@@ -294,6 +294,14 @@ class MembersTest extends ParseTest {
     $this->assertParsed(
       [new ScopeExpression('\\A', new Literal('class', self::LINE), self::LINE)],
       'A::class;'
+    );
+  }
+
+  #[Test]
+  public function generic_class_resolution() {
+    $this->assertParsed(
+      [new ScopeExpression(new IsGeneric(new IsValue('\\A'), [new IsValue('\\T')]), new Literal('class', self::LINE), self::LINE)],
+      'A<T>::class;'
     );
   }
 

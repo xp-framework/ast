@@ -332,4 +332,17 @@ class OperatorTest extends ParseTest {
       ';; $a= 1 ;;; $b= 2;'
     );
   }
+
+  #[Test]
+  public function const_less_than_const() {
+    $this->assertParsed(
+      [new BinaryExpression(
+        new Literal('a', self::LINE),
+        '<',
+        new Literal('b', self::LINE),
+        self::LINE
+      )],
+      'a < b;'
+    );
+  }
 }

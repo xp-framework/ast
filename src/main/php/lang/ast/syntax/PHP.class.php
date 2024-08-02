@@ -171,7 +171,7 @@ class PHP extends Language {
         $expr= new InvokeExpression($expr, $arguments, $token->line);
       }
 
-      return new ScopeExpression($scope, $expr, $left->line);
+      return new ScopeExpression($scope, $expr, $token->line);
     });
 
     $this->infix('(', 100, function($parse, $token, $left) {
@@ -482,6 +482,40 @@ class PHP extends Language {
     });
 
     $this->prefix('(name)', 0, function($parse, $token) {
+      static $types= ['(' => 1, ')' => 1, ',' => 1, '?' => 1, ':' => 1, '|' => 1, '&' => 1];
+
+      // Disambiguate `Class<T>` from `const < expr` by looking ahead
+      if ('<' === $parse->token->value) {
+        $generic= true;
+        $level= 1;
+        $skipped= [$parse->token];
+        while ($level > 0) {
+          $parse->forward();
+          $skipped[]= $parse->token;
+
+          if ('<' === $parse->token->symbol->id) {
+            $level++;
+          } else if ('<?' === $parse->token->symbol->id) {
+            $level++;
+          } else if ('>' === $parse->token->symbol->id) {
+            $level--;
+          } else if ('>>' === $parse->token->symbol->id) {
+            $level-= 2;
+          } else if ('name' !== $parse->token->kind && !isset($types[$parse->token->value])) {
+            $generic= false;
+            break;
+          }
+        }
+
+        $parse->queue= $parse->queue ? array_merge($skipped, $parse->queue) : $skipped;
+        if ($generic) {
+          $parse->token= $token;
+          return $this->type($parse, false);
+        }
+
+        $parse->forward();
+      }
+
       return new Literal($token->value, $token->line);
     });
 
