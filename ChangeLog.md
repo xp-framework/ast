@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.2.0 / 2024-08-04
+
+* Merged PR #53: Add syntactic support for `T<string>::class` - @thekid
+
 ## 11.1.0 / 2024-06-15
 
 * Merged PR #45: Implement property hooks syntax - @thekid
