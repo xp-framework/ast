@@ -264,7 +264,7 @@ class PHP extends Language {
         $parse->forward();
         $skipped[]= $parse->token;
       }
-      $parse->queue= $parse->queue ? array_merge($skipped, $parse->queue) : $skipped;
+      $parse->queue= $parse->queue ? [...$skipped, ...$parse->queue] : $skipped;
 
       if ($cast && ('operator' !== $parse->token->kind || '(' === $parse->token->value || '[' === $parse->token->value)) {
         $parse->forward();
@@ -507,7 +507,7 @@ class PHP extends Language {
           }
         }
 
-        $parse->queue= $parse->queue ? array_merge($skipped, $parse->queue) : $skipped;
+        $parse->queue= $parse->queue ? [...$skipped, ...$parse->queue] : $skipped;
         if ($generic) {
           $parse->token= $token;
           return $this->type($parse, false);
