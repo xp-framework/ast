@@ -18,7 +18,7 @@ use lang\ast\nodes\{
   UnaryExpression,
   Variable
 };
-use lang\ast\types\{IsExpression, IsValue};
+use lang\ast\types\{IsExpression, IsGeneric, IsValue};
 use test\{Assert, Test, Values};
 
 class OperatorTest extends ParseTest {
@@ -280,6 +280,18 @@ class OperatorTest extends ParseTest {
         self::LINE
       )],
       '!$this instanceof self;'
+    );
+  }
+
+  #[Test]
+  public function instanceof_generic() {
+    $this->assertParsed(
+      [new InstanceOfExpression(
+        new Variable('this', self::LINE),
+        new IsGeneric(new IsValue('self'), [new IsValue('T')]),
+        self::LINE
+      )],
+      '$this instanceof self<T>;'
     );
   }
 
