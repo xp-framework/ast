@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.2.1 / 2024-08-11
+
 * Fixed grouped `use` statements containing aliases not scoped correctly
   (@thekid)
 
