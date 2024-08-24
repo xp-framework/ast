@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.2.1 / 2024-08-11
+
+* Fixed grouped `use` statements containing aliases not scoped correctly
+  (@thekid)
+
 ## 11.2.0 / 2024-08-04
 
 * Merged PR #53: Add syntactic support for `T<string>::class` - @thekid

@@ -619,7 +619,7 @@ class PHP extends Language {
             if ('as' === $parse->token->value) {
               $parse->forward();
               $names[$class]= $parse->token->value;
-              $parse->scope->import($parse->token->value);
+              $parse->scope->import($class, $parse->token->value);
               $parse->forward();
             } else {
               $names[$class]= null;
