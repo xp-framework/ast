@@ -1477,16 +1477,25 @@ class PHP extends Language {
   }
 
   private function modifier($parse) {
-    $token= $parse->token->value;
+    $modifier= $parse->token->value;
     $parse->forward();
 
     if ('(' === $parse->token->value) {
+      $token= $parse->token;
       $parse->expecting('(', 'modifiers');
-      $token.= '('.$parse->token->value.')';
+
+      // Disambiguate function types from `private(set)`
+      if ('function' === $parse->token->value) {
+        array_unshift($parse->queue, $parse->token);
+        $parse->token= $token;
+        return $modifier;
+      }
+
+      $modifier.= '('.$parse->token->value.')';
       $parse->forward();
       $parse->expecting(')', 'modifiers');
     }
-    return $token;
+    return $modifier;
   }
 
   private function parameters($parse) {
