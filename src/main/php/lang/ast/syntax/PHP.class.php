@@ -1477,7 +1477,12 @@ class PHP extends Language {
   }
 
   private function parameters($parse) {
-    static $promotion= ['private' => true, 'protected' => true, 'public' => true];
+    static $promotion= [
+      'private'   => true,
+      'protected' => true,
+      'public'    => true,
+      'readonly'  => true,
+    ];
 
     $parameters= [];
     while (')' !== $parse->token->value) {
@@ -1490,14 +1495,20 @@ class PHP extends Language {
 
       $line= $parse->token->line;
       if ('name' === $parse->token->kind && isset($promotion[$parse->token->value])) {
-        $promote= $parse->token->value;
-        $parse->forward();
-
-        // It would be better to use an array for promote, but this way we keep BC
-        if ('readonly' === $parse->token->value) {
-          $promote.= ' readonly';
+        $promote= [];
+        do {
+          $token= $parse->token->value;
           $parse->forward();
-        }
+
+          if ('(' === $parse->token->value) {
+            $parse->expecting('(', 'modifiers');
+            $token.= '('.$parse->token->value.')';
+            $parse->forward();
+            $parse->expecting(')', 'modifiers');
+          }
+
+          $promote[]= $token;
+        } while ('name' === $parse->token->kind && isset($promotion[$parse->token->value]));
       } else {
         $promote= null;
       }

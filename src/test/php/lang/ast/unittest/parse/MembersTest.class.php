@@ -388,4 +388,13 @@ class MembersTest extends ParseTest {
 
     $this->assertParsed([$class], 'class A { public private(set) int $a; }');
   }
+
+  #[Test]
+  public function asymmetric_property_as_constructor_argument() {
+    $params= [new Parameter('a', new IsLiteral('int'), null, false, false, ['private(set)'], null, null, self::LINE)];
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $class->declare(new Method(['public'], '__construct', new Signature($params, null, false, self::LINE), [], null, null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { public function __construct(private(set) int $a) { } }');
+  }
 }
