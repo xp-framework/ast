@@ -1566,8 +1566,17 @@ class PHP extends Language {
     $meta= [];
     while ('}' !== $parse->token->value) {
       if (isset($modifier[$parse->token->value])) {
-        $modifiers[]= $parse->token->value;
+        $token= $parse->token->value;
         $parse->forward();
+
+        if ('(' === $parse->token->value) {
+          $parse->expecting('(', 'modifiers');
+          $token.= '('.$parse->token->value.')';
+          $parse->forward();
+          $parse->expecting(')', 'modifiers');
+        }
+
+        $modifiers[]= $token;
       } else if ($f= $this->body[$parse->token->value] ?? $this->body['@'.$parse->token->kind] ?? null) {
         $f($parse, $body, $meta, $modifiers);
         $modifiers= [];
