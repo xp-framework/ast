@@ -1477,6 +1477,8 @@ class PHP extends Language {
   }
 
   private function modifier($parse) {
+    static $hooks= ['set' => true];
+
     $modifier= $parse->token->value;
     $parse->forward();
 
@@ -1484,16 +1486,14 @@ class PHP extends Language {
       $token= $parse->token;
       $parse->expecting('(', 'modifiers');
 
-      // Disambiguate function types from `private(set)`
-      if ('function' === $parse->token->value) {
+      if (isset($hooks[$parse->token->value])) {
+        $modifier.= '('.$parse->token->value.')';
+        $parse->forward();
+        $parse->expecting(')', 'modifiers');
+      } else {
         array_unshift($parse->queue, $parse->token);
         $parse->token= $token;
-        return $modifier;
       }
-
-      $modifier.= '('.$parse->token->value.')';
-      $parse->forward();
-      $parse->expecting(')', 'modifiers');
     }
     return $modifier;
   }
