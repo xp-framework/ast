@@ -1511,7 +1511,7 @@ class PHP extends Language {
         $promote= [];
         do {
           $promote[]= $this->modifier($parse);
-        } while ('name' === $parse->token->kind && isset($promotion[$parse->token->value]));
+        } while (isset($promotion[$parse->token->value]));
       } else {
         $promote= null;
       }
