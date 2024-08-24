@@ -1476,6 +1476,19 @@ class PHP extends Language {
     return $annotations;
   }
 
+  private function modifier($parse) {
+    $token= $parse->token->value;
+    $parse->forward();
+
+    if ('(' === $parse->token->value) {
+      $parse->expecting('(', 'modifiers');
+      $token.= '('.$parse->token->value.')';
+      $parse->forward();
+      $parse->expecting(')', 'modifiers');
+    }
+    return $token;
+  }
+
   private function parameters($parse) {
     static $promotion= [
       'private'   => true,
@@ -1497,17 +1510,7 @@ class PHP extends Language {
       if ('name' === $parse->token->kind && isset($promotion[$parse->token->value])) {
         $promote= [];
         do {
-          $token= $parse->token->value;
-          $parse->forward();
-
-          if ('(' === $parse->token->value) {
-            $parse->expecting('(', 'modifiers');
-            $token.= '('.$parse->token->value.')';
-            $parse->forward();
-            $parse->expecting(')', 'modifiers');
-          }
-
-          $promote[]= $token;
+          $promote[]= $this->modifier($parse);
         } while ('name' === $parse->token->kind && isset($promotion[$parse->token->value]));
       } else {
         $promote= null;
@@ -1577,17 +1580,7 @@ class PHP extends Language {
     $meta= [];
     while ('}' !== $parse->token->value) {
       if (isset($modifier[$parse->token->value])) {
-        $token= $parse->token->value;
-        $parse->forward();
-
-        if ('(' === $parse->token->value) {
-          $parse->expecting('(', 'modifiers');
-          $token.= '('.$parse->token->value.')';
-          $parse->forward();
-          $parse->expecting(')', 'modifiers');
-        }
-
-        $modifiers[]= $token;
+        $modifiers[]= $this->modifier($parse);
       } else if ($f= $this->body[$parse->token->value] ?? $this->body['@'.$parse->token->kind] ?? null) {
         $f($parse, $body, $meta, $modifiers);
         $modifiers= [];
