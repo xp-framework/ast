@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.3.0 / 2024-08-26
+
+* Merged PR #54: Add syntactic support for asymmetric visibility, see
+  https://wiki.php.net/rfc/asymmetric-visibility-v2, targeted for PHP 8.4
+  (@thekid)
+
 ## 11.2.1 / 2024-08-11
 
 * Fixed grouped `use` statements containing aliases not scoped correctly
