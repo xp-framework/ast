@@ -1476,8 +1476,35 @@ class PHP extends Language {
     return $annotations;
   }
 
+  private function modifier($parse) {
+    static $hooks= ['set' => true];
+
+    $modifier= $parse->token->value;
+    $parse->forward();
+
+    if ('(' === $parse->token->value) {
+      $token= $parse->token;
+      $parse->expecting('(', 'modifiers');
+
+      if (isset($hooks[$parse->token->value])) {
+        $modifier.= '('.$parse->token->value.')';
+        $parse->forward();
+        $parse->expecting(')', 'modifiers');
+      } else {
+        array_unshift($parse->queue, $parse->token);
+        $parse->token= $token;
+      }
+    }
+    return $modifier;
+  }
+
   private function parameters($parse) {
-    static $promotion= ['private' => true, 'protected' => true, 'public' => true];
+    static $promotion= [
+      'private'   => true,
+      'protected' => true,
+      'public'    => true,
+      'readonly'  => true,
+    ];
 
     $parameters= [];
     while (')' !== $parse->token->value) {
@@ -1490,14 +1517,10 @@ class PHP extends Language {
 
       $line= $parse->token->line;
       if ('name' === $parse->token->kind && isset($promotion[$parse->token->value])) {
-        $promote= $parse->token->value;
-        $parse->forward();
-
-        // It would be better to use an array for promote, but this way we keep BC
-        if ('readonly' === $parse->token->value) {
-          $promote.= ' readonly';
-          $parse->forward();
-        }
+        $promote= [];
+        do {
+          $promote[]= $this->modifier($parse);
+        } while (isset($promotion[$parse->token->value]));
       } else {
         $promote= null;
       }
@@ -1566,8 +1589,7 @@ class PHP extends Language {
     $meta= [];
     while ('}' !== $parse->token->value) {
       if (isset($modifier[$parse->token->value])) {
-        $modifiers[]= $parse->token->value;
-        $parse->forward();
+        $modifiers[]= $this->modifier($parse);
       } else if ($f= $this->body[$parse->token->value] ?? $this->body['@'.$parse->token->kind] ?? null) {
         $f($parse, $body, $meta, $modifiers);
         $modifiers= [];
