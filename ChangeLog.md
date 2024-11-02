@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.3.1 / 2024-11-02
+
+* Fixed strings enclosed in backticks - @thekid
+
 ## 11.3.0 / 2024-08-26
 
 * Merged PR #54: Add syntactic support for asymmetric visibility, see
