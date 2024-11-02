@@ -10,7 +10,7 @@ use lang\FormatException;
  * @test  lang.ast.unittest.TokensTest
  */
 class Tokens {
-  const DELIMITERS = " \r\n\t'\$\"=,;.:?!(){}[]#+-*/|&^@%~<>";
+  const DELIMITERS = " \r\n\t'\$\"`=,;.:?!(){}[]#+-*/|&^@%~<>";
   const OPERATORS = [
     '<' => ['<=>', '<<=', '<=', '<<', '<>', '<?'],
     '>' => ['>>=', '>=', '>>'],
@@ -101,7 +101,7 @@ class Tokens {
         $line++;
       } else if ("\r" === $token || "\t" === $token || ' ' === $token) {
         // Skip over whitespace
-      } else if ("'" === $token || '"' === $token) {
+      } else if ("'" === $token || '"' === $token || '`' === $token) {
         $string= $token;
         $end= '\\'.$token;
         do {

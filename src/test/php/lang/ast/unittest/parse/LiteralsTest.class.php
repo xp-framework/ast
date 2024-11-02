@@ -50,6 +50,11 @@ class LiteralsTest extends ParseTest {
     $this->assertParsed([new Literal('"Test"', self::LINE)], '"Test";');
   }
 
+  #[Test]
+  public function exec_statement() {
+    $this->assertParsed([new Literal('`ls -al`', self::LINE)], '`ls -al`;');
+  }
+
   #[Test, Values(['[];', ['array();']])]
   public function empty_array($declaration) {
     $this->assertParsed([new ArrayLiteral([], self::LINE)], $declaration);
