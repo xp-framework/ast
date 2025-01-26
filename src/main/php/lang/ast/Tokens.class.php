@@ -166,13 +166,13 @@ class Tokens {
 
         // Handle combined operators. First, ensure we have enough bytes in our buffer
         // Our longest operator is 3 characters, hardcode this here.
-        if (self::OPERATORS[$token]) {
+        if ($combined= self::OPERATORS[$token]) {
           $offset--;
           while ($offset + 3 > $length && $this->in->available()) {
             $buffer.= $this->in->read(8192);
             $length= strlen($buffer);
           }
-          foreach (self::OPERATORS[$token] as $operator) {
+          foreach ($combined as $operator) {
             if ($offset + strlen($operator) > $length) continue;
             if (0 === substr_compare($buffer, $operator, $offset, strlen($operator))) {
               $token= $operator;
@@ -180,41 +180,42 @@ class Tokens {
             }
           }
           $offset+= strlen($token);
-        }
 
-        // Distinguish single- and multiline comments as well as heredoc from operators
-        if ('//' === $token) {
-          yield new Token(null, 'comment', '//'.$next("\r\n"), $line);
-        } else if ('/*' === $token) {
-          $comment= '';
-          do {
-            $chunk= $next('/');
-            $comment.= $chunk;
-          } while (null !== $chunk && '*' !== $chunk[strlen($chunk) - 1]);
-          $comment.= $next('/');
-          yield new Token(null, '*' === $comment[0] ? 'apidoc' : 'comment', '/*'.$comment, $line);
-          $line+= substr_count($comment, "\n");
-        } else if ('<<<' === $token) {
-          $label= $next("\r\n");
-          $end= trim($label, '"\'');
-          $l= strlen($end);
-          $string= "<<<{$label}";
-
-          heredoc: $token= $next("\r\n");
-          if (0 === substr_compare($token, $end, $p= strspn($token, ' '), $l)) {
-            $p+= $l;
-            $offset-= strlen($token) - $p;
-            yield new Token($language->symbol('(literal)'), 'heredoc', $string.substr($token, 0, $p), $line);
-            $line+= substr_count($string, "\n");
+          // Distinguish single- and multiline comments as well as heredoc from operators
+          if ('//' === $token) {
+            yield new Token(null, 'comment', '//'.$next("\r\n"), $line);
             continue;
-          } else if (null === $token) {
-            throw new FormatException('Unclosed heredoc literal starting at line '.$line);
+          } else if ('/*' === $token) {
+            $comment= '';
+            do {
+              $chunk= $next('/');
+              $comment.= $chunk;
+            } while (null !== $chunk && '*' !== $chunk[strlen($chunk) - 1]);
+            $comment.= $next('/');
+            yield new Token(null, '*' === $comment[0] ? 'apidoc' : 'comment', '/*'.$comment, $line);
+            $line+= substr_count($comment, "\n");
+            continue;
+          } else if ('<<<' === $token) {
+            $label= $next("\r\n");
+            $end= trim($label, '"\'');
+            $l= strlen($end);
+            $string= "<<<{$label}";
+
+            heredoc: $token= $next("\r\n");
+            if (0 === substr_compare($token, $end, $p= strspn($token, ' '), $l)) {
+              $p+= $l;
+              $offset-= strlen($token) - $p;
+              yield new Token($language->symbol('(literal)'), 'heredoc', $string.substr($token, 0, $p), $line);
+              $line+= substr_count($string, "\n");
+              continue;
+            } else if (null === $token) {
+              throw new FormatException('Unclosed heredoc literal starting at line '.$line);
+            }
+            $string.= $token;
+            goto heredoc;
           }
-          $string.= $token;
-          goto heredoc;
-        } else {
-          yield new Token($language->symbol($token), 'operator', $token, $line);
         }
+        yield new Token($language->symbol($token), 'operator', $token, $line);
       } else {
         yield new Token($language->symbols[$token] ?? $language->symbol('(name)'), 'name', $token, $line);
       }
