@@ -86,4 +86,17 @@ class LiteralsTest extends ParseTest {
     $pair= [new Literal('"key"', self::LINE), new Literal('"value"', self::LINE)];
     $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], $declaration);
   }
+
+  #[Test, Values(['EOD', '"EOD"', "'EOD'"])]
+  public function heredoc($label) {
+    $nowdoc= (
+      "<<<{$label}\n".
+      "Line 1\n".
+      "Line 2\n".
+      "\n".
+      "Line 4\n".
+      "EOD"
+    );
+    $this->assertParsed([new Literal($nowdoc, self::LINE + 5)], $nowdoc.';');
+  }
 }

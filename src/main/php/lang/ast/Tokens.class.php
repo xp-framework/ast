@@ -179,6 +179,25 @@ class Tokens {
             continue;
           }
           null === $t || $offset-= strlen($t);
+        } else if ('<' === $token) {
+          $t= $next(self::DELIMITERS);
+          if ('<' === $t) {
+            $t= $next(self::DELIMITERS);
+            if ('<' === $t) {
+              $label= $next("\r\n");
+              $end= trim($label, '"\'');
+              $string= "<<<{$label}";
+              do {
+                $token= $next("\r\n");
+                if ("\n" === $token) $line++;
+              } while (strncmp($end, $token, strlen($end)) && $string.= $token);
+              $string.= $end;
+              yield new Token($language->symbol('(literal)'), 'heredoc', $string, $line);
+              $offset--;
+              continue;
+            }
+          }
+          $offset-= 2;
         }
 
         // Handle combined operators. First, ensure we have enough bytes in our buffer
