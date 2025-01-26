@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.4.0 / 2025-01-26
+
+* Merged PR #55: Add suport for heredoc (and its nowdoc variant) - @thekid
+
 ## 11.3.1 / 2024-11-02
 
 * Fixed strings enclosed in backticks - @thekid
