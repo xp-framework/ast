@@ -99,4 +99,17 @@ class LiteralsTest extends ParseTest {
     );
     $this->assertParsed([new Literal($nowdoc, self::LINE + 5)], $nowdoc.';');
   }
+
+  #[Test]
+  public function heredoc_indentation() {
+    $nowdoc= (
+      "<<<EOD\n".
+      "  Line 1\n".
+      "  Line 2\n".
+      "\n".
+      "  Line 4\n".
+      "  EOD"
+    );
+    $this->assertParsed([new Literal($nowdoc, self::LINE + 5)], $nowdoc.';');
+  }
 }
