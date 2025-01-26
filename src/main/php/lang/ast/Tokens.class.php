@@ -12,7 +12,7 @@ use lang\FormatException;
 class Tokens {
   const DELIMITERS = " \r\n\t'\$\"`=,;.:?!(){}[]#+-*/|&^@%~<>";
   const OPERATORS = [
-    '<' => ['<=>', '<<=', '<=', '<<', '<>', '<?'],
+    '<' => ['<=>', '<<=', '<<<', '<=', '<<', '<>', '<?'],
     '>' => ['>>=', '>=', '>>'],
     '=' => ['===', '=>', '=='],
     '!' => ['!==', '!='],
@@ -22,7 +22,7 @@ class Tokens {
     '+' => ['+=', '++'],
     '-' => ['-=', '--', '->'],
     '*' => ['**=', '*=', '**'],
-    '/' => ['/='],
+    '/' => ['/=', '//', '/*'],
     '~' => ['~='],
     '%' => ['%='],
     '?' => ['?->', '??=', '?:', '??'],
@@ -106,10 +106,10 @@ class Tokens {
         $end= '\\'.$token;
         do {
           $chunk= $next($end);
-          if (null === $chunk) {
-            throw new FormatException('Unclosed string literal starting at line '.$line);
-          } else if ('\\' === $chunk) {
+          if ('\\' === $chunk) {
             $string.= $chunk.$next($end);
+          } else if (null === $chunk) {
+            throw new FormatException('Unclosed string literal starting at line '.$line);
           } else {
             $string.= $chunk;
           }
@@ -162,49 +162,6 @@ class Tokens {
             goto number;
           }
           $offset-= strlen($t);
-        } else if ('/' === $token) {
-          $t= $next(self::DELIMITERS);
-          if ('/' === $t) {
-            yield new Token(null, 'comment', '//'.$next("\r\n"), $line);
-            continue;
-          } else if ('*' === $t) {
-            $comment= '';
-            do {
-              $chunk= $next('/');
-              $comment.= $chunk;
-            } while (null !== $chunk && '*' !== $chunk[strlen($chunk) - 1]);
-            $comment.= $next('/');
-            yield new Token(null, '*' === $comment[0] ? 'apidoc' : 'comment', '/*'.$comment, $line);
-            $line+= substr_count($comment, "\n");
-            continue;
-          }
-          null === $t || $offset-= strlen($t);
-        } else if ('<' === $token) {
-          $t= $next(self::DELIMITERS);
-          if ('<' === $t) {
-            $n= $next(self::DELIMITERS);
-            if ('<' === $n) {
-              $label= $next("\r\n");
-              $end= trim($label, '"\'');
-              $l= strlen($end);
-              $string= "<<<{$label}";
-
-              heredoc: $token= $next("\r\n");
-              if (0 === substr_compare($token, $end, $p= strspn($token, ' '), $l)) {
-                $p+= $l;
-                $offset-= strlen($token) - $p;
-                yield new Token($language->symbol('(literal)'), 'heredoc', $string.substr($token, 0, $p), $line);
-                $line+= substr_count($string, "\n");
-                continue;
-              } else if (null === $token) {
-                throw new FormatException('Unclosed heredoc literal starting at line '.$line);
-              }
-              $string.= $token;
-              goto heredoc;
-            }
-            $offset-= strlen($n);
-          }
-          $offset-= strlen($t);
         }
 
         // Handle combined operators. First, ensure we have enough bytes in our buffer
@@ -225,7 +182,39 @@ class Tokens {
           $offset+= strlen($token);
         }
 
-        yield new Token($language->symbol($token), 'operator', $token, $line);
+        // Distinguish single- and multiline comments as well as heredoc from operators
+        if ('//' === $token) {
+          yield new Token(null, 'comment', '//'.$next("\r\n"), $line);
+        } else if ('/*' === $token) {
+          $comment= '';
+          do {
+            $chunk= $next('/');
+            $comment.= $chunk;
+          } while (null !== $chunk && '*' !== $chunk[strlen($chunk) - 1]);
+          $comment.= $next('/');
+          yield new Token(null, '*' === $comment[0] ? 'apidoc' : 'comment', '/*'.$comment, $line);
+          $line+= substr_count($comment, "\n");
+        } else if ('<<<' === $token) {
+          $label= $next("\r\n");
+          $end= trim($label, '"\'');
+          $l= strlen($end);
+          $string= "<<<{$label}";
+
+          heredoc: $token= $next("\r\n");
+          if (0 === substr_compare($token, $end, $p= strspn($token, ' '), $l)) {
+            $p+= $l;
+            $offset-= strlen($token) - $p;
+            yield new Token($language->symbol('(literal)'), 'heredoc', $string.substr($token, 0, $p), $line);
+            $line+= substr_count($string, "\n");
+            continue;
+          } else if (null === $token) {
+            throw new FormatException('Unclosed heredoc literal starting at line '.$line);
+          }
+          $string.= $token;
+          goto heredoc;
+        } else {
+          yield new Token($language->symbol($token), 'operator', $token, $line);
+        }
       } else {
         yield new Token($language->symbols[$token] ?? $language->symbol('(name)'), 'name', $token, $line);
       }
