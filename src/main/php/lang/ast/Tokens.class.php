@@ -182,8 +182,8 @@ class Tokens {
         } else if ('<' === $token) {
           $t= $next(self::DELIMITERS);
           if ('<' === $t) {
-            $t= $next(self::DELIMITERS);
-            if ('<' === $t) {
+            $n= $next(self::DELIMITERS);
+            if ('<' === $n) {
               $label= $next("\r\n");
               $end= trim($label, '"\'');
               $string= "<<<{$label}";
@@ -196,8 +196,9 @@ class Tokens {
               $offset--;
               continue;
             }
+            $offset-= strlen($n);
           }
-          $offset-= 2;
+          $offset-= strlen($t);
         }
 
         // Handle combined operators. First, ensure we have enough bytes in our buffer
