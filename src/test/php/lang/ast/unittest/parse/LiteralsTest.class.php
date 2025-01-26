@@ -112,4 +112,30 @@ class LiteralsTest extends ParseTest {
     );
     $this->assertParsed([new Literal($nowdoc, self::LINE)], $nowdoc.';');
   }
+
+  #[Test]
+  public function line_number_after_multiline_string() {
+    $string= (
+      "'<html>\n".
+      "  ...\n".
+      "</html>'"
+    );
+    $this->assertParsed(
+      [new Literal($string, self::LINE), new Literal('null', self::LINE + 3)],
+      $string.";\nnull;"
+    );
+  }
+
+  #[Test]
+  public function line_number_after_heredoc() {
+    $nowdoc= (
+      "<<<EOD\n".
+      "  Line 1\n".
+      "  EOD"
+    );
+    $this->assertParsed(
+      [new Literal($nowdoc, self::LINE), new Literal('null', self::LINE + 3)],
+      $nowdoc.";\nnull;"
+    );
+  }
 }
