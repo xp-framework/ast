@@ -97,7 +97,7 @@ class LiteralsTest extends ParseTest {
       "Line 4\n".
       "EOD"
     );
-    $this->assertParsed([new Literal($nowdoc, self::LINE + 5)], $nowdoc.';');
+    $this->assertParsed([new Literal($nowdoc, self::LINE)], $nowdoc.';');
   }
 
   #[Test]
@@ -110,6 +110,6 @@ class LiteralsTest extends ParseTest {
       "  Line 4\n".
       "  EOD"
     );
-    $this->assertParsed([new Literal($nowdoc, self::LINE + 5)], $nowdoc.';');
+    $this->assertParsed([new Literal($nowdoc, self::LINE)], $nowdoc.';');
   }
 }

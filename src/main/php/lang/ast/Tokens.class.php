@@ -188,19 +188,19 @@ class Tokens {
               $end= trim($label, '"\'');
               $l= strlen($end);
               $string= "<<<{$label}";
-              do {
-                $token= $next("\r\n");
-                if ("\n" === $token) {
-                  $line++;
-                } else if (0 === substr_compare($token, $end, $p= strspn($token, ' '), $l)) {
-                  $string.= substr($token, 0, $p + $l);
-                  $offset-= strlen($token) - $p - $l;
-                  yield new Token($language->symbol('(literal)'), 'heredoc', $string, $line);
-                  continue 2;
-                }
-                $string.= $token;
-              } while (null !== $token);
-              throw new FormatException('Unclosed heredoc literal starting at line '.$line);
+
+              heredoc: $token= $next("\r\n");
+              if (0 === substr_compare($token, $end, $p= strspn($token, ' '), $l)) {
+                $p+= $l;
+                $offset-= strlen($token) - $p;
+                yield new Token($language->symbol('(literal)'), 'heredoc', $string.substr($token, 0, $p), $line);
+                $line+= substr_count($string, "\n");
+                continue;
+              } else if (null === $token) {
+                throw new FormatException('Unclosed heredoc literal starting at line '.$line);
+              }
+              $string.= $token;
+              goto heredoc;
             }
             $offset-= strlen($n);
           }
