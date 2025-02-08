@@ -175,12 +175,12 @@ class PHP extends Language {
       return new ScopeExpression($scope, $expr, $token->line);
     });
 
-    $this->infix('|>', 90, function($parse, $token, $left) {
-      return new PipeExpression($left, $this->expression($parse, 90), $left->line);
+    $this->infix('|>', 20, function($parse, $token, $left) {
+      return new PipeExpression($left, $this->expression($parse, 20), $left->line);
     });
 
-    $this->infix('?|>', 90, function($parse, $node, $left) {
-      $value= new PipeExpression($left, $this->expression($parse, 90), $left->line);
+    $this->infix('?|>', 20, function($parse, $node, $left) {
+      $value= new PipeExpression($left, $this->expression($parse, 20), $left->line);
       $value->kind= 'nullsafepipe';
       return $value;
     });
