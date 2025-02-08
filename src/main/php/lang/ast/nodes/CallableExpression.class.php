@@ -12,5 +12,5 @@ class CallableExpression extends Node {
   }
 
   /** @return iterable */
-  public function children() { return [$this->expression]; }
+  public function children() { return [&$this->expression]; }
 }

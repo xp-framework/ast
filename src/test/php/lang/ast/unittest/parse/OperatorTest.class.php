@@ -18,7 +18,7 @@ use lang\ast\nodes\{
   UnaryExpression,
   Variable
 };
-use lang\ast\types\{IsExpression, IsValue};
+use lang\ast\types\{IsExpression, IsGeneric, IsValue};
 use test\{Assert, Test, Values};
 
 class OperatorTest extends ParseTest {
@@ -283,6 +283,18 @@ class OperatorTest extends ParseTest {
     );
   }
 
+  #[Test]
+  public function instanceof_generic() {
+    $this->assertParsed(
+      [new InstanceOfExpression(
+        new Variable('this', self::LINE),
+        new IsGeneric(new IsValue('self'), [new IsValue('T')]),
+        self::LINE
+      )],
+      '$this instanceof self<T>;'
+    );
+  }
+
   #[Test, Values(['+', '-', '~'])]
   public function precedence_of_prefix($operator) {
     $this->assertParsed(
@@ -330,6 +342,19 @@ class OperatorTest extends ParseTest {
         new Assignment(new Variable('b', self::LINE), '=', new Literal('2', self::LINE), self::LINE)
       ],
       ';; $a= 1 ;;; $b= 2;'
+    );
+  }
+
+  #[Test]
+  public function const_less_than_const() {
+    $this->assertParsed(
+      [new BinaryExpression(
+        new Literal('a', self::LINE),
+        '<',
+        new Literal('b', self::LINE),
+        self::LINE
+      )],
+      'a < b;'
     );
   }
 }

@@ -10,9 +10,9 @@ use lang\FormatException;
  * @test  lang.ast.unittest.TokensTest
  */
 class Tokens {
-  const DELIMITERS = " \r\n\t'\$\"=,;.:?!(){}[]#+-*/|&^@%~<>";
+  const DELIMITERS = " \r\n\t'\$\"`=,;.:?!(){}[]#+-*/|&^@%~<>";
   const OPERATORS = [
-    '<' => ['<=>', '<<=', '<=', '<<', '<>', '<?'],
+    '<' => ['<=>', '<<=', '<<<', '<=', '<<', '<>', '<?'],
     '>' => ['>>=', '>=', '>>'],
     '=' => ['===', '=>', '=='],
     '!' => ['!==', '!='],
@@ -22,7 +22,7 @@ class Tokens {
     '+' => ['+=', '++'],
     '-' => ['-=', '--', '->'],
     '*' => ['**=', '*=', '**'],
-    '/' => ['/='],
+    '/' => ['/=', '//', '/*'],
     '~' => ['~='],
     '%' => ['%='],
     '?' => ['?->', '?|>', '??=', '?:', '??'],
@@ -101,15 +101,15 @@ class Tokens {
         $line++;
       } else if ("\r" === $token || "\t" === $token || ' ' === $token) {
         // Skip over whitespace
-      } else if ("'" === $token || '"' === $token) {
+      } else if ("'" === $token || '"' === $token || '`' === $token) {
         $string= $token;
         $end= '\\'.$token;
         do {
           $chunk= $next($end);
-          if (null === $chunk) {
-            throw new FormatException('Unclosed string literal starting at line '.$line);
-          } else if ('\\' === $chunk) {
+          if ('\\' === $chunk) {
             $string.= $chunk.$next($end);
+          } else if (null === $chunk) {
+            throw new FormatException('Unclosed string literal starting at line '.$line);
           } else {
             $string.= $chunk;
           }
@@ -162,12 +162,30 @@ class Tokens {
             goto number;
           }
           $offset-= strlen($t);
-        } else if ('/' === $token) {
-          $t= $next(self::DELIMITERS);
-          if ('/' === $t) {
+        }
+
+        // Handle combined operators. First, ensure we have enough bytes in our buffer
+        // Our longest operator is 3 characters, hardcode this here.
+        if ($combined= self::OPERATORS[$token]) {
+          $offset--;
+          while ($offset + 3 > $length && $this->in->available()) {
+            $buffer.= $this->in->read(8192);
+            $length= strlen($buffer);
+          }
+          foreach ($combined as $operator) {
+            if ($offset + strlen($operator) > $length) continue;
+            if (0 === substr_compare($buffer, $operator, $offset, strlen($operator))) {
+              $token= $operator;
+              break;
+            }
+          }
+          $offset+= strlen($token);
+
+          // Distinguish single- and multiline comments as well as heredoc from operators
+          if ('//' === $token) {
             yield new Token(null, 'comment', '//'.$next("\r\n"), $line);
             continue;
-          } else if ('*' === $t) {
+          } else if ('/*' === $token) {
             $comment= '';
             do {
               $chunk= $next('/');
@@ -177,28 +195,26 @@ class Tokens {
             yield new Token(null, '*' === $comment[0] ? 'apidoc' : 'comment', '/*'.$comment, $line);
             $line+= substr_count($comment, "\n");
             continue;
-          }
-          null === $t || $offset-= strlen($t);
-        }
+          } else if ('<<<' === $token) {
+            $label= $next("\r\n");
+            $end= trim($label, '"\'');
+            $l= strlen($end);
+            $string= "<<<{$label}";
 
-        // Handle combined operators. First, ensure we have enough bytes in our buffer
-        // Our longest operator is 3 characters, hardcode this here.
-        if (self::OPERATORS[$token]) {
-          $offset--;
-          while ($offset + 3 > $length && $this->in->available()) {
-            $buffer.= $this->in->read(8192);
-            $length= strlen($buffer);
-          }
-          foreach (self::OPERATORS[$token] as $operator) {
-            if ($offset + strlen($operator) > $length) continue;
-            if (0 === substr_compare($buffer, $operator, $offset, strlen($operator))) {
-              $token= $operator;
-              break;
+            heredoc: $token= $next("\r\n");
+            if (0 === substr_compare($token, $end, $p= strspn($token, ' '), $l)) {
+              $p+= $l;
+              $offset-= strlen($token) - $p;
+              yield new Token($language->symbol('(literal)'), 'heredoc', $string.substr($token, 0, $p), $line);
+              $line+= substr_count($string, "\n");
+              continue;
+            } else if (null === $token) {
+              throw new FormatException('Unclosed heredoc literal starting at line '.$line);
             }
+            $string.= $token;
+            goto heredoc;
           }
-          $offset+= strlen($token);
         }
-
         yield new Token($language->symbol($token), 'operator', $token, $line);
       } else {
         yield new Token($language->symbols[$token] ?? $language->symbol('(name)'), 'name', $token, $line);

@@ -12,5 +12,5 @@ class YieldFromExpression extends Node {
   }
 
   /** @return iterable */
-  public function children() { return [$this->iterable]; }
+  public function children() { return [&$this->iterable]; }
 }

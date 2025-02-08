@@ -19,12 +19,12 @@ class IfStatement extends Node {
   }
 
   /** @return iterable */
-  public function children() {
+  public function &children() {
     yield $this->expression;
-    foreach ($this->body as $node) {
+    foreach ($this->body as &$node) {
       yield $node;
     }
-    foreach ((array)$this->otherwise as $node) {
+    foreach ((array)$this->otherwise as &$node) {
       yield $node;
     }
   }

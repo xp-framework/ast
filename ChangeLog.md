@@ -3,6 +3,33 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.4.0 / 2025-01-26
+
+* Merged PR #55: Add suport for heredoc (and its nowdoc variant) - @thekid
+
+## 11.3.1 / 2024-11-02
+
+* Fixed strings enclosed in backticks - @thekid
+
+## 11.3.0 / 2024-08-26
+
+* Merged PR #54: Add syntactic support for asymmetric visibility, see
+  https://wiki.php.net/rfc/asymmetric-visibility-v2, targeted for PHP 8.4
+  (@thekid)
+
+## 11.2.1 / 2024-08-11
+
+* Fixed grouped `use` statements containing aliases not scoped correctly
+  (@thekid)
+
+## 11.2.0 / 2024-08-04
+
+* Merged PR #53: Add syntactic support for `T<string>::class` - @thekid
+
+## 11.1.0 / 2024-06-15
+
+* Merged PR #45: Implement property hooks syntax - @thekid
+
 ## 11.0.1 / 2024-03-24
 
 * Fixed `%=` (modulo-assignment) operator - @thekid

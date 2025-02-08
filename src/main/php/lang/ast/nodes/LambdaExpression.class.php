@@ -13,6 +13,6 @@ class LambdaExpression extends Annotated {
 
   /** @return iterable */
   public function children() {
-    return is_array($this->body) ? $this->body : [$this->body];
+    return is_array($this->body) ? $this->body : [&$this->body];
   }
 }

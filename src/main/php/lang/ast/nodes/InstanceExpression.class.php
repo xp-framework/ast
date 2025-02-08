@@ -13,7 +13,5 @@ class InstanceExpression extends Node {
   }
 
   /** @return iterable */
-  public function children() {
-    return [$this->expression, $this->member];
-  }
+  public function children() { return [&$this->expression, &$this->member]; }
 }

@@ -14,6 +14,6 @@ class YieldExpression extends Node {
 
   /** @return iterable */
   public function children() {
-    return $this->key ? [$this->key, $this->value] : [$this->value];
+    return $this->key ? [&$this->key, &$this->value] : [&$this->value];
   }
 }

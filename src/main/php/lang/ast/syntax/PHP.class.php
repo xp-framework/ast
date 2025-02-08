@@ -27,6 +27,7 @@ use lang\ast\nodes\{
   ForeachLoop,
   FunctionDeclaration,
   GotoStatement,
+  Hook,
   IfStatement,
   InstanceExpression,
   InstanceOfExpression,
@@ -171,7 +172,7 @@ class PHP extends Language {
         $expr= new InvokeExpression($expr, $arguments, $token->line);
       }
 
-      return new ScopeExpression($scope, $expr, $left->line);
+      return new ScopeExpression($scope, $expr, $token->line);
     });
 
     $this->infix('|>', 90, function($parse, $token, $left) {
@@ -274,7 +275,7 @@ class PHP extends Language {
         $parse->forward();
         $skipped[]= $parse->token;
       }
-      $parse->queue= $parse->queue ? array_merge($skipped, $parse->queue) : $skipped;
+      $parse->queue= $parse->queue ? [...$skipped, ...$parse->queue] : $skipped;
 
       if ($cast && ('operator' !== $parse->token->kind || '(' === $parse->token->value || '[' === $parse->token->value)) {
         $parse->forward();
@@ -492,6 +493,40 @@ class PHP extends Language {
     });
 
     $this->prefix('(name)', 0, function($parse, $token) {
+      static $types= ['(' => 1, ')' => 1, ',' => 1, '?' => 1, ':' => 1, '|' => 1, '&' => 1];
+
+      // Disambiguate `Class<T>` from `const < expr` by looking ahead
+      if ('<' === $parse->token->value) {
+        $generic= true;
+        $level= 1;
+        $skipped= [$parse->token];
+        while ($level > 0) {
+          $parse->forward();
+          $skipped[]= $parse->token;
+
+          if ('<' === $parse->token->symbol->id) {
+            $level++;
+          } else if ('<?' === $parse->token->symbol->id) {
+            $level++;
+          } else if ('>' === $parse->token->symbol->id) {
+            $level--;
+          } else if ('>>' === $parse->token->symbol->id) {
+            $level-= 2;
+          } else if ('name' !== $parse->token->kind && !isset($types[$parse->token->value])) {
+            $generic= false;
+            break;
+          }
+        }
+
+        $parse->queue= $parse->queue ? [...$skipped, ...$parse->queue] : $skipped;
+        if ($generic) {
+          $parse->token= $token;
+          return $this->type($parse, false);
+        }
+
+        $parse->forward();
+      }
+
       return new Literal($token->value, $token->line);
     });
 
@@ -595,7 +630,7 @@ class PHP extends Language {
             if ('as' === $parse->token->value) {
               $parse->forward();
               $names[$class]= $parse->token->value;
-              $parse->scope->import($parse->token->value);
+              $parse->scope->import($class, $parse->token->value);
               $parse->forward();
             } else {
               $names[$class]= null;
@@ -1314,7 +1349,7 @@ class PHP extends Language {
     $parse->comment= null;
     $annotations= $meta[DETAIL_ANNOTATIONS] ?? null;
 
-    while (';' !== $parse->token->value) {
+    do {
       $line= $parse->token->line;
 
       // Untyped `$a` vs. typed `int $a`
@@ -1336,11 +1371,97 @@ class PHP extends Language {
       } else {
         $expr= null;
       }
+
       $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line);
 
-      if (',' === $parse->token->value) $parse->forward();
-    }
-    $parse->expecting(';', 'field declaration');
+      // Check for property hooks
+      if (';' === $parse->token->value) {
+        $parse->forward();
+        return;
+      } else if (',' === $parse->token->value) {
+        $parse->forward();
+        continue;
+      } else if ('=>' === $parse->token->value) {
+        $parse->forward();
+        $expr= $this->expression($parse, 0);
+        $parse->expecting(';', 'property hook');
+
+        $body[$lookup]->hooks['get']= new Hook([], 'get', $expr, false, null, $line);
+        return;
+      } else if ('{' === $parse->token->value) {
+        $parse->forward();
+
+        while ('}' !== $parse->token->value) {
+          if ('final' === $parse->token->value) {
+            $modifiers= ['final'];
+            $parse->forward();
+          } else {
+            $modifiers= [];
+          }
+
+          if ('&' === $parse->token->value) {
+            $byref= true;
+            $parse->forward();
+          } else {
+            $byref= false;
+          }
+
+          $hook= $parse->token->value;
+          $parse->forward();
+
+          if ('(' === $parse->token->value) {
+            $parse->forward();
+
+            if ('#[' === $parse->token->value) {
+              $parse->forward();
+              $annotations= $this->annotations($parse, 'parameter annotations');
+            } else {
+              $annotations= null;
+            }
+
+            $line= $parse->token->line;
+            $type= $this->type($parse);
+
+            $parse->forward();
+            $param= $parse->token->value;
+            $parse->forward();
+
+            if ('=' === $parse->token->value) {
+              $parse->forward();
+              $default= $this->expression($parse, 0);
+            } else {
+              $default= null;
+            }
+
+            $parameter= new Parameter($param, $type, $default, false, false, null, $annotations, null, $line);
+            $parse->expecting(')', 'property hook parameters');
+          } else {
+            $parameter= null;
+          }
+
+          $line= $parse->token->line;
+          if ('=>' === $parse->token->value) {
+            $parse->forward();
+            $expr= $this->expression($parse, 0);
+            $parse->expecting(';', 'property hook');
+          } else if ('{' === $parse->token->value) {
+            $parse->forward();
+            $expr= new Block($this->statements($parse), $line);
+            $parse->expecting('}', 'property hook');
+          } else if (';' === $parse->token->value) {
+            $parse->forward();
+            $expr= null;
+          }
+
+          $body[$lookup]->hooks[$hook]= new Hook($modifiers, $hook, $expr, $byref, $parameter, $line);
+        }
+
+        $parse->forward();
+        return;
+      } else {
+        $parse->expecting(';, , or {', 'property');
+      }
+    } while (null !== $parse->token->value);
   }
 
   /** Parses PHP 8 attributes (#[Test]) */
@@ -1366,8 +1487,35 @@ class PHP extends Language {
     return $annotations;
   }
 
+  private function modifier($parse) {
+    static $hooks= ['set' => true];
+
+    $modifier= $parse->token->value;
+    $parse->forward();
+
+    if ('(' === $parse->token->value) {
+      $token= $parse->token;
+      $parse->expecting('(', 'modifiers');
+
+      if (isset($hooks[$parse->token->value])) {
+        $modifier.= '('.$parse->token->value.')';
+        $parse->forward();
+        $parse->expecting(')', 'modifiers');
+      } else {
+        array_unshift($parse->queue, $parse->token);
+        $parse->token= $token;
+      }
+    }
+    return $modifier;
+  }
+
   private function parameters($parse) {
-    static $promotion= ['private' => true, 'protected' => true, 'public' => true];
+    static $promotion= [
+      'private'   => true,
+      'protected' => true,
+      'public'    => true,
+      'readonly'  => true,
+    ];
 
     $parameters= [];
     while (')' !== $parse->token->value) {
@@ -1380,14 +1528,10 @@ class PHP extends Language {
 
       $line= $parse->token->line;
       if ('name' === $parse->token->kind && isset($promotion[$parse->token->value])) {
-        $promote= $parse->token->value;
-        $parse->forward();
-
-        // It would be better to use an array for promote, but this way we keep BC
-        if ('readonly' === $parse->token->value) {
-          $promote.= ' readonly';
-          $parse->forward();
-        }
+        $promote= [];
+        do {
+          $promote[]= $this->modifier($parse);
+        } while (isset($promotion[$parse->token->value]));
       } else {
         $promote= null;
       }
@@ -1456,8 +1600,7 @@ class PHP extends Language {
     $meta= [];
     while ('}' !== $parse->token->value) {
       if (isset($modifier[$parse->token->value])) {
-        $modifiers[]= $parse->token->value;
-        $parse->forward();
+        $modifiers[]= $this->modifier($parse);
       } else if ($f= $this->body[$parse->token->value] ?? $this->body['@'.$parse->token->kind] ?? null) {
         $f($parse, $body, $meta, $modifiers);
         $modifiers= [];
