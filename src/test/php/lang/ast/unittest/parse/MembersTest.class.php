@@ -47,6 +47,14 @@ class MembersTest extends ParseTest {
   }
 
   #[Test]
+  public function final_instance_property() {
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $class->declare(new Property(['public', 'final'], 'a', new IsLiteral('string'), null, null, null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { public final string $a; }');
+  }
+
+  #[Test]
   public function private_instance_properties() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $class->declare(new Property(['private'], 'a', null, null, null, null, self::LINE));
