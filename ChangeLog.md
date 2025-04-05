@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.5.0 / 2025-04-05
+
+* Added syntactic support for `final` promoted parameters, see this RFC:
+  https://wiki.php.net/rfc/final_promotion
+  (@thekid)
+
 ## 11.4.0 / 2025-01-26
 
 * Merged PR #55: Add suport for heredoc (and its nowdoc variant) - @thekid

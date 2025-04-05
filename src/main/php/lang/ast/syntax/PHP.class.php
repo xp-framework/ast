@@ -1504,6 +1504,7 @@ class PHP extends Language {
       'protected' => true,
       'public'    => true,
       'readonly'  => true,
+      'final'     => true,
     ];
 
     $parameters= [];
