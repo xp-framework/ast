@@ -13,6 +13,7 @@ use lang\ast\nodes\{
   CastExpression,
   CatchStatement,
   ClassDeclaration,
+  CloneExpression,
   ClosureExpression,
   Comment,
   Constant,
@@ -222,7 +223,6 @@ class PHP extends Language {
     $this->prefix('-', 90);
     $this->prefix('++', 90);
     $this->prefix('--', 90);
-    $this->prefix('clone', 90);
 
     $this->assignment('=');
     $this->assignment('&=');
@@ -281,6 +281,29 @@ class PHP extends Language {
 
         return new Braced($expr, $token->line);
       }
+    });
+
+    $this->prefix('clone', 90, function($parse, $token) {
+
+      // clone $x vs. clone($x) or clone($x, id: 6100)
+      if ('(' === $parse->token->value) {
+        $parse->forward();
+        $expression= $this->expression($parse, 90);
+
+        if (',' === $parse->token->value) {
+          $parse->forward();
+          $with= $this->arguments($parse);
+        } else {
+          $expression= new Braced($expression, $expression->line);
+          $with= [];
+        }
+        $parse->expecting(')', 'clone arguments');
+      } else {
+        $expression= $this->expression($parse, 90);
+        $with= [];
+      }
+
+      return new CloneExpression($expression, $with, $token->line);
     });
 
     $this->prefix('{', 0, function($parse, $token) {
