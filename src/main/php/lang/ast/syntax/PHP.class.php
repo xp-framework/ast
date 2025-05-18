@@ -218,7 +218,7 @@ class PHP extends Language {
       return new OffsetExpression($left, $expr, $left->line);
     });
 
-    $this->infix('?', 80, function($parse, $token, $left) {
+    $this->infix('?', 30, function($parse, $token, $left) {
       $when= $this->expression($parse, 0);
       $parse->expecting(':', 'ternary');
       $else= $this->expression($parse, 0);
