@@ -44,6 +44,7 @@ use lang\ast\nodes\{
   NullSafeInstanceExpression,
   OffsetExpression,
   Parameter,
+  PipeExpression,
   Property,
   ReturnStatement,
   ScopeExpression,
@@ -175,6 +176,16 @@ class PHP extends Language {
       return new ScopeExpression($scope, $expr, $token->line);
     });
 
+    $this->infix('|>', 40, function($parse, $token, $left) {
+      return new PipeExpression($left, $this->expression($parse, 40), $left->line);
+    });
+
+    $this->infix('?|>', 40, function($parse, $node, $left) {
+      $value= new PipeExpression($left, $this->expression($parse, 40), $left->line);
+      $value->kind= 'nullsafepipe';
+      return $value;
+    });
+
     $this->infix('(', 100, function($parse, $token, $left) {
 
       // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
@@ -208,7 +219,7 @@ class PHP extends Language {
       return new OffsetExpression($left, $expr, $left->line);
     });
 
-    $this->infix('?', 80, function($parse, $token, $left) {
+    $this->infix('?', 30, function($parse, $token, $left) {
       $when= $this->expression($parse, 0);
       $parse->expecting(':', 'ternary');
       $else= $this->expression($parse, 0);

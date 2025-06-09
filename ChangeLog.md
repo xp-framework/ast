@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.6.0 / 2025-05-28
+
+* Merged PR #52: Add syntactical support for pipelines with `|>` and `?|>`.
+  (@thekid)
+
 ## 11.5.0 / 2025-04-05
 
 * Added syntactic support for `final` promoted parameters, see this RFC:
