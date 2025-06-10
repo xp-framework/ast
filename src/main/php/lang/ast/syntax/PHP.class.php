@@ -296,25 +296,16 @@ class PHP extends Language {
 
     $this->prefix('clone', 90, function($parse, $token) {
 
-      // clone $x vs. clone($x) or clone($x, id: 6100)
+      // clone $x vs. clone($x) or clone($x, ["id" => 6100])
       if ('(' === $parse->token->value) {
         $parse->forward();
-        $expression= $this->expression($parse, 90);
-
-        if (',' === $parse->token->value) {
-          $parse->forward();
-          $with= $this->arguments($parse);
-        } else {
-          $expression= new Braced($expression, $expression->line);
-          $with= [];
-        }
+        $arguments= $this->arguments($parse);
         $parse->expecting(')', 'clone arguments');
       } else {
-        $expression= $this->expression($parse, 90);
-        $with= [];
+        $arguments= [$this->expression($parse, 90)];
       }
 
-      return new CloneExpression($expression, $with, $token->line);
+      return new CloneExpression($arguments, $token->line);
     });
 
     $this->prefix('{', 0, function($parse, $token) {

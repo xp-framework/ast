@@ -4,18 +4,16 @@ use lang\ast\Node;
 
 class CloneExpression extends Node {
   public $kind= 'clone';
-  public $expression;
-  public $with;
+  public $arguments;
 
-  public function __construct($expression, $with, $line= -1) {
-    $this->expression= $expression;
-    $this->with= $with;
+  public function __construct($arguments, $line= -1) {
+    $this->arguments= $arguments;
+    $this->line= $line;
   }
 
   /** @return iterable */
   public function children() {
-    yield &$this->expression;
-    foreach ($this->with as &$expr) {
+    foreach ($this->arguments as &$expr) {
       yield &$expr;
     }
   }
