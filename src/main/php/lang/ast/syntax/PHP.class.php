@@ -13,6 +13,7 @@ use lang\ast\nodes\{
   CastExpression,
   CatchStatement,
   ClassDeclaration,
+  CloneExpression,
   ClosureExpression,
   Comment,
   Constant,
@@ -153,18 +154,8 @@ class PHP extends Language {
       if ('(' === $parse->token->value) {
         $parse->expecting('(', 'invoke expression');
 
-        // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
-        // callable reference vs. `func(...$it)` - a call with an unpacked argument
-        if ('...' === $parse->token->value) {
-          $dots= $parse->token;
-          $parse->forward();
-          if (')' === $parse->token->value) {
-            $parse->forward();
-            return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $left->line);
-          }
-
-          array_unshift($parse->queue, $parse->token);
-          $parse->token= $dots;
+        if ($this->callable($parse)) {
+          return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $token->line);
         }
 
         $arguments= $this->arguments($parse);
@@ -189,16 +180,8 @@ class PHP extends Language {
 
       // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
       // callable reference vs. `func(...$it)` - a call with an unpacked argument
-      if ('...' === $parse->token->value) {
-        $dots= $parse->token;
-        $parse->forward();
-        if (')' === $parse->token->value) {
-          $parse->forward();
-          return new CallableExpression($left, $left->line);
-        }
-
-        array_unshift($parse->queue, $parse->token);
-        $parse->token= $dots;
+      if ($this->callable($parse)) {
+        return new CallableExpression($left, $token->line);
       }
 
       $arguments= $this->arguments($parse);
@@ -233,7 +216,6 @@ class PHP extends Language {
     $this->prefix('-', 90);
     $this->prefix('++', 90);
     $this->prefix('--', 90);
-    $this->prefix('clone', 90);
 
     $this->assignment('=');
     $this->assignment('&=');
@@ -294,6 +276,24 @@ class PHP extends Language {
       }
     });
 
+    $this->prefix('clone', 90, function($parse, $token) {
+
+      // clone $x vs. clone($x) or clone($x, ["id" => 6100])
+      if ('(' === $parse->token->value) {
+        $parse->forward();
+        if ($this->callable($parse)) {
+          return new CallableExpression(new Literal('clone', $token->line), $token->line);
+        }
+
+        $arguments= $this->arguments($parse);
+        $parse->expecting(')', 'clone arguments');
+      } else {
+        $arguments= [$this->expression($parse, 90)];
+      }
+
+      return new CloneExpression($arguments, $token->line);
+    });
+
     $this->prefix('{', 0, function($parse, $token) {
       $statements= $this->statements($parse);
       $parse->expecting('}', 'block');
@@ -339,25 +339,16 @@ class PHP extends Language {
 
       // Resolve ambiguity by looking ahead: `new T(...)` which is a first-class
       // callable reference vs. `new T(...$it)` - a call with an unpacked argument
-      if ('...' === $parse->token->value) {
-        $dots= $parse->token;
-        $parse->forward();
-        if (')' === $parse->token->value) {
-          $parse->forward();
-
-          if (null === $type) {
-            $class= $this->class($parse, null);
-            $class->annotations= $annotations;
-            $new= new NewClassExpression($class, null, $token->line);
-          } else {
-            $new= new NewExpression($type, null, $token->line);
-          }
-
-          return new CallableNewExpression($new, $token->line);
+      if ($this->callable($parse)) {
+        if (null === $type) {
+          $class= $this->class($parse, null);
+          $class->annotations= $annotations;
+          $new= new NewClassExpression($class, null, $token->line);
+        } else {
+          $new= new NewExpression($type, null, $token->line);
         }
 
-        array_unshift($parse->queue, $parse->token);
-        $parse->token= $dots;
+        return new CallableNewExpression($new, $token->line);
       }
 
       $arguments= $this->arguments($parse);
@@ -1723,6 +1714,22 @@ class PHP extends Language {
     $parse->expecting('}', 'class');
 
     return $decl;
+  }
+
+  public function callable($parse) {
+    if ('...' === $parse->token->value) {
+      $dots= $parse->token;
+      $parse->forward();
+      if (')' === $parse->token->value) {
+        $parse->forward();
+        return true;
+      }
+
+      // Not first-class callable syntax but unpack
+      array_unshift($parse->queue, $parse->token);
+      $parse->token= $dots;
+    }
+    return false;
   }
 
   public function arguments($parse) {
