@@ -652,6 +652,10 @@ class PHP extends Language {
           $names[$import]= $parse->token->value;
           $parse->scope->import($import, $parse->token->value);
           $parse->forward();
+        } else if ('=' === $parse->token->value) {
+          $parse->forward();
+          $type= 'type';
+          $names[$import]= $this->type($parse, false);
         } else {
           $names[$import]= null;
           $parse->scope->import($import);
