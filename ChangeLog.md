@@ -3,6 +3,8 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.7.0 / 2025-06-22
+
 * Merged PR #56: Implement "clone with" syntax using a `CloneExpression`
   node, see https://wiki.php.net/rfc/clone_with_v2
   (@thekid)
