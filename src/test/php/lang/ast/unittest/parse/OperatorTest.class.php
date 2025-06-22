@@ -6,6 +6,7 @@ use lang\ast\nodes\{
   BinaryExpression,
   Braced,
   ClassDeclaration,
+  CloneExpression,
   InstanceExpression,
   InstanceOfExpression,
   InvokeExpression,
@@ -115,8 +116,17 @@ class OperatorTest extends ParseTest {
   #[Test]
   public function clone_expression() {
     $this->assertParsed(
-      [new UnaryExpression('prefix', new Variable('a', self::LINE), 'clone', self::LINE)],
+      [new CloneExpression([new Variable('a', self::LINE)], self::LINE)],
       'clone $a;'
+    );
+  }
+
+  #[Test]
+  public function clone_with() {
+    $with= [[new Literal('"id"', self::LINE), new Literal('6100', self::LINE)]];
+    $this->assertParsed(
+      [new CloneExpression([new Variable('a', self::LINE), new ArrayLiteral($with, self::LINE)], self::LINE)],
+      'clone($a, ["id" => 6100]);'
     );
   }
 
