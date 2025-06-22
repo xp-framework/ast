@@ -9,7 +9,8 @@ XP AST ChangeLog
 
 ## 11.6.0 / 2025-05-28
 
-* Merged PR #52: Add syntactical support for pipelines with `|>` and `?|>`.
+* Merged PR #52: Add syntactical support for pipelines with `|>` and `?|>`,
+  see https://wiki.php.net/rfc/pipe-operator-v3
   (@thekid)
 
 ## 11.5.0 / 2025-04-05
