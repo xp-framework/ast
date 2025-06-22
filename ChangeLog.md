@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #56: Implement "clone with" syntax using a `CloneExpression`
+  node, see https://wiki.php.net/rfc/clone_with_v2
+  (@thekid)
+
 ## 11.6.0 / 2025-05-28
 
 * Merged PR #52: Add syntactical support for pipelines with `|>` and `?|>`.
