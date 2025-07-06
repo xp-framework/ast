@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.7.1 / 2025-07-06
+
+* Fixed more than one annotation on an element only yielding the last.
+  (@thekid)
+
 ## 11.7.0 / 2025-06-22
 
 * Merged PR #56: Implement "clone with" syntax using a `CloneExpression`

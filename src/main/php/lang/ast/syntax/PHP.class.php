@@ -1459,7 +1459,7 @@ class PHP extends Language {
   private function annotations($parse, $context) {
     $annotations= new Annotations([], $parse->token->line);
 
-    while ('name' === $parse->token->kind) {
+    next: while ('name' === $parse->token->kind) {
       $name= ltrim($parse->scope->resolve($parse->token->value), '\\');
       $parse->forward();
 
@@ -1474,6 +1474,12 @@ class PHP extends Language {
       if (',' === $parse->token->value) $parse->forward();
     }
     $parse->expecting(']', $context);
+
+    // Check if another annotation follows
+    if ('#[' === $parse->token->value) {
+      $parse->forward();
+      goto next;
+    }
 
     return $annotations;
   }
