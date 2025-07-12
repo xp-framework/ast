@@ -133,6 +133,18 @@ class InvokeTest extends ParseTest {
   }
 
   #[Test]
+  public function partial_function_application_named() {
+    $this->assertParsed(
+      [new CallableExpression(
+        new Literal('str_replace', self::LINE),
+        [new Literal('"test"', self::LINE), new Literal('"ok"', self::LINE), 'subject' => Placeholder::$ARGUMENT],
+        self::LINE
+      )],
+      'str_replace("test", "ok", subject: ?);'
+    );
+  }
+
+  #[Test]
   public function chained_invocation_spanning_multiple_lines() {
     $expr= new InvokeExpression(
       new InstanceExpression(

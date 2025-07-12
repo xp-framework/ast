@@ -1737,15 +1737,19 @@ class PHP extends Language {
         $parse->forward();
         if (':' === $parse->token->value) {
           $parse->forward();
-          $arguments[$token->value]= $this->expression($parse, 0);
+          $offset= $token->value;
         } else {
           array_unshift($parse->queue, $parse->token);
           $parse->token= $token;
-          $arguments[]= $this->expression($parse, 0);
+          $offset= sizeof($arguments);
         }
-      } else if ('?' === $parse->token->value) {
+      } else {
+        $offset= sizeof($arguments);
+      }
+
+      if ('?' === $parse->token->value) {
         $callable= true;
-        $arguments[]= Placeholder::$ARGUMENT;
+        $arguments[$offset]= Placeholder::$ARGUMENT;
         $parse->forward();
       } else if ('...' === $parse->token->value) {
         $parse->forward();
@@ -1753,12 +1757,12 @@ class PHP extends Language {
         // Resolve ambiguity between unpack and variadic placeholder at the end of arguments
         if (')' === $parse->token->value) {
           $callable= true;
-          $arguments[]= Placeholder::$VARIADIC;
+          $arguments[$offset]= Placeholder::$VARIADIC;
         } else {
-          $arguments[]= new UnpackExpression($this->expression($parse, 0), $parse->token->line);
+          $arguments[$offset]= new UnpackExpression($this->expression($parse, 0), $parse->token->line);
         }
       } else {
-        $arguments[]= $this->expression($parse, 0);
+        $arguments[$offset]= $this->expression($parse, 0);
       }
 
       if (',' === $parse->token->value) {
