@@ -7,7 +7,7 @@ use lang\ast\Node;
  *
  * - The argument place holder `?` means that exactly one argument is
  *   expected at this position.
- * - The variadic place holder `..`. means that zero or more arguments
+ * - The variadic place holder `...` means that zero or more arguments
  *   may be supplied at this position.
  * 
  * @see   https://wiki.php.net/rfc/partial_function_application_v2

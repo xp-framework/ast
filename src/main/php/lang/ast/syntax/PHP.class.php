@@ -155,7 +155,7 @@ class PHP extends Language {
       // Wrap self::member() into an invoke expression
       if ('(' === $parse->token->value) {
         $parse->expecting('(', 'invoke expression');
-        list($arguments, $callable)= $this->arguments($parse);
+        [$arguments, $callable]= $this->arguments($parse);
         $parse->expecting(')', 'invoke expression');
 
         if ($callable) return new CallableExpression(
@@ -181,7 +181,7 @@ class PHP extends Language {
     });
 
     $this->infix('(', 100, function($parse, $token, $left) {
-      list($arguments, $callable)= $this->arguments($parse);
+      [$arguments, $callable]= $this->arguments($parse);
       $parse->expecting(')', 'invoke expression');
 
       if ($callable) {
@@ -283,7 +283,7 @@ class PHP extends Language {
       // clone $x vs. clone($x) or clone($x, ["id" => 6100])
       if ('(' === $parse->token->value) {
         $parse->forward();
-        list($arguments, $callable)= $this->arguments($parse);
+        [$arguments, $callable]= $this->arguments($parse);
         $parse->expecting(')', 'clone arguments');
 
         if ($callable) return new CallableExpression(
@@ -340,7 +340,7 @@ class PHP extends Language {
       }
 
       $parse->expecting('(', 'new arguments');
-      list($arguments, $callable)= $this->arguments($parse);
+      [$arguments, $callable]= $this->arguments($parse);
       $parse->expecting(')', 'new arguments');
 
       // Resolve ambiguity by looking ahead: `new T(...)` which is a first-class
@@ -1468,7 +1468,7 @@ class PHP extends Language {
 
       if ('(' === $parse->token->value) {
         $parse->expecting('(', $context);
-        list($arguments, $callable)= $this->arguments($parse);
+        [$arguments, $callable]= $this->arguments($parse);
         $annotations->add(new Annotation($name, $arguments, $parse->token->line));
         $parse->expecting(')', $context);
       } else {
