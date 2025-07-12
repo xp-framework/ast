@@ -1755,7 +1755,7 @@ class PHP extends Language {
         $parse->forward();
 
         // Resolve ambiguity between unpack and variadic placeholder at the end of arguments
-        if (')' === $parse->token->value) {
+        if (')' === $parse->token->value || ',' === $parse->token->value) {
           $callable= true;
           $arguments[$offset]= Placeholder::$VARIADIC;
         } else {
