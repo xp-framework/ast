@@ -148,6 +148,15 @@ class MembersTest extends ParseTest {
   }
 
   #[Test]
+  public function single_expression_method() {
+    $expr= new ReturnStatement(new Literal('true', self::LINE), self::LINE);
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $class->declare(new Method(['private'], 'a', new Signature([], null, false, self::LINE), [$expr], null, null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { private function a() => true; }');
+  }
+
+  #[Test]
   public function property_with_get_and_set_hooks() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
