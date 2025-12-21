@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 11.8.0 / 2025-12-21
+
+* Made `lang.ast.syntax.PHP::type0()` public. This method parses a single
+  type without support for unions and intersections
+  (@thekid)
+
 ## 11.7.1 / 2025-07-06
 
 * Fixed more than one annotation on an element only yielding the last.
