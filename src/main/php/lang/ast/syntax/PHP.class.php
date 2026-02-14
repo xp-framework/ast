@@ -1248,7 +1248,7 @@ class PHP extends Language {
     return $expr;
   }
 
-  private function type0($parse, $optional) {
+  public function type0($parse, $optional= false) {
     static $literal= [
       'string'   => true,
       'int'      => true,
