@@ -45,6 +45,7 @@ use lang\ast\nodes\{
   OffsetExpression,
   Parameter,
   PipeExpression,
+  Placeholder,
   Property,
   ReturnStatement,
   ScopeExpression,
@@ -151,15 +152,18 @@ class PHP extends Language {
       $scope= $left instanceof Literal ? $parse->scope->resolve($left->expression) : $left;
       $expr= $this->member($parse);
 
+      // Wrap self::member() into an invoke expression
       if ('(' === $parse->token->value) {
         $parse->expecting('(', 'invoke expression');
-
-        if ($this->callable($parse)) {
-          return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $token->line);
-        }
-
-        $arguments= $this->arguments($parse);
+        [$arguments, $callable]= $this->arguments($parse);
         $parse->expecting(')', 'invoke expression');
+
+        if ($callable) return new CallableExpression(
+          new ScopeExpression($scope, $expr, $token->line),
+          $arguments,
+          $token->line
+        );
+
         $expr= new InvokeExpression($expr, $arguments, $token->line);
       }
 
@@ -177,16 +181,14 @@ class PHP extends Language {
     });
 
     $this->infix('(', 100, function($parse, $token, $left) {
-
-      // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
-      // callable reference vs. `func(...$it)` - a call with an unpacked argument
-      if ($this->callable($parse)) {
-        return new CallableExpression($left, $token->line);
-      }
-
-      $arguments= $this->arguments($parse);
+      [$arguments, $callable]= $this->arguments($parse);
       $parse->expecting(')', 'invoke expression');
-      return new InvokeExpression($left, $arguments, $left->line);
+
+      if ($callable) {
+        return new CallableExpression($left, $arguments, $token->line);
+      } else {
+        return new InvokeExpression($left, $arguments, $left->line);
+      }
     });
 
     $this->infix('[', 100, function($parse, $token, $left) {
@@ -281,12 +283,14 @@ class PHP extends Language {
       // clone $x vs. clone($x) or clone($x, ["id" => 6100])
       if ('(' === $parse->token->value) {
         $parse->forward();
-        if ($this->callable($parse)) {
-          return new CallableExpression(new Literal('clone', $token->line), $token->line);
-        }
-
-        $arguments= $this->arguments($parse);
+        [$arguments, $callable]= $this->arguments($parse);
         $parse->expecting(')', 'clone arguments');
+
+        if ($callable) return new CallableExpression(
+          new Literal('clone', $token->line),
+          $arguments,
+          $token->line
+        );
       } else {
         $arguments= [$this->expression($parse, 90)];
       }
@@ -336,10 +340,12 @@ class PHP extends Language {
       }
 
       $parse->expecting('(', 'new arguments');
+      [$arguments, $callable]= $this->arguments($parse);
+      $parse->expecting(')', 'new arguments');
 
       // Resolve ambiguity by looking ahead: `new T(...)` which is a first-class
       // callable reference vs. `new T(...$it)` - a call with an unpacked argument
-      if ($this->callable($parse)) {
+      if ($callable) {
         if (null === $type) {
           $class= $this->class($parse, null);
           $class->annotations= $annotations;
@@ -348,11 +354,8 @@ class PHP extends Language {
           $new= new NewExpression($type, null, $token->line);
         }
 
-        return new CallableNewExpression($new, $token->line);
+        return new CallableNewExpression($new, $arguments, $token->line);
       }
-
-      $arguments= $this->arguments($parse);
-      $parse->expecting(')', 'new arguments');
 
       if (null === $type) {
         $class= $this->class($parse, null);
@@ -1465,7 +1468,8 @@ class PHP extends Language {
 
       if ('(' === $parse->token->value) {
         $parse->expecting('(', $context);
-        $annotations->add(new Annotation($name, $this->arguments($parse), $parse->token->line));
+        [$arguments, $callable]= $this->arguments($parse);
+        $annotations->add(new Annotation($name, $arguments, $parse->token->line));
         $parse->expecting(')', $context);
       } else {
         $annotations->add(new Annotation($name, [], $parse->token->line));
@@ -1722,24 +1726,9 @@ class PHP extends Language {
     return $decl;
   }
 
-  public function callable($parse) {
-    if ('...' === $parse->token->value) {
-      $dots= $parse->token;
-      $parse->forward();
-      if (')' === $parse->token->value) {
-        $parse->forward();
-        return true;
-      }
-
-      // Not first-class callable syntax but unpack
-      array_unshift($parse->queue, $parse->token);
-      $parse->token= $dots;
-    }
-    return false;
-  }
-
   public function arguments($parse) {
     $arguments= [];
+    $callable= false;
     while (')' !== $parse->token->value) {
 
       // Named arguments (name: <argument>) vs. positional arguments
@@ -1748,14 +1737,32 @@ class PHP extends Language {
         $parse->forward();
         if (':' === $parse->token->value) {
           $parse->forward();
-          $arguments[$token->value]= $this->expression($parse, 0);
+          $offset= $token->value;
         } else {
           array_unshift($parse->queue, $parse->token);
           $parse->token= $token;
-          $arguments[]= $this->expression($parse, 0);
+          $offset= sizeof($arguments);
         }
       } else {
-        $arguments[]= $this->expression($parse, 0);
+        $offset= sizeof($arguments);
+      }
+
+      if ('?' === $parse->token->value) {
+        $callable= true;
+        $arguments[$offset]= Placeholder::$ARGUMENT;
+        $parse->forward();
+      } else if ('...' === $parse->token->value) {
+        $parse->forward();
+
+        // Resolve ambiguity between unpack and variadic placeholder at the end of arguments
+        if (')' === $parse->token->value || ',' === $parse->token->value) {
+          $callable= true;
+          $arguments[$offset]= Placeholder::$VARIADIC;
+        } else {
+          $arguments[$offset]= new UnpackExpression($this->expression($parse, 0), $parse->token->line);
+        }
+      } else {
+        $arguments[$offset]= $this->expression($parse, 0);
       }
 
       if (',' === $parse->token->value) {
@@ -1767,7 +1774,7 @@ class PHP extends Language {
         break;
       }
     }
-    return $arguments;
+    return [$arguments, $callable];
   }
 
   public function expressions($parse, $end) {
