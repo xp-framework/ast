@@ -1133,6 +1133,10 @@ class PHP extends Language {
         $parse->forward();
         $statements= $this->statements($parse);
         $parse->expecting('}', 'method declaration');
+      } else if ('=>' === $parse->token->value) {  // Single expression
+        $parse->forward();
+        $statements= [new ReturnStatement($this->expression($parse, 0), $parse->token->line)];
+        $parse->expecting(';', 'method expression');
       } else if (';' === $parse->token->value) {   // Abstract or interface method
         $statements= null;
         $parse->expecting(';', 'method declaration');
