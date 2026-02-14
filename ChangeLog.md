@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 12.0.0 / 2026-02-14
+
+* Merged PR #57: Add syntactic support for partial function application
+  (@thekid)
+
 ## 11.8.0 / 2025-12-21
 
 * Added PHP 8.6 to the test matrix following the Nov 2025 PHP 8.5 release
