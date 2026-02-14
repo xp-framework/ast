@@ -5,6 +5,8 @@ XP AST ChangeLog
 
 ## 11.8.0 / 2025-12-21
 
+* Added PHP 8.6 to the test matrix following the Nov 2025 PHP 8.5 release
+  (@thekid)
 * Made `lang.ast.syntax.PHP::type0()` public. This method parses a single
   type without support for unions and intersections
   (@thekid)
