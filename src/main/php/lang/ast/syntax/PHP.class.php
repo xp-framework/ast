@@ -4,6 +4,7 @@ use lang\ast\nodes\{
   ArrayLiteral,
   Annotation,
   Annotations,
+  Assignment,
   Block,
   Braced,
   BreakStatement,
@@ -233,8 +234,15 @@ class PHP extends Language {
     $this->assignment('>>=');
     $this->assignment('<<=');
     $this->assignment('??=');
-    $this->assignment('&&=');
-    $this->assignment('||=');
+
+    // Logical AND and OR, not supported in PHP
+    foreach (['&&=', '||='] as $op) {
+      $this->symbol($op, 10)->led= function($parse, $token, $left) use($op) {
+        $assign= new Assignment($left, $op, $this->expression($parse, 9), $left->line);
+        $assign->kind= 'logicalassignment';
+        return $assign;
+      };
+    }
 
     // This is ambiguous:
     //
