@@ -3,6 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 12.1.0 / 2026-04-23
+
+* Merged PR #59: Implement logical AND and OR assignment operators `&&=`
+  and `||=`, see xp-framework/compiler#133
+  (@thekid)
+
 ## 12.0.0 / 2026-02-14
 
 * Merged PR #57: Add syntactic support for partial function application
