@@ -64,12 +64,19 @@ class OperatorTest extends ParseTest {
     );
   }
 
-  #[Test, Values(['=', '+=', '-=', '*=', '/=', '%=', '.=', '**=', '&=', '|=', '^=', '>>=', '<<=', '??=', '&&=', '||='])]
+  #[Test, Values(['=', '+=', '-=', '*=', '/=', '%=', '.=', '**=', '&=', '|=', '^=', '>>=', '<<=', '??='])]
   public function assignment($operator) {
     $this->assertParsed(
       [new Assignment(new Variable('a', self::LINE), $operator, new Variable('b', self::LINE), self::LINE)],
       '$a '.$operator.' $b;'
     );
+  }
+
+  #[Test, Values(['&&=', '||='])]
+  public function logical_assignment($operator) {
+    $assignment= new Assignment(new Variable('a', self::LINE), $operator, new Variable('b', self::LINE), self::LINE);
+    $assignment->kind= 'logicalassignment';
+    $this->assertParsed([$assignment], '$a '.$operator.' $b;');
   }
 
   #[Test]
