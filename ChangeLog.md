@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 12.1.2 / 2026-05-16
+
+* Fixed errors when parsing unclosed types - @thekid
+
 ## 12.1.1 / 2026-05-16
 
 * Fixed issue #60: IIFE parse error - @thekid

@@ -1628,6 +1628,9 @@ class PHP extends Language {
           'Expected a type, modifier, property, annotation, method or "}", have "%s"',
           $parse->token->symbol->id
         ));
+
+        // Continue parsing the body except on EOF
+        if (null === $parse->token->value) break;
         $parse->forward();
       }
     }

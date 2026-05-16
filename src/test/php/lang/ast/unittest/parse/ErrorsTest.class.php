@@ -33,6 +33,38 @@ class ErrorsTest extends ParseTest {
   }
 
   #[Test]
+  public function unclosed_array() {
+    $this->assertError(
+      'Expected ",", have "(end)" in array literal',
+      $this->parse('[1, ')
+    );
+  }
+
+  #[Test]
+  public function unclosed_pair() {
+    $this->assertError(
+      'Expected ",", have "(end)" in array literal',
+      $this->parse('["key" => "value",')
+    );
+  }
+
+  #[Test]
+  public function unclosed_empty_array() {
+    $this->assertError(
+      'Expected ",", have "(end)" in array literal',
+      $this->parse('[')
+    );
+  }
+
+  #[Test]
+  public function unclosed_nested_array() {
+    $this->assertError(
+      'Expected ",", have "(end)" in array literal',
+      $this->parse('[[')
+    );
+  }
+
+  #[Test]
   public function unclosed_brace_in_arguments() {
     $this->assertError(
       'Expected ") or ,", have "(end)" in argument list',
@@ -50,6 +82,14 @@ class ErrorsTest extends ParseTest {
 
   #[Test]
   public function unclosed_type() {
+    $this->assertError(
+      'Expected a type, modifier, property, annotation, method or "}", have "(end)"',
+      $this->parse('class T {')
+    );
+  }
+
+  #[Test]
+  public function error_in_type_body() {
     $this->assertError(
       'Expected a type, modifier, property, annotation, method or "}", have "-"',
       $this->parse('class T { - }')
