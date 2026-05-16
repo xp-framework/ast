@@ -1,11 +1,21 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{BinaryExpression, ClosureExpression, Literal, Parameter, ReturnStatement, Signature, Variable};
+use lang\ast\nodes\{
+  BinaryExpression,
+  Braced,
+  ClosureExpression,
+  InvokeExpression,
+  Literal,
+  Parameter,
+  ReturnStatement,
+  Signature,
+  Variable
+};
 use lang\ast\{FunctionType, Type};
 use test\{Assert, Before, Test};
 
 class ClosuresTest extends ParseTest {
-  private $returns;
+  private $returns, $invoke;
 
   #[Before]
   public function returns() {
@@ -16,6 +26,15 @@ class ClosuresTest extends ParseTest {
         new Literal('1', self::LINE),
         self::LINE
       ),
+      self::LINE
+    );
+  }
+
+  #[Before]
+  public function invoke() {
+    $this->invoke= new InvokeExpression(
+      new Literal('var_dump', self::LINE),
+      [new Literal('true', self::LINE)],
       self::LINE
     );
   }
@@ -64,24 +83,40 @@ class ClosuresTest extends ParseTest {
   #[Test]
   public function with_return_type() {
     $this->assertParsed(
-      [new ClosureExpression(new Signature([], new Type('int'), false, self::LINE), null, [$this->returns], false, self::LINE)],
-      'function(): int { return $a + 1; };'
+      [new ClosureExpression(new Signature([], new Type('int'), false, self::LINE), null, [$this->invoke], false, self::LINE)],
+      'function(): int { var_dump(true); };'
     );
   }
 
   #[Test]
   public function with_nullable_return_type() {
     $this->assertParsed(
-      [new ClosureExpression(new Signature([], new Type('?int'), false, self::LINE), null, [$this->returns], false, self::LINE)],
-      'function(): ?int { return $a + 1; };'
+      [new ClosureExpression(new Signature([], new Type('?int'), false, self::LINE), null, [$this->invoke], false, self::LINE)],
+      'function(): ?int { var_dump(true); };'
     );
   }
 
   #[Test]
   public function static_function() {
     $this->assertParsed(
-      [new ClosureExpression(new Signature([], null, false, self::LINE), null, [$this->returns], true, self::LINE)],
-      'static function() { return $a + 1; };'
+      [new ClosureExpression(new Signature([], null, false, self::LINE), null, [$this->invoke], true, self::LINE)],
+      'static function() { var_dump(true); };'
+    );
+  }
+
+  /** @see https://github.com/xp-framework/ast/issues/60 */
+  #[Test]
+  public function iife_with_statement() {
+    $this->assertParsed(
+      [new InvokeExpression(
+        new Braced(
+          new ClosureExpression(new Signature([], null, false, self::LINE), null, [$this->invoke], false, self::LINE),
+          self::LINE
+        ),
+        [],
+        self::LINE
+      )],
+      '(function() { var_dump(true); })();'
     );
   }
 }

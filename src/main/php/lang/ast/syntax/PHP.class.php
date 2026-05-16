@@ -246,8 +246,9 @@ class PHP extends Language {
 
     // This is ambiguous:
     //
-    // - An expression surrounded by parentheses `($a ?? $b)->invoke()`;
-    // - A cast `(int)$a` or `(int)($a / 2)`.
+    // - An expression surrounded by parentheses `($a ?? $b)->invoke()`
+    // - An invocation of a braced expression like `($expr)()`
+    // - A cast `(int)$a` or `(int)($a / 2)`
     //
     // Resolve by looking ahead after the closing ")"
     $this->prefix('(', 0, function($parse, $token) {
@@ -553,7 +554,7 @@ class PHP extends Language {
       if (':' === $parse->token->value) {
         $node= new Label($token->value, $token->line);
       } else {
-        $parse->queue[]= $parse->token;
+        array_unshift($parse->queue, $parse->token);
         $parse->token= $token;
         $node= $this->expression($parse, 0);
       }
@@ -705,7 +706,7 @@ class PHP extends Language {
               continue;
             }
 
-            $parse->queue[]= $parse->token;
+            array_unshift($parse->queue, $parse->token);
             $parse->token= $const;
           }
 
@@ -1080,8 +1081,8 @@ class PHP extends Language {
         if ('=' === $parse->token->value) {
           $name= $first->value;
         } else {
-          $parse->queue[]= $first;
-          $parse->queue[]= $parse->token;
+          array_unshift($parse->queue, $parse->token);
+          array_unshift($parse->queue, $first);
           $parse->token= $first;
 
           $type= $this->type($parse, false);

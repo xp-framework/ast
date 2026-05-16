@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 12.1.1 / 2026-05-16
+
+* Fixed issue #60: IIFE parse error - @thekid
+
 ## 12.1.0 / 2026-04-23
 
 * Merged PR #59: Implement logical AND and OR assignment operators `&&=`
