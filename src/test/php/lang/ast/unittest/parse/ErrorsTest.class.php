@@ -17,6 +17,7 @@ class ErrorsTest extends ParseTest {
       $parse->tree();
       throw new AssertionFailedError('No exception raised');
     } catch (Errors $expected) {
+      \xp::gc();
       Assert::true(
         false !== strpos($expected->getMessage(), $message.' [line 1 of '.self::class.']'),
         $expected->getMessage()
