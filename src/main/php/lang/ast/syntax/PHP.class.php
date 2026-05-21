@@ -77,6 +77,7 @@ use lang\ast\types\{
   IsLiteral,
   IsMap,
   IsNullable,
+  IsUnchecked,
   IsUnion,
   IsValue
 };
@@ -1187,6 +1188,11 @@ class PHP extends Language {
   }
 
   public function type($parse, $optional= true) {
+    if ('@' === $parse->token->value) {
+      $parse->forward();
+      return new IsUnchecked($this->type($parse, false));
+    }
+
     $t= $this->type0($parse, $optional);
 
     // Check for union and intersection types (which cannot be mixed
