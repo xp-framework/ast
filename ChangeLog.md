@@ -3,6 +3,14 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 12.2.0 / 2026-05-23
+
+* Merged PR #61: Refactor function scopes: Capturing and returning.
+  - `fn` captures variables from the surrounding scope
+  - `function` does not
+  - `=> ...` is short for `{ return ... }`
+  (@thekid)
+
 ## 12.1.2 / 2026-05-16
 
 * Fixed errors when parsing unclosed types - @thekid
