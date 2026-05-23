@@ -48,6 +48,15 @@ class ClosuresTest extends ParseTest {
   }
 
   #[Test]
+  public function single_expression() {
+    $scope= [new ReturnStatement(new Literal('true', self::LINE), self::LINE)];
+    $this->assertParsed(
+      [new ClosureExpression(new Signature([], null, false, self::LINE), null, $scope, false, self::LINE)],
+      'function() => true;'
+    );
+  }
+
+  #[Test]
   public function with_param() {
     $params= [new Parameter('a', null, null, false, false, null, null, null, self::LINE)];
     $this->assertParsed(

@@ -42,6 +42,15 @@ class FunctionsTest extends ParseTest {
   }
 
   #[Test]
+  public function single_expression_function() {
+    $scope= [new ReturnStatement(new Literal('"A"', self::LINE), self::LINE)];
+    $this->assertParsed(
+      [new FunctionDeclaration('a', new Signature([], null, false, self::LINE), $scope, self::LINE)],
+      'function a() => "A";'
+    );
+  }
+
+  #[Test]
   public function returning_by_reference() {
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], null, true, self::LINE), [], self::LINE)],

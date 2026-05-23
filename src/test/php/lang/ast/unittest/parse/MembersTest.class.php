@@ -88,6 +88,15 @@ class MembersTest extends ParseTest {
   }
 
   #[Test]
+  public function single_expression_method() {
+    $scope= [new ReturnStatement(new Literal('"A"', self::LINE), self::LINE)];
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $class->declare(new Method(['private'], 'a', new Signature([], null, false, self::LINE), $scope, null, null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { private function a() => "A"; }');
+  }
+
+  #[Test]
   public function class_constant() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), null, null, self::LINE));
