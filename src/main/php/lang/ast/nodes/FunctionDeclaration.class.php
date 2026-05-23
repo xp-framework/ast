@@ -12,5 +12,7 @@ class FunctionDeclaration extends Annotated {
   }
 
   /** @return iterable */
-  public function children() { return $this->body; }
+  public function children() {
+    return is_array($this->body) ? $this->body : [&$this->body]; // Array = BC
+  }
 }

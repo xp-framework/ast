@@ -901,21 +901,9 @@ class PHP extends Language {
       $parse->forward();
 
       $signature= $this->signature($parse, $byref);
+      $scope= $this->scope($parse, 'function');
 
-      if ('{' === $parse->token->value) {
-        $parse->forward();
-        $statements= $this->statements($parse);
-        $parse->expecting('}', 'function');
-      } else if ('=>' === $parse->token->value) {
-        $parse->forward();
-        $expr= $this->expression($parse, 0);
-        $statements= [new ReturnStatement($expr, $expr->line)];
-        $parse->expecting(';', 'function');
-      } else {
-        $parse->expecting('=> or { ... }', 'function');
-      }
-
-      return new FunctionDeclaration($name, $signature, $statements, $token->line);
+      return new FunctionDeclaration($name, $signature, $scope, $token->line);
     });
 
     $this->stmt('class', function($parse, $token) {
@@ -1142,20 +1130,20 @@ class PHP extends Language {
       $parse->forward();
       $signature= $this->signature($parse, $byref);
 
-      if ('{' === $parse->token->value) {          // Regular body
+      // Cannot use scope() here as we require a semicolon after single-expressions
+      if ('{' === $parse->token->value) {
         $parse->forward();
-        $statements= $this->statements($parse);
+        $scope= new Block($this->statements($parse), $parse->token->line);
         $parse->expecting('}', 'method declaration');
-      } else if ('=>' === $parse->token->value) {  // Single-expression method
+      } else if ('=>' === $parse->token->value) {
         $parse->forward();
-        $expr= $this->expression($parse, 0);
-        $statements= [new ReturnStatement($expr, $expr->line)];
+        $scope= $this->expression($parse, 0);
         $parse->expecting(';', 'method declaration');
-      } else if (';' === $parse->token->value) {   // Abstract or interface method
-        $statements= null;
+      } else if (';' === $parse->token->value) {
+        $scope= null;
         $parse->expecting(';', 'method declaration');
       } else {
-        $parse->expecting('{ or ;', 'method declaration');
+        $parse->expecting('{, => or ;', 'method declaration');
         return;
       }
 
@@ -1163,7 +1151,7 @@ class PHP extends Language {
         $modifiers,
         $name,
         $signature,
-        $statements,
+        $scope,
         $meta[DETAIL_ANNOTATIONS] ?? null,
         $comment,
         $line
@@ -1721,20 +1709,8 @@ class PHP extends Language {
       $return= null;
     }
 
-    if ('{' === $parse->token->value) {
-      $parse->forward();
-      $statements= $this->statements($parse);
-      $parse->expecting('}', 'function');
-    } else if ('=>' === $parse->token->value) {
-      $parse->forward();
-      $expr= $this->expression($parse, 0);
-      $statements= [new ReturnStatement($expr, $expr->line)];
-      $parse->expecting(';', 'function');
-    } else {
-      $parse->expecting('=> or { ... }', 'function');
-    }
-
-    return new ClosureExpression(new Signature($parameters, $return, false, $line), $use, $statements, $static, $line);
+    $scope= $this->scope($parse, 'function');
+    return new ClosureExpression(new Signature($parameters, $return, false, $line), $use, $scope, $static, $line);
   }
 
   public function block($parse) {

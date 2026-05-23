@@ -20,9 +20,10 @@ use lang\ast\nodes\{
   Parameter
 };
 use lang\ast\types\{IsFunction, IsLiteral, IsNullable, IsUnion, IsValue, IsGeneric};
-use test\{Assert, Test, Values};
+use test\{Assert, Before, Test, Values};
 
 class MembersTest extends ParseTest {
+  private $empty;
 
   /** @return iterable */
   private function types() {
@@ -36,6 +37,11 @@ class MembersTest extends ParseTest {
     yield ['string|(function(): void)', new IsUnion([new IsLiteral('string'), new IsFunction([], new IsLiteral('void'))])];
     yield ['function(): string', new IsFunction([], new IsLiteral('string'))];
     yield ['(function(): string)', new IsFunction([], new IsLiteral('string'))];
+  }
+
+  #[Before]
+  public function empty() {
+    $this->empty= new Block([], self::LINE);
   }
 
   #[Test]
@@ -66,7 +72,7 @@ class MembersTest extends ParseTest {
   #[Test]
   public function private_instance_method() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Method(['private'], 'a', new Signature([], null, false, self::LINE), [], null, null, self::LINE));
+    $class->declare(new Method(['private'], 'a', new Signature([], null, false, self::LINE), $this->empty, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private function a() { } }');
   }
@@ -74,7 +80,7 @@ class MembersTest extends ParseTest {
   #[Test]
   public function private_static_method() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Method(['private', 'static'], 'a', new Signature([], null, false, self::LINE), [], null, null, self::LINE));
+    $class->declare(new Method(['private', 'static'], 'a', new Signature([], null, false, self::LINE), $this->empty, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private static function a() { } }');
   }
@@ -82,14 +88,14 @@ class MembersTest extends ParseTest {
   #[Test]
   public function method_returning_reference() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Method(['private', 'static'], 'a', new Signature([], null, true, self::LINE), [], null, null, self::LINE));
+    $class->declare(new Method(['private', 'static'], 'a', new Signature([], null, true, self::LINE), $this->empty, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private static function &a() { } }');
   }
 
   #[Test]
   public function single_expression_method() {
-    $scope= [new ReturnStatement(new Literal('"A"', self::LINE), self::LINE)];
+    $scope= new Literal('"A"', self::LINE);
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $class->declare(new Method(['private'], 'a', new Signature([], null, false, self::LINE), $scope, null, null, self::LINE));
 
@@ -125,7 +131,7 @@ class MembersTest extends ParseTest {
   public function method_with_typed_parameter($declaration, $expected) {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $params= [new Parameter('param', $expected, null, false, false, null, null, null, self::LINE)];
-    $class->declare(new Method(['public'], 'a', new Signature($params, null, false, self::LINE), [], null, null, self::LINE));
+    $class->declare(new Method(['public'], 'a', new Signature($params, null, false, self::LINE), $this->empty, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { public function a('.$declaration.' $param) { } }');
   }
@@ -133,7 +139,7 @@ class MembersTest extends ParseTest {
   #[Test, Values(from: 'types')]
   public function method_with_return_type($declaration, $expected) {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Method(['public'], 'a', new Signature([], $expected, false, self::LINE), [], null, null, self::LINE));
+    $class->declare(new Method(['public'], 'a', new Signature([], $expected, false, self::LINE), $this->empty, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { public function a(): '.$declaration.' { } }');
   }
@@ -142,7 +148,7 @@ class MembersTest extends ParseTest {
   public function method_with_annotation() {
     $annotations= new Annotations(['Test' => []], self::LINE);
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Method(['public'], 'a', new Signature([], null, false, self::LINE), [], $annotations, null, self::LINE));
+    $class->declare(new Method(['public'], 'a', new Signature([], null, false, self::LINE), $this->empty, $annotations, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { #[Test] public function a() { } }');
   }
@@ -151,7 +157,7 @@ class MembersTest extends ParseTest {
   public function method_with_annotations() {
     $annotations= new Annotations(['Test' => [], 'Ignore' => [new Literal('"Not implemented"', self::LINE)]], self::LINE);
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Method(['public'], 'a', new Signature([], null, false, self::LINE), [], $annotations, null, self::LINE));
+    $class->declare(new Method(['public'], 'a', new Signature([], null, false, self::LINE), $this->empty, $annotations, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { #[Test, Ignore("Not implemented")] public function a() { } }');
   }
@@ -410,7 +416,7 @@ class MembersTest extends ParseTest {
   public function asymmetric_property_as_constructor_argument() {
     $params= [new Parameter('a', new IsLiteral('int'), null, false, false, ['private(set)'], null, null, self::LINE)];
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Method(['public'], '__construct', new Signature($params, null, false, self::LINE), [], null, null, self::LINE));
+    $class->declare(new Method(['public'], '__construct', new Signature($params, null, false, self::LINE), $this->empty, null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { public function __construct(private(set) int $a) { } }');
   }

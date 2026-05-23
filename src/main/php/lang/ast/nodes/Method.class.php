@@ -46,5 +46,13 @@ class Method extends Annotated implements Member {
   }
 
   /** @return iterable */
-  public function children() { return (array)$this->body; }
+  public function children() {
+    if (null === $this->body) {
+      return [];
+    } else if (is_array($this->body)) { // BC
+      return $this->body;
+    } else {
+      return [&$this->body];
+    }
+  }
 }
