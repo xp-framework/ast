@@ -1,8 +1,9 @@
 <?php namespace lang\ast\nodes;
 
+use Traversable, IteratorAggregate;
 use lang\ast\Node;
 
-class Block extends Node {
+class Block extends Node implements IteratorAggregate {
   public $kind= 'block';
   public $statements;
 
@@ -13,4 +14,7 @@ class Block extends Node {
 
   /** @return iterable */
   public function children() { return $this->statements; }
+
+  /** Iteration support */
+  public function getIterator(): Traversable { yield from $this->statements; }
 }

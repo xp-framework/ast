@@ -1,6 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{
+  Block,
   Braced,
   ClosureExpression,
   InvokeExpression,
@@ -70,7 +71,7 @@ class BracedTest extends ParseTest {
       self::LINE
     );
     $this->assertParsed(
-      [new Braced(new ClosureExpression($signature, null, [], false, self::LINE), self::LINE)],
+      [new Braced(new ClosureExpression($signature, null, new Block([], self::LINE), false, self::LINE), self::LINE)],
       '(function(T &$arg) { });'
     );
   }
