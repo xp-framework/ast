@@ -8,7 +8,7 @@ class Method extends Annotated implements Member {
     $this->name= $name;
     $this->modifiers= $modifiers;
     $this->signature= $signature;
-    $this->body= $body;
+    $this->body= is_array($body) ? new Block($body, $line) : $body;
     parent::__construct($annotations, $comment, $line);
   }
 
@@ -46,13 +46,5 @@ class Method extends Annotated implements Member {
   }
 
   /** @return iterable */
-  public function children() {
-    if (null === $this->body) {
-      return [];
-    } else if (is_array($this->body)) { // BC
-      return $this->body;
-    } else {
-      return [&$this->body];
-    }
-  }
+  public function children() { return null === $this->body ? [] : [&$this->body]; }
 }
