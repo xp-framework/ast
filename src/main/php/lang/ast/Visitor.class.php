@@ -1,5 +1,7 @@
 <?php namespace lang\ast;
 
+use lang\ast\nodes\Literal;
+
 /**
  * Abstract base class for all visitors. Handles all node types without
  * doing anything.
@@ -237,6 +239,46 @@ abstract class Visitor {
    * @return var
    */
   public function literal($self) { }
+
+  /**
+   * Visits strings
+   *
+   * @param  lang.ast.Node $self
+   * @return var
+   */
+  public function string($self) {
+    return $this->literal(new Literal($self->literal, $self->line));
+  }
+
+  /**
+   * Visits heredoc
+   *
+   * @param  lang.ast.Node $self
+   * @return var
+   */
+  public function heredoc($self) {
+    return $this->literal(new Literal($self->literal, $self->line));
+  }
+
+  /**
+   * Visits integers
+   *
+   * @param  lang.ast.Node $self
+   * @return var
+   */
+  public function integer($self) {
+    return $this->literal(new Literal($self->literal, $self->line));
+  }
+
+  /**
+   * Visits decimals
+   *
+   * @param  lang.ast.Node $self
+   * @return var
+   */
+  public function decimal($self) {
+    return $this->literal(new Literal($self->literal, $self->line));
+  }
 
   /**
    * Visits methods
