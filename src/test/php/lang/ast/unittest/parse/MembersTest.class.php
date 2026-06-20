@@ -14,6 +14,7 @@ use lang\ast\nodes\{
   Method,
   Property,
   ReturnStatement,
+  Scalar,
   ScopeExpression,
   Signature,
   Variable,
@@ -95,7 +96,7 @@ class MembersTest extends ParseTest {
 
   #[Test]
   public function single_expression_method() {
-    $scope= new Literal('"A"', self::LINE);
+    $scope= new Scalar('"A"', 'string', self::LINE);
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $class->declare(new Method(['private'], 'a', new Signature([], null, false, self::LINE), $scope, null, null, self::LINE));
 
@@ -105,7 +106,7 @@ class MembersTest extends ParseTest {
   #[Test]
   public function class_constant() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'T', null, new Scalar('1', 'integer', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { const T = 1; }');
   }
@@ -113,8 +114,8 @@ class MembersTest extends ParseTest {
   #[Test]
   public function class_constants() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Constant([], 'T', null, new Literal('1', self::LINE), null, null, self::LINE));
-    $class->declare(new Constant([], 'S', null, new Literal('2', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'T', null, new Scalar('1', 'integer', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'S', null, new Scalar('2', 'integer', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { const T = 1, S = 2; }');
   }
@@ -122,7 +123,7 @@ class MembersTest extends ParseTest {
   #[Test]
   public function private_class_constant() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Constant(['private'], 'T', null, new Literal('1', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant(['private'], 'T', null, new Scalar('1', 'integer', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private const T = 1; }');
   }
@@ -155,7 +156,10 @@ class MembersTest extends ParseTest {
 
   #[Test]
   public function method_with_annotations() {
-    $annotations= new Annotations(['Test' => [], 'Ignore' => [new Literal('"Not implemented"', self::LINE)]], self::LINE);
+    $annotations= new Annotations([
+      'Test'   => [],
+      'Ignore' => [new Scalar('"Not implemented"', 'string', self::LINE)],
+    ], self::LINE);
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $class->declare(new Method(['public'], 'a', new Signature([], null, false, self::LINE), $this->empty, $annotations, null, self::LINE));
 
@@ -166,7 +170,7 @@ class MembersTest extends ParseTest {
   public function property_with_get_and_set_hooks() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
-    $return= new ReturnStatement(new Literal('"Hello"', self::LINE), self::LINE);
+    $return= new ReturnStatement(new Scalar('"Hello"', 'string', self::LINE), self::LINE);
     $parameter= new Parameter('value', null, null, false, false, null, null, null, self::LINE);
     $prop->hooks['get']= new Hook([], 'get', new Block([$return], self::LINE), false, null, self::LINE);
     $prop->hooks['set']= new Hook([], 'set', new Block([], self::LINE), false, $parameter, self::LINE);
@@ -179,7 +183,7 @@ class MembersTest extends ParseTest {
   public function property_with_short_get_hook() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
-    $prop->hooks['get']= new Hook([], 'get', new Literal('"Hello"', self::LINE), false, null, self::LINE);
+    $prop->hooks['get']= new Hook([], 'get', new Scalar('"Hello"', 'string' ,self::LINE), false, null, self::LINE);
     $class->declare($prop);
 
     $this->assertParsed([$class], 'class A { public $a { get => "Hello"; } }');
@@ -189,7 +193,7 @@ class MembersTest extends ParseTest {
   public function property_with_abbreviated_get_hook() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $prop= new Property(['public'], 'a', null, null, null, null, self::LINE);
-    $prop->hooks['get']= new Hook([], 'get', new Literal('"Hello"', self::LINE), false, null, self::LINE);
+    $prop->hooks['get']= new Hook([], 'get', new Scalar('"Hello"', 'string' ,self::LINE), false, null, self::LINE);
     $class->declare($prop);
 
     $this->assertParsed([$class], 'class A { public $a => "Hello"; }');
@@ -333,7 +337,7 @@ class MembersTest extends ParseTest {
     $this->assertParsed(
       [new InvokeExpression(
         new InstanceExpression(new Variable('a', self::LINE), new Literal('member', self::LINE), self::LINE),
-        [new Literal('1', self::LINE)],
+        [new Scalar('1', 'integer', self::LINE)],
         self::LINE
       )],
       '$a->member(1);'
@@ -345,7 +349,7 @@ class MembersTest extends ParseTest {
     $this->assertParsed(
       [new ScopeExpression(
         '\\A',
-        new InvokeExpression(new Literal('member', self::LINE), [new Literal('1', self::LINE)], self::LINE),
+        new InvokeExpression(new Literal('member', self::LINE), [new Scalar('1', 'integer', self::LINE)], self::LINE),
         self::LINE
       )],
       'A::member(1);'
@@ -363,7 +367,7 @@ class MembersTest extends ParseTest {
   #[Test]
   public function typed_property_with_value() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Property(['private'], 'a', new Type('string'), new Literal('"test"', self::LINE), null, null, self::LINE));
+    $class->declare(new Property(['private'], 'a', new Type('string'), new Scalar('"test"', 'string', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { private string $a = "test"; }');
   }
@@ -389,7 +393,7 @@ class MembersTest extends ParseTest {
   #[Test]
   public function typed_constant() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'T', new Type('int'), new Scalar('1', 'integer', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { const int T = 1; }');
   }
@@ -397,9 +401,9 @@ class MembersTest extends ParseTest {
   #[Test]
   public function typed_constants() {
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
-    $class->declare(new Constant([], 'T', new Type('int'), new Literal('1', self::LINE), null, null, self::LINE));
-    $class->declare(new Constant([], 'S', new Type('int'), new Literal('2', self::LINE), null, null, self::LINE));
-    $class->declare(new Constant([], 'I', new Type('string'), new Literal('"i"', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'T', new Type('int'), new Scalar('1', 'integer', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'S', new Type('int'), new Scalar('2', 'integer', self::LINE), null, null, self::LINE));
+    $class->declare(new Constant([], 'I', new Type('string'), new Scalar('"i"', 'string', self::LINE), null, null, self::LINE));
 
     $this->assertParsed([$class], 'class A { const int T = 1, S = 2, string I = "i"; }');
   }

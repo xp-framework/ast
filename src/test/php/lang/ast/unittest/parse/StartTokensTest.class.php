@@ -1,7 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Errors;
-use lang\ast\nodes\{Directives, Literal, NamespaceDeclaration};
+use lang\ast\nodes\{Directives, NamespaceDeclaration, Scalar};
 use test\{Assert, Expect, Test};
 
 class StartTokensTest extends ParseTest {
@@ -16,7 +16,7 @@ class StartTokensTest extends ParseTest {
 
   #[Test]
   public function declare() {
-    $declare= ['strict_types' => new Literal('1', self::LINE)];
+    $declare= ['strict_types' => new Scalar('1', 'integer', self::LINE)];
     $this->assertParsed(
       [new Directives($declare, self::LINE)],
       '<?php declare(strict_types = 1);'
@@ -25,7 +25,10 @@ class StartTokensTest extends ParseTest {
 
   #[Test]
   public function declare_with_multiple() {
-    $declare= ['strict_types' => new Literal('1', self::LINE), 'encoding' => new Literal('"UTF-8"', self::LINE)];
+    $declare= [
+      'strict_types' => new Scalar('1', 'integer', self::LINE),
+      'encoding'     => new Scalar('"UTF-8"', 'string', self::LINE),
+    ];
     $this->assertParsed(
       [new Directives($declare, self::LINE)],
       '<?php declare(strict_types = 1, encoding = "UTF-8");'

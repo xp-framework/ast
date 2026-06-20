@@ -49,6 +49,7 @@ use lang\ast\nodes\{
   Placeholder,
   Property,
   ReturnStatement,
+  Scalar,
   ScopeExpression,
   Signature,
   StaticLocals,
@@ -484,7 +485,7 @@ class PHP extends Language {
     });
 
     $this->prefix('(literal)', 0, function($parse, $token) {
-      return new Literal($token->value, $token->line);
+      return new Scalar($token->value, $token->kind, $token->line);
     });
 
     $this->prefix('(name)', 0, function($parse, $token) {

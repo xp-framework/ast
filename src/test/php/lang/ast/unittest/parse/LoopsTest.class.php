@@ -12,6 +12,7 @@ use lang\ast\nodes\{
   InvokeExpression,
   Label,
   Literal,
+  Scalar,
   UnaryExpression,
   Variable,
   WhileLoop
@@ -72,8 +73,8 @@ class LoopsTest extends ParseTest {
   public function for_loop() {
     $this->assertParsed(
       [new ForLoop(
-        [new Assignment(new Variable('i', self::LINE), '=', new Literal('0', self::LINE), self::LINE)],
-        [new BinaryExpression(new Variable('i', self::LINE), '<', new Literal('10', self::LINE), self::LINE)],
+        [new Assignment(new Variable('i', self::LINE), '=', new Scalar('0', 'integer', self::LINE), self::LINE)],
+        [new BinaryExpression(new Variable('i', self::LINE), '<', new Scalar('10', 'integer', self::LINE), self::LINE)],
         [new UnaryExpression('suffix', new Variable('i', self::LINE), '++', self::LINE)],
         [$this->loop],
         self::LINE
@@ -141,7 +142,7 @@ class LoopsTest extends ParseTest {
   #[Test]
   public function break_statement_with_level() {
     $this->assertParsed(
-      [new BreakStatement(new Literal('2', self::LINE), self::LINE)],
+      [new BreakStatement(new Scalar('2', 'integer', self::LINE), self::LINE)],
       'break 2;'
     );
   }
@@ -157,7 +158,7 @@ class LoopsTest extends ParseTest {
   #[Test]
   public function continue_statement_with_level() {
     $this->assertParsed(
-      [new ContinueStatement(new Literal('2', self::LINE), self::LINE)],
+      [new ContinueStatement(new Scalar('2', 'integer', self::LINE), self::LINE)],
       'continue 2;'
     );
   }

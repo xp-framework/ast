@@ -1,28 +1,28 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{ArrayLiteral, Literal};
+use lang\ast\nodes\{ArrayLiteral, Literal, Scalar};
 use test\{Assert, Test, Values};
 
 class LiteralsTest extends ParseTest {
 
   #[Test, Values(['0', '1'])]
   public function integer($input) {
-    $this->assertParsed([new Literal($input, self::LINE)], $input.';');
+    $this->assertParsed([new Scalar($input, 'integer', self::LINE)], $input.';');
   }
 
   #[Test, Values(['0x00', '0x01', '0xFF', '0xff'])]
   public function hexadecimal($input) {
-    $this->assertParsed([new Literal($input, self::LINE)], $input.';');
+    $this->assertParsed([new Scalar($input, 'integer', self::LINE)], $input.';');
   }
 
   #[Test, Values(['00', '01', '010', '0777', '0o16', '0O16'])]
   public function octal($input) {
-    $this->assertParsed([new Literal($input, self::LINE)], $input.';');
+    $this->assertParsed([new Scalar($input, 'integer', self::LINE)], $input.';');
   }
 
   #[Test, Values(['1.0', '1.5'])]
   public function decimal($input) {
-    $this->assertParsed([new Literal($input, self::LINE)], $input.';');
+    $this->assertParsed([new Scalar($input, 'decimal', self::LINE)], $input.';');
   }
 
   #[Test]
@@ -42,17 +42,17 @@ class LiteralsTest extends ParseTest {
 
   #[Test]
   public function empty_string() {
-    $this->assertParsed([new Literal('""', self::LINE)], '"";');
+    $this->assertParsed([new Scalar('""', 'string', self::LINE)], '"";');
   }
 
   #[Test]
   public function non_empty_string() {
-    $this->assertParsed([new Literal('"Test"', self::LINE)], '"Test";');
+    $this->assertParsed([new Scalar('"Test"', 'string', self::LINE)], '"Test";');
   }
 
   #[Test]
   public function exec_statement() {
-    $this->assertParsed([new Literal('`ls -al`', self::LINE)], '`ls -al`;');
+    $this->assertParsed([new Scalar('`ls -al`', 'string', self::LINE)], '`ls -al`;');
   }
 
   #[Test, Values(['[];', ['array();']])]
@@ -63,27 +63,27 @@ class LiteralsTest extends ParseTest {
   #[Test, Values(['[1, 2];', ['array(1, 2);']])]
   public function int_array($declaration) {
     $pairs= [
-      [null, new Literal('1', self::LINE)],
-      [null, new Literal('2', self::LINE)]
+      [null, new Scalar('1', 'integer', self::LINE)],
+      [null, new Scalar('2', 'integer', self::LINE)]
     ];
     $this->assertParsed([new ArrayLiteral($pairs, self::LINE)], $declaration);
   }
 
   #[Test, Values(['["key" => "value"];', ['array("key" => "value");']])]
   public function key_value_map($declaration) {
-    $pair= [new Literal('"key"', self::LINE), new Literal('"value"', self::LINE)];
+    $pair= [new Scalar('"key"', 'string', self::LINE), new Scalar('"value"', 'string', self::LINE)];
     $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], $declaration);
   }
 
   #[Test, Values(['[1, ];', 'array(1, );'])]
   public function dangling_comma_in_array($declaration) {
-    $pair= [null, new Literal('1', self::LINE)];
+    $pair= [null, new Scalar('1', 'integer', self::LINE)];
     $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], $declaration);
   }
 
   #[Test, Values(['["key" => "value", ];', 'array("key" => "value", );'])]
   public function dangling_comma_in_key_value_map($declaration) {
-    $pair= [new Literal('"key"', self::LINE), new Literal('"value"', self::LINE)];
+    $pair= [new Scalar('"key"', 'string', self::LINE), new Scalar('"value"', 'string', self::LINE)];
     $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], $declaration);
   }
 
@@ -97,7 +97,7 @@ class LiteralsTest extends ParseTest {
       "Line 4\n".
       "EOD"
     );
-    $this->assertParsed([new Literal($nowdoc, self::LINE)], $nowdoc.';');
+    $this->assertParsed([new Scalar($nowdoc, 'heredoc', self::LINE)], $nowdoc.';');
   }
 
   #[Test]
@@ -110,7 +110,7 @@ class LiteralsTest extends ParseTest {
       "  Line 4\n".
       "  EOD"
     );
-    $this->assertParsed([new Literal($nowdoc, self::LINE)], $nowdoc.';');
+    $this->assertParsed([new Scalar($nowdoc, 'heredoc', self::LINE)], $nowdoc.';');
   }
 
   #[Test]
@@ -121,7 +121,7 @@ class LiteralsTest extends ParseTest {
       "</html>'"
     );
     $this->assertParsed(
-      [new Literal($string, self::LINE), new Literal('null', self::LINE + 3)],
+      [new Scalar($string, 'string', self::LINE), new Literal('null', self::LINE + 3)],
       $string.";\nnull;"
     );
   }
@@ -134,7 +134,7 @@ class LiteralsTest extends ParseTest {
       "  EOD"
     );
     $this->assertParsed(
-      [new Literal($nowdoc, self::LINE), new Literal('null', self::LINE + 3)],
+      [new Scalar($nowdoc, 'heredoc', self::LINE), new Literal('null', self::LINE + 3)],
       $nowdoc.";\nnull;"
     );
   }

@@ -9,7 +9,7 @@ use lang\ast\nodes\{
   NamespaceDeclaration,
   TraitDeclaration,
   UseExpression,
-  Literal
+  Scalar
 };
 use lang\ast\types\IsValue;
 use test\{Assert, Expect, Test};
@@ -123,8 +123,8 @@ class TypesTest extends ParseTest {
   #[Test]
   public function backed_enum_with_cases() {
     $enum= new EnumDeclaration([], new IsValue('\\A'), 'int', [], [], null, null, self::LINE);
-    $enum->declare(new EnumCase('ONE', new Literal('1', self::LINE), null, null, self::LINE));
-    $enum->declare(new EnumCase('TWO', new Literal('2', self::LINE), null, null, self::LINE));
+    $enum->declare(new EnumCase('ONE', new Scalar('1', 'integer', self::LINE), null, null, self::LINE));
+    $enum->declare(new EnumCase('TWO', new Scalar('2', 'integer', self::LINE), null, null, self::LINE));
     $this->assertParsed([$enum], 'enum A: int { case ONE = 1; case TWO = 2; }');
   }
 

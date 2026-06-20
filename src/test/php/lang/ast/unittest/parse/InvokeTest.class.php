@@ -10,6 +10,7 @@ use lang\ast\nodes\{
   ScopeExpression,
   Literal,
   Placeholder,
+  Scalar,
   Variable
 };
 use lang\ast\types\IsValue;
@@ -41,7 +42,7 @@ class InvokeTest extends ParseTest {
 
   #[Test]
   public function invoke_function_with_argument() {
-    $arguments= [new Literal('1', self::LINE)];
+    $arguments= [new Scalar('1', 'integer', self::LINE)];
     $this->assertParsed(
       [new InvokeExpression(new Literal('test', self::LINE), $arguments, self::LINE)],
       'test(1);'
@@ -50,7 +51,7 @@ class InvokeTest extends ParseTest {
 
   #[Test]
   public function invoke_function_with_arguments() {
-    $arguments= [new Literal('1', self::LINE), new Literal('2', self::LINE)];
+    $arguments= [new Scalar('1', 'integer', self::LINE), new Scalar('2', 'integer', self::LINE)];
     $this->assertParsed(
       [new InvokeExpression(new Literal('test', self::LINE), $arguments, self::LINE)],
       'test(1, 2);'
@@ -59,7 +60,7 @@ class InvokeTest extends ParseTest {
 
   #[Test]
   public function invoke_function_with_dangling_comma() {
-    $arguments= [new Literal('1', self::LINE), new Literal('2', self::LINE)];
+    $arguments= [new Scalar('1', 'integer', self::LINE), new Scalar('2', 'integer', self::LINE)];
     $this->assertParsed(
       [new InvokeExpression(new Literal('test', self::LINE), $arguments, self::LINE)],
       'test(1, 2, );'
@@ -68,7 +69,7 @@ class InvokeTest extends ParseTest {
 
   #[Test]
   public function invoke_function_with_positional_and_named_arguments() {
-    $arguments= [0 => new Literal('1', self::LINE), 'named' => new Literal('2', self::LINE)];
+    $arguments= [0 => new Scalar('1', 'integer', self::LINE), 'named' => new Scalar('2', 'integer', self::LINE)];
     $this->assertParsed(
       [new InvokeExpression(new Literal('test', self::LINE), $arguments, self::LINE)],
       'test(1, named: 2);'
@@ -125,7 +126,11 @@ class InvokeTest extends ParseTest {
     $this->assertParsed(
       [new CallableExpression(
         new Literal('str_replace', self::LINE),
-        [new Literal('"test"', self::LINE), new Literal('"ok"', self::LINE), Placeholder::$ARGUMENT],
+        [
+          new Scalar('"test"', 'string', self::LINE),
+          new Scalar('"ok"', 'string', self::LINE),
+          Placeholder::$ARGUMENT
+        ],
         self::LINE
       )],
       'str_replace("test", "ok", ?);'
@@ -137,7 +142,11 @@ class InvokeTest extends ParseTest {
     $this->assertParsed(
       [new CallableExpression(
         new Literal('str_replace', self::LINE),
-        [new Literal('"test"', self::LINE), new Literal('"ok"', self::LINE), 'subject' => Placeholder::$ARGUMENT],
+        [
+          new Scalar('"test"', 'string', self::LINE),
+          new Scalar('"ok"', 'string', self::LINE),
+          'subject' => Placeholder::$ARGUMENT,
+        ],
         self::LINE
       )],
       'str_replace("test", "ok", subject: ?);'

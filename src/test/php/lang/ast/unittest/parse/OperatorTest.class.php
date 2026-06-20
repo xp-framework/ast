@@ -14,6 +14,7 @@ use lang\ast\nodes\{
   NewClassExpression,
   NewExpression,
   OffsetExpression,
+  Scalar,
   ScopeExpression,
   TernaryExpression,
   UnaryExpression,
@@ -35,7 +36,7 @@ class OperatorTest extends ParseTest {
   #[Test]
   public function ternary() {
     $this->assertParsed(
-      [new TernaryExpression(new Variable('a', self::LINE), new Literal('1', self::LINE), new Literal('2', self::LINE), self::LINE)],
+      [new TernaryExpression(new Variable('a', self::LINE), new Scalar('1', 'integer', self::LINE), new Scalar('2', 'integer', self::LINE), self::LINE)],
       '$a ? 1 : 2;'
     );
   }
@@ -81,7 +82,7 @@ class OperatorTest extends ParseTest {
 
   #[Test]
   public function assignment_to_offset() {
-    $target= new OffsetExpression(new Variable('a', self::LINE), new Literal('0', self::LINE), self::LINE);
+    $target= new OffsetExpression(new Variable('a', self::LINE), new Scalar('0', 'integer', self::LINE), self::LINE);
     $this->assertParsed(
       [new Assignment($target, '=', new Variable('b', self::LINE), self::LINE)],
       '$a[0]= $b;'
@@ -101,8 +102,8 @@ class OperatorTest extends ParseTest {
   public function comparison_to_assignment() {
     $this->assertParsed(
       [new BinaryExpression(
-        new Literal('1', self::LINE), '===', new Braced(
-          new Assignment(new Variable('a', self::LINE), '=', new Literal('1', self::LINE), self::LINE),
+        new Scalar('1', 'integer', self::LINE), '===', new Braced(
+          new Assignment(new Variable('a', self::LINE), '=', new Scalar('1', 'integer', self::LINE), self::LINE),
           self::LINE
         ),
         self::LINE
@@ -130,7 +131,7 @@ class OperatorTest extends ParseTest {
 
   #[Test]
   public function clone_with() {
-    $with= [[new Literal('"id"', self::LINE), new Literal('6100', self::LINE)]];
+    $with= [[new Scalar('"id"', 'string', self::LINE), new Scalar('6100', 'integer', self::LINE)]];
     $this->assertParsed(
       [new CloneExpression([new Variable('a', self::LINE), new ArrayLiteral($with, self::LINE)], self::LINE)],
       'clone($a, ["id" => 6100]);'
@@ -241,7 +242,7 @@ class OperatorTest extends ParseTest {
       [new BinaryExpression(
         new InstanceExpression(new Variable('this', self::LINE), new Literal('a', self::LINE), self::LINE),
         '.',
-        new Literal('"test"', self::LINE),
+        new Scalar('"test"', 'string', self::LINE),
         self::LINE
       )],
       '$this->a."test";'
@@ -267,7 +268,7 @@ class OperatorTest extends ParseTest {
       [new BinaryExpression(
         new ScopeExpression('self', new Literal('class', self::LINE), self::LINE),
         '.',
-        new Literal('"test"', self::LINE),
+        new Scalar('"test"', 'string', self::LINE),
         self::LINE
       )],
       'self::class."test";'
@@ -316,7 +317,7 @@ class OperatorTest extends ParseTest {
   public function precedence_of_prefix($operator) {
     $this->assertParsed(
       [new BinaryExpression(
-        new UnaryExpression('prefix', new Literal('2', self::LINE), $operator, self::LINE),
+        new UnaryExpression('prefix', new Scalar('2', 'integer', self::LINE), $operator, self::LINE),
         '===',
         new Variable('value', self::LINE),
         self::LINE
@@ -343,7 +344,7 @@ class OperatorTest extends ParseTest {
     $this->assertParsed(
       [new UnaryExpression(
         'prefix',
-        new OffsetExpression(new Variable('a', self::LINE), new Literal('0', self::LINE), self::LINE),
+        new OffsetExpression(new Variable('a', self::LINE), new Scalar('0', 'integer', self::LINE), self::LINE),
         '!',
         self::LINE
       )],
@@ -355,8 +356,8 @@ class OperatorTest extends ParseTest {
   public function multiple_semicolons() {
     $this->assertParsed(
       [
-        new Assignment(new Variable('a', self::LINE), '=', new Literal('1', self::LINE), self::LINE),
-        new Assignment(new Variable('b', self::LINE), '=', new Literal('2', self::LINE), self::LINE)
+        new Assignment(new Variable('a', self::LINE), '=', new Scalar('1', 'integer', self::LINE), self::LINE),
+        new Assignment(new Variable('b', self::LINE), '=', new Scalar('2', 'integer', self::LINE), self::LINE)
       ],
       ';; $a= 1 ;;; $b= 2;'
     );
