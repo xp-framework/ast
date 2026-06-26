@@ -373,7 +373,7 @@ class PHP extends Language {
       if ('from' === $parse->token->value) {
         $parse->forward();
         return new YieldFromExpression($this->expression($parse, 0), $token->line);
-      } else if ('operator' === $parse->token->kind && '(' !== $parse->token->value) {
+      } else if ('operator' === $parse->token->kind && '(' !== $parse->token->value && '[' !== $parse->token->value) {
         return new YieldExpression(null, null, $token->line);
       }
 
