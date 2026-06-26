@@ -373,18 +373,16 @@ class PHP extends Language {
       if ('from' === $parse->token->value) {
         $parse->forward();
         return new YieldFromExpression($this->expression($parse, 0), $token->line);
+      } else if ('operator' === $parse->token->kind && '(' !== $parse->token->value) {
+        return new YieldExpression(null, null, $token->line);
+      }
+
+      $expr= $this->expression($parse, 0);
+      if ('=>' === $parse->token->value) {
+        $parse->forward();
+        return new YieldExpression($expr, $this->expression($parse, 0), $token->line);
       } else {
-        $expr= $this->expression($parse, 0);
-        if ('operator' === $expr->kind) {
-          array_unshift($parse->queue, $parse->token);
-          $parse->token= $expr;
-          return new YieldExpression(null, null, $token->line);
-        } else if ('=>' === $parse->token->value) {
-          $parse->forward();
-          return new YieldExpression($expr, $this->expression($parse, 0), $token->line);
-        } else {
-          return new YieldExpression(null, $expr, $token->line);
-        }
+        return new YieldExpression(null, $expr, $token->line);
       }
     });
 

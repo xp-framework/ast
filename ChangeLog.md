@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 12.2.1 / 2026-06-26
+
+* Fixed parsing `$offset[yield] ?? null` - @thekid
+
 ## 12.2.0 / 2026-05-23
 
 * Merged PR #61: Refactor function scopes: Capturing and returning.
