@@ -370,10 +370,12 @@ class PHP extends Language {
     });
 
     $this->prefix('yield', 0, function($parse, $token) {
+      static $start= ['(' => 1, '[' => 1, '@' => 1, '&' => 1, '!' => 1, '~' => 1, '+' => 1, '-' => 1, '++' => 1, '--' => 1];
+
       if ('from' === $parse->token->value) {
         $parse->forward();
         return new YieldFromExpression($this->expression($parse, 0), $token->line);
-      } else if ('operator' === $parse->token->kind && '(' !== $parse->token->value && '[' !== $parse->token->value) {
+      } else if ('operator' === $parse->token->kind && !isset($start[$parse->token->value])) {
         return new YieldExpression(null, null, $token->line);
       }
 
