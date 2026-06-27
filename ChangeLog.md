@@ -3,15 +3,12 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 12.2.2 / 2026-06-27
+## 12.2.1 / 2026-06-27
 
 * Added extensive testing for `yield` expressions, fixing additional
   situations when used in conjunction with prefix operators. Interpret
-  `yield + 1` as `yield (+1)` vs. `(yield) + 1`
+  `yield + 1` becomes `yield (+1)` vs. `(yield) + 1`
   (@thekid)
-
-## 12.2.1 / 2026-06-26
-
 * Fixed parsing `$offset[yield] ?? null` - @thekid
 
 ## 12.2.0 / 2026-05-23
