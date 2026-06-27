@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{Expression, Literal, OffsetExpression, StaticLocals, Variable};
+use lang\ast\nodes\{Expression, OffsetExpression, Scalar, StaticLocals, Variable};
 use test\{Assert, Test, Values};
 
 class VariablesTest extends ParseTest {
@@ -64,7 +64,7 @@ class VariablesTest extends ParseTest {
   #[Test]
   public function static_variable_with_initialization() {
     $this->assertParsed(
-      [new StaticLocals(['id' => new Literal('0', self::LINE)], self::LINE)],
+      [new StaticLocals(['id' => new Scalar('0', 'integer', self::LINE)], self::LINE)],
       'static $id= 0;'
     );
   }
@@ -72,7 +72,7 @@ class VariablesTest extends ParseTest {
   #[Test]
   public function array_offset() {
     $this->assertParsed(
-      [new OffsetExpression(new Variable('a', self::LINE), new Literal('0', self::LINE), self::LINE)],
+      [new OffsetExpression(new Variable('a', self::LINE), new Scalar('0', 'integer', self::LINE), self::LINE)],
       '$a[0];'
     );
   }

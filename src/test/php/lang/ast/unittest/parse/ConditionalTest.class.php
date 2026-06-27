@@ -1,7 +1,18 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\Errors;
-use lang\ast\nodes\{CaseLabel, IfStatement, InvokeExpression, Literal, MatchCondition, MatchExpression, ScopeExpression, SwitchStatement, Variable};
+use lang\ast\nodes\{
+  CaseLabel,
+  IfStatement,
+  InvokeExpression,
+  Literal,
+  MatchCondition,
+  MatchExpression,
+  Scalar,
+  ScopeExpression,
+  SwitchStatement,
+  Variable
+};
 use test\{Assert, Before, Expect, Test};
 
 class ConditionalTest extends ParseTest {
@@ -57,7 +68,7 @@ class ConditionalTest extends ParseTest {
 
   #[Test]
   public function switch_with_one_case() {
-    $cases= [new CaseLabel(new Literal('1', self::LINE), $this->blocks[1], self::LINE)];
+    $cases= [new CaseLabel(new Scalar('1', 'integer', self::LINE), $this->blocks[1], self::LINE)];
     $this->assertParsed(
       [new SwitchStatement(new Variable('condition', self::LINE), $cases, self::LINE)],
       'switch ($condition) { case 1: action1(); }'
@@ -85,8 +96,8 @@ class ConditionalTest extends ParseTest {
   #[Test]
   public function switch_with_two_cases() {
     $cases= [
-      new CaseLabel(new Literal('1', self::LINE), $this->blocks[1], self::LINE),
-      new CaseLabel(new Literal('2', self::LINE), $this->blocks[2], self::LINE)
+      new CaseLabel(new Scalar('1', 'integer', self::LINE), $this->blocks[1], self::LINE),
+      new CaseLabel(new Scalar('2', 'integer', self::LINE), $this->blocks[2], self::LINE)
     ];
     $this->assertParsed(
       [new SwitchStatement(new Variable('condition', self::LINE), $cases, self::LINE)],
@@ -114,7 +125,7 @@ class ConditionalTest extends ParseTest {
   #[Test]
   public function match_with_trailing_comma() {
     $cases= [
-      new MatchCondition([new Literal('1', self::LINE)], $this->blocks[1][0], self::LINE),
+      new MatchCondition([new Scalar('1', 'integer', self::LINE)], $this->blocks[1][0], self::LINE),
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('condition', self::LINE), $cases, null, self::LINE)],
@@ -125,8 +136,8 @@ class ConditionalTest extends ParseTest {
   #[Test]
   public function match_with_two_cases() {
     $cases= [
-      new MatchCondition([new Literal('1', self::LINE)], $this->blocks[1][0], self::LINE),
-      new MatchCondition([new Literal('2', self::LINE)], $this->blocks[2][0], self::LINE)
+      new MatchCondition([new Scalar('1', 'integer', self::LINE)], $this->blocks[1][0], self::LINE),
+      new MatchCondition([new Scalar('2', 'integer', self::LINE)], $this->blocks[2][0], self::LINE)
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('condition', self::LINE), $cases, null, self::LINE)],
@@ -137,7 +148,7 @@ class ConditionalTest extends ParseTest {
   #[Test]
   public function match_with_multi_expression_case_and_default() {
     $cases= [
-      new MatchCondition([new Literal('1', self::LINE), new Literal('2', self::LINE)], $this->blocks[1][0], self::LINE),
+      new MatchCondition([new Scalar('1', 'integer', self::LINE), new Scalar('2', 'integer', self::LINE)], $this->blocks[1][0], self::LINE),
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('condition', self::LINE), $cases, $this->blocks[2][0], self::LINE)],

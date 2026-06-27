@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{Annotated, ArrayLiteral, Literal};
+use lang\ast\nodes\{Annotated, ArrayLiteral, Literal, Scalar};
 use test\{Assert, Test, Values};
 
 /** @see https://wiki.php.net/rfc/shorter_attribute_syntax_change */
@@ -23,8 +23,8 @@ class AttributesTest extends ParseTest {
    */
   private function attributes() {
     yield ['#[Service]', ['Service' => []]];
-    yield ['#[Test(version: 1)]', ['Test' => ['version' => new Literal('1', self::LINE)]]];
-    yield ['#[Service, Version(1)]', ['Service' => [], 'Version' => [new Literal('1', self::LINE)]]];
+    yield ['#[Test(version: 1)]', ['Test' => ['version' => new Scalar('1', 'integer', self::LINE)]]];
+    yield ['#[Service, Version(1)]', ['Service' => [], 'Version' => [new Scalar('1', 'integer', self::LINE)]]];
   }
 
   /**
@@ -55,7 +55,15 @@ class AttributesTest extends ParseTest {
     );
   }
 
-  #[Test, Values(['"test"', '1', '1.5', 'true', 'false', 'null'])]
+  #[Test, Values([['"test"', 'string'], ['1', 'integer'], ['1.5', 'decimal']])]
+  public function with_scalar_argument($value, $kind) {
+    $this->assertAnnotated(
+      ['Service' => [new Scalar($value, $kind, self::LINE)]],
+      $this->type('#[Service('.$value.')] class T { }')
+    );
+  }
+
+  #[Test, Values(['true', 'false', 'null'])]
   public function with_literal_argument($value) {
     $this->assertAnnotated(
       ['Service' => [new Literal($value, self::LINE)]],
@@ -66,8 +74,8 @@ class AttributesTest extends ParseTest {
   #[Test]
   public function with_array_argument() {
     $elements= [
-      [null, new Literal('1', self::LINE)],
-      [null, new Literal('2', self::LINE)],
+      [null, new Scalar('1', 'integer', self::LINE)],
+      [null, new Scalar('2', 'integer', self::LINE)],
     ];
     $this->assertAnnotated(
       ['Service' => [new ArrayLiteral($elements, self::LINE)]],
@@ -78,8 +86,8 @@ class AttributesTest extends ParseTest {
   #[Test]
   public function with_map_argument() {
     $elements= [
-      [new Literal('"one"', self::LINE), new Literal('1', self::LINE)],
-      [new Literal('"two"', self::LINE), new Literal('2', self::LINE)],
+      [new Scalar('"one"', 'string', self::LINE), new Scalar('1', 'integer', self::LINE)],
+      [new Scalar('"two"', 'string', self::LINE), new Scalar('2', 'integer', self::LINE)],
     ];
     $this->assertAnnotated(
       ['Service' => [new ArrayLiteral($elements, self::LINE)]],
@@ -90,7 +98,7 @@ class AttributesTest extends ParseTest {
   #[Test]
   public function with_named_arguments() {
     $this->assertAnnotated(
-      ['Impl' => ['class' => new Literal('"T"', self::LINE), 'version' => new Literal('1', self::LINE)]],
+      ['Impl' => ['class' => new Scalar('"T"', 'string', self::LINE), 'version' => new Scalar('1', 'integer', self::LINE)]],
       $this->type('#[Impl(class: "T", version: 1)] class T { }')
     );
   }
@@ -98,8 +106,8 @@ class AttributesTest extends ParseTest {
   #[Test]
   public function multiline() {
     $elements= [
-      [new Literal('"one"', self::LINE + 2), new Literal('1', self::LINE + 2)],
-      [new Literal('"two"', self::LINE + 3), new Literal('2', self::LINE + 3)],
+      [new Scalar('"one"', 'string', self::LINE + 2), new Scalar('1', 'integer', self::LINE + 2)],
+      [new Scalar('"two"', 'string', self::LINE + 3), new Scalar('2', 'integer', self::LINE + 3)],
     ];
     $this->assertAnnotated(['Values' => [new ArrayLiteral($elements, self::LINE + 1)]], $this->type('
       #[Values([
@@ -127,7 +135,7 @@ class AttributesTest extends ParseTest {
   #[Test]
   public function with_two_arguments() {
     $this->assertAnnotated(
-      ['Service' => [new Literal('1', self::LINE), new Literal('2', self::LINE)]],
+      ['Service' => [new Scalar('1', 'integer', self::LINE), new Scalar('2', 'integer', self::LINE)]],
       $this->type('#[Service(1, 2)] class T { }')
     );
   }
@@ -135,7 +143,7 @@ class AttributesTest extends ParseTest {
   #[Test]
   public function two_annotations() {
     $this->assertAnnotated(
-      ['Author' => [new Literal('"Test"', self::LINE)], 'Version' => [new Literal('2', self::LINE)]],
+      ['Author' => [new Scalar('"Test"', 'string', self::LINE)], 'Version' => [new Scalar('2', 'integer', self::LINE)]],
       $this->type('#[Author("Test"), Version(2)] class T { }')
     );
   }
@@ -143,7 +151,7 @@ class AttributesTest extends ParseTest {
   #[Test]
   public function trailing_comma() {
     $this->assertAnnotated(
-      ['Author' => [new Literal('"Test"', self::LINE)]],
+      ['Author' => [new Scalar('"Test"', 'string', self::LINE)]],
       $this->type('#[Author("Test"), ] class T { }')
     );
   }
