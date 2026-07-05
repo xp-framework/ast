@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 13.0.0 / 2026-07-05
+
+* Merged PR #64: Support property hooks in promoted parameters - @thekid
+
 ## 12.2.1 / 2026-06-27
 
 * Added extensive testing for `yield` expressions, fixing additional
