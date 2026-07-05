@@ -911,7 +911,27 @@ class PHP extends Language {
       $parse->comment= null;
       $name= $this->type($parse, false);
 
-      return $this->class($parse, $name, $comment);
+      // Primary constructors
+      if ('(' === $parse->token->value) {
+        $parse->expecting('(', 'class');
+        $parameters= $this->parameters($parse);
+        $parse->expecting(')', 'class');
+
+        $class= $this->class($parse, $name, $comment);
+        $class->declare(new Method(
+          ['public'],
+          '__construct',
+          new Signature($parameters, null, false, $token->line),
+          new Block([], $token->line),
+          null,
+          $comment,
+          $token->line,
+        ));
+      } else {
+        $class= $this->class($parse, $name, $comment);
+      }
+
+      return $class;
     });
 
     $this->stmt('interface', function($parse, $token) {
