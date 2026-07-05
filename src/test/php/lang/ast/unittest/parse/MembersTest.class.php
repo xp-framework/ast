@@ -228,6 +228,27 @@ class MembersTest extends ParseTest {
   }
 
   #[Test]
+  public function promoted_parameter() {
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $promoted= new Property(['public'], 'name', new IsLiteral('string'), null, null, null, self::LINE);
+    $parameter= new Parameter('name', new IsLiteral('string'), null, false, false, $promoted, null, null, self::LINE);
+    $class->declare(new Method(['public'], '__construct', new Signature([$parameter], null, false, self::LINE), $this->empty, null, null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { public function __construct(public string $name) { } }');
+  }
+
+  #[Test]
+  public function promoted_parameter_with_hook() {
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $promoted= new Property(['public'], 'name', new IsLiteral('string'), null, null, null, self::LINE);
+    $promoted->hooks['get']= new Hook([], 'get', new Literal('"Hello"', self::LINE), false, null, self::LINE);
+    $parameter= new Parameter('name', new IsLiteral('string'), null, false, false, $promoted, null, null, self::LINE);
+    $class->declare(new Method(['public'], '__construct', new Signature([$parameter], null, false, self::LINE), $this->empty, null, null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { public function __construct(public string $name { get => "Hello"; }) { } }');
+  }
+
+  #[Test]
   public function instance_property_access() {
     $this->assertParsed(
       [new InstanceExpression(new Variable('a', self::LINE), new Literal('member', self::LINE), self::LINE)],
@@ -414,7 +435,8 @@ class MembersTest extends ParseTest {
 
   #[Test]
   public function asymmetric_property_as_constructor_argument() {
-    $params= [new Parameter('a', new IsLiteral('int'), null, false, false, ['private(set)'], null, null, self::LINE)];
+    $promoted= new Property(['private(set)'], 'a', new IsLiteral('int'), null, null, null, self::LINE);
+    $params= [new Parameter('a', new IsLiteral('int'), null, false, false, $promoted, null, null, self::LINE)];
     $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
     $class->declare(new Method(['public'], '__construct', new Signature($params, null, false, self::LINE), $this->empty, null, null, self::LINE));
 
