@@ -228,6 +228,15 @@ class MembersTest extends ParseTest {
   }
 
   #[Test]
+  public function promoted_parameter() {
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $parameter= new Parameter('name', new IsLiteral('string'), null, false, false, ['public'], null, null, self::LINE);
+    $class->declare(new Method(['public'], '__construct', new Signature([$parameter], null, false, self::LINE), $this->empty, null, null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { public function __construct(public string $name) { } }');
+  }
+
+  #[Test]
   public function instance_property_access() {
     $this->assertParsed(
       [new InstanceExpression(new Variable('a', self::LINE), new Literal('member', self::LINE), self::LINE)],
