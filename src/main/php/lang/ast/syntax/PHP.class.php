@@ -917,8 +917,7 @@ class PHP extends Language {
         $parameters= $this->parameters($parse);
         $parse->expecting(')', 'class');
 
-        $class= $this->class($parse, $name, $comment, [], $token->line);
-        $class->body= ['__construct()' => new Method(
+        $constructor= new Method(
           ['public'],
           '__construct',
           new Signature($parameters, null, false, $token->line),
@@ -926,7 +925,9 @@ class PHP extends Language {
           null,
           $comment,
           $token->line,
-        )] + $class->body;
+        );
+        $class= $this->class($parse, $name, $comment, [], $token->line);
+        $class->body= ['__construct()' => $constructor] + $class->body;
       } else {
         $class= $this->class($parse, $name, $comment, [], $token->line);
       }
