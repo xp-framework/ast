@@ -350,7 +350,7 @@ class PHP extends Language {
       // callable reference vs. `new T(...$it)` - a call with an unpacked argument
       if ($callable) {
         if (null === $type) {
-          $class= $this->class($parse, null);
+          $class= $this->class($parse, null, null, [], $parse->token->line);
           $class->annotations= $annotations;
           $new= new NewClassExpression($class, null, $token->line);
         } else {
@@ -361,7 +361,7 @@ class PHP extends Language {
       }
 
       if (null === $type) {
-        $class= $this->class($parse, null);
+        $class= $this->class($parse, null, null, [], $parse->token->line);
         $class->annotations= $annotations;
         return new NewClassExpression($class, $arguments, $token->line);
       } else {
@@ -917,8 +917,8 @@ class PHP extends Language {
         $parameters= $this->parameters($parse);
         $parse->expecting(')', 'class');
 
-        $class= $this->class($parse, $name, $comment);
-        $class->declare(new Method(
+        $class= $this->class($parse, $name, $comment, [], $token->line);
+        $class->body= ['__construct()' => new Method(
           ['public'],
           '__construct',
           new Signature($parameters, null, false, $token->line),
@@ -926,9 +926,9 @@ class PHP extends Language {
           null,
           $comment,
           $token->line,
-        ));
+        )] + $class->body;
       } else {
-        $class= $this->class($parse, $name, $comment);
+        $class= $this->class($parse, $name, $comment, [], $token->line);
       }
 
       return $class;
@@ -1771,8 +1771,7 @@ class PHP extends Language {
     }
   }
 
-  public function class($parse, $name, $comment= null, $modifiers= []) {
-    $line= $parse->token->line;
+  public function class($parse, $name, $comment= null, $modifiers= [], $line= null) {
     $parent= null;
     if ('extends' === $parse->token->value) {
       $parse->forward();
