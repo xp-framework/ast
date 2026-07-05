@@ -346,26 +346,22 @@ class PHP extends Language {
       [$arguments, $callable]= $this->arguments($parse);
       $parse->expecting(')', 'new arguments');
 
-      // Resolve ambiguity by looking ahead: `new T(...)` which is a first-class
-      // callable reference vs. `new T(...$it)` - a call with an unpacked argument
-      if ($callable) {
-        if (null === $type) {
-          $class= $this->class($parse, null, null, [], $parse->token->line);
-          $class->annotations= $annotations;
-          $new= new NewClassExpression($class, null, $token->line);
-        } else {
-          $new= new NewExpression($type, null, $token->line);
-        }
-
-        return new CallableNewExpression($new, $arguments, $token->line);
-      }
-
+      // Anonymous classes
       if (null === $type) {
         $class= $this->class($parse, null, null, [], $parse->token->line);
         $class->annotations= $annotations;
-        return new NewClassExpression($class, $arguments, $token->line);
+        $new= new NewClassExpression($class, null, $token->line);
       } else {
-        return new NewExpression($type, $arguments, $token->line);
+        $new= new NewExpression($type, null, $token->line);
+      }
+
+      // Resolve ambiguity by looking ahead: `new T(...)` which is a first-class
+      // callable reference vs. `new T(...$it)` - a call with an unpacked argument
+      if ($callable) {
+        return new CallableNewExpression($new, $arguments, $token->line);
+      } else {
+        $new->arguments= $arguments;
+        return $new;
       }
     });
 
