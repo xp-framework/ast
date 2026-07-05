@@ -924,7 +924,7 @@ class PHP extends Language {
             $parse->expecting('(', 'base arguments');
             [$arguments, $callable]= $this->arguments($parse);
             $parse->expecting(')', 'base arguments');
-            $statements= [new ScopeExpression(new Literal('parent'), new InvokeExpression(
+            $statements= [new ScopeExpression('parent', new InvokeExpression(
               new Literal('__construct'),
               $arguments
             ))];
