@@ -917,17 +917,36 @@ class PHP extends Language {
         $parameters= $this->parameters($parse);
         $parse->expecting(')', 'class');
 
+        // Check for call to parent constructor via `extends B(...)`:
+        $parent= null;
+        $statements= [];
+        if ('extends' === $parse->token->value) {
+          $parse->forward();
+          $parent= $this->type($parse, false);
+
+          if ('(' === $parse->token->value) {
+            $parse->expecting('(', 'base arguments');
+            [$arguments, $callable]= $this->arguments($parse);
+            $parse->expecting(')', 'base arguments');
+            $statements= [new ScopeExpression(new Literal('parent'), new InvokeExpression(
+              new Literal('__construct'),
+              $arguments
+            ))];
+          }
+        }
+
         $constructor= new Method(
           ['public'],
           '__construct',
           new Signature($parameters, null, false, $token->line),
-          new Block([], $token->line),
+          new Block($statements, $token->line),
           null,
           $comment,
           $token->line,
         );
         $class= $this->class($parse, $name, $comment, [], $token->line);
         $class->body= ['__construct()' => $constructor] + $class->body;
+        $class->parent= $parent;
       } else {
         $class= $this->class($parse, $name, $comment, [], $token->line);
       }
