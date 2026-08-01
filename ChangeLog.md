@@ -3,6 +3,11 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 13.0.1 / 2026-08-01
+
+* Added forward-compatible refactoring for xp-framework/core#367
+  (@thekid)
+
 ## 13.0.0 / 2026-07-05
 
 * Merged PR #64: Support property hooks in promoted parameters - @thekid

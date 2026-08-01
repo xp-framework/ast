@@ -161,7 +161,7 @@ class Language {
     foreach ($cl->packageContents($package) as $item) {
       if (0 === substr_compare($item, \xp::CLASS_FILE_EXT, $offset)) {
         $class= $cl->loadClass($package.'.'.substr($item, 0, $offset));
-        if ($class->isSubclassOf(Extension::class)) yield $class->newInstance();
+        if (is_subclass_of($class->literal(), Extension::class)) yield $class->newInstance();
       }
     }
   }
