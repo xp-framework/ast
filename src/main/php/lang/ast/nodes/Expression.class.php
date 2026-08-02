@@ -12,5 +12,5 @@ class Expression extends Node {
   }
 
   /** @return iterable */
-  public function children() { return [$this->inline]; }
+  public function children() { return [&$this->inline]; }
 }

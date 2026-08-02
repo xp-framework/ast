@@ -5,7 +5,7 @@ use text\StringTokenizer;
 use test\Assert;
 
 abstract class ParseTest {
-  const LINE = 1;
+  const LINE= 1;
 
   /**
    * Parse code, returning nodes on at a time

@@ -38,6 +38,14 @@ class NamespacesTest extends ParseTest {
   }
 
   #[Test]
+  public function use_with_alias_in_group() {
+    $this->assertParsed(
+      [new UseStatement(null, ['lang\ast\Type' => null, 'lang\ast\Parse' => 'P'], self::LINE)],
+      'use lang\\ast\\{Type, Parse as P};'
+    );
+  }
+
+  #[Test]
   public function use_with_types_separated_by_commas() {
     $this->assertParsed(
       [new UseStatement(null, ['lang\\ast\\Parse' => null, 'lang\\ast\\Emitter' => null], self::LINE)],

@@ -17,6 +17,7 @@ class ErrorsTest extends ParseTest {
       $parse->tree();
       throw new AssertionFailedError('No exception raised');
     } catch (Errors $expected) {
+      \xp::gc();
       Assert::true(
         false !== strpos($expected->getMessage(), $message.' [line 1 of '.self::class.']'),
         $expected->getMessage()
@@ -29,6 +30,38 @@ class ErrorsTest extends ParseTest {
     $this->assertError(
       'Missing semicolon after assignment statement',
       $this->parse('$a= 1 $b= 1;')
+    );
+  }
+
+  #[Test]
+  public function unclosed_array() {
+    $this->assertError(
+      'Expected ",", have "(end)" in array literal',
+      $this->parse('[1, ')
+    );
+  }
+
+  #[Test]
+  public function unclosed_pair() {
+    $this->assertError(
+      'Expected ",", have "(end)" in array literal',
+      $this->parse('["key" => "value",')
+    );
+  }
+
+  #[Test]
+  public function unclosed_empty_array() {
+    $this->assertError(
+      'Expected ",", have "(end)" in array literal',
+      $this->parse('[')
+    );
+  }
+
+  #[Test]
+  public function unclosed_nested_array() {
+    $this->assertError(
+      'Expected ",", have "(end)" in array literal',
+      $this->parse('[[')
     );
   }
 
@@ -50,6 +83,14 @@ class ErrorsTest extends ParseTest {
 
   #[Test]
   public function unclosed_type() {
+    $this->assertError(
+      'Expected a type, modifier, property, annotation, method or "}", have "(end)"',
+      $this->parse('class T {')
+    );
+  }
+
+  #[Test]
+  public function error_in_type_body() {
     $this->assertError(
       'Expected a type, modifier, property, annotation, method or "}", have "-"',
       $this->parse('class T { - }')

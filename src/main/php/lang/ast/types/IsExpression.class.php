@@ -30,7 +30,7 @@ class IsExpression extends Type {
   public function toString() { return nameof($this).'({'.nameof($this->expression).'})'; }
 
   /** @return string */
-  public function hashCode() { return '{'.spl_object_hash($this->expression); }
+  public function hashCode() { return '{'.Objects::hashOf($this->expression); }
 
   /**
    * Compare

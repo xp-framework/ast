@@ -18,9 +18,9 @@ class SwitchStatement extends Node {
   }
 
   /** @return iterable */
-  public function children() {
+  public function &children() {
     yield $this->expression;
-    foreach ($this->cases as $element) {
+    foreach ($this->cases as &$element) {
       yield $element;
     }
   }

@@ -7,10 +7,10 @@ class FunctionDeclaration extends Annotated {
   public function __construct($name, $signature, $body, $line= -1) {
     $this->name= $name;
     $this->signature= $signature;
-    $this->body= $body;
+    $this->body= is_array($body) ? new Block($body, $line) : $body;
     $this->line= $line;
   }
 
   /** @return iterable */
-  public function children() { return $this->body; }
+  public function children() { return [&$this->body]; }
 }

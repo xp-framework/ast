@@ -3,6 +3,129 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 13.0.1 / 2026-08-01
+
+* Added forward-compatible refactoring for xp-framework/core#367
+  (@thekid)
+
+## 13.0.0 / 2026-07-05
+
+* Merged PR #64: Support property hooks in promoted parameters - @thekid
+
+## 12.2.1 / 2026-06-27
+
+* Added extensive testing for `yield` expressions, fixing additional
+  situations when used in conjunction with prefix operators. Interpret
+  `yield + 1` becomes `yield (+1)` vs. `(yield) + 1`
+  (@thekid)
+* Fixed parsing `$offset[yield] ?? null` - @thekid
+
+## 12.2.0 / 2026-05-23
+
+* Merged PR #61: Refactor function scopes: Capturing and returning.
+  - `fn` captures variables from the surrounding scope
+  - `function` does not
+  - `=> ...` is short for `{ return ... }`
+  (@thekid)
+
+## 12.1.2 / 2026-05-16
+
+* Fixed errors when parsing unclosed types - @thekid
+
+## 12.1.1 / 2026-05-16
+
+* Fixed issue #60: IIFE parse error - @thekid
+
+## 12.1.0 / 2026-04-23
+
+* Merged PR #59: Implement logical AND and OR assignment operators `&&=`
+  and `||=`, see xp-framework/compiler#133
+  (@thekid)
+
+## 12.0.0 / 2026-02-14
+
+* Merged PR #57: Add syntactic support for partial function application
+  (@thekid)
+
+## 11.8.0 / 2025-12-21
+
+* Added PHP 8.6 to the test matrix following the Nov 2025 PHP 8.5 release
+  (@thekid)
+* Made `lang.ast.syntax.PHP::type0()` public. This method parses a single
+  type without support for unions and intersections
+  (@thekid)
+
+## 11.7.1 / 2025-07-06
+
+* Fixed more than one annotation on an element only yielding the last.
+  (@thekid)
+
+## 11.7.0 / 2025-06-22
+
+* Merged PR #56: Implement "clone with" syntax using a `CloneExpression`
+  node, see https://wiki.php.net/rfc/clone_with_v2
+  (@thekid)
+
+## 11.6.0 / 2025-05-28
+
+* Merged PR #52: Add syntactical support for pipelines with `|>` and `?|>`,
+  see https://wiki.php.net/rfc/pipe-operator-v3
+  (@thekid)
+
+## 11.5.0 / 2025-04-05
+
+* Added syntactic support for `final` promoted parameters, see this RFC:
+  https://wiki.php.net/rfc/final_promotion
+  (@thekid)
+
+## 11.4.0 / 2025-01-26
+
+* Merged PR #55: Add suport for heredoc (and its nowdoc variant) - @thekid
+
+## 11.3.1 / 2024-11-02
+
+* Fixed strings enclosed in backticks - @thekid
+
+## 11.3.0 / 2024-08-26
+
+* Merged PR #54: Add syntactic support for asymmetric visibility, see
+  https://wiki.php.net/rfc/asymmetric-visibility-v2, targeted for PHP 8.4
+  (@thekid)
+
+## 11.2.1 / 2024-08-11
+
+* Fixed grouped `use` statements containing aliases not scoped correctly
+  (@thekid)
+
+## 11.2.0 / 2024-08-04
+
+* Merged PR #53: Add syntactic support for `T<string>::class` - @thekid
+
+## 11.1.0 / 2024-06-15
+
+* Merged PR #45: Implement property hooks syntax - @thekid
+
+## 11.0.1 / 2024-03-24
+
+* Fixed `%=` (modulo-assignment) operator - @thekid
+
+## 11.0.0 / 2024-03-23
+
+* Merged PR #51: Logical Operators and Assignment Expressions - @thekid
+* Made this library compatible with XP 12, droppping support for all but
+  the latest PHP 7 version. Minimum PHP version required is now **7.4**!
+  (@thekid)
+
+## 10.3.1 / 2024-01-06
+
+* Added PHP 8.4 to the test matrix - @thekid
+* Fixed parsing captures and return types for closures - @thekid
+
+## 10.3.0 / 2023-10-06
+
+* Merged PR #49: Record starting line numbers for multi-line nodes
+  (@thekid)
+
 ## 10.2.3 / 2023-10-01
 
 * Fixed `Signature::insert()` - @thekid

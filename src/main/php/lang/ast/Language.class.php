@@ -47,21 +47,21 @@ class Language {
   public function assignment($id) {
     $infix= $this->symbol($id, 10);
     $infix->led= function($parse, $token, $left) use($id) {
-      return new Assignment($left, $id, $this->expression($parse, 9), $token->line);
+      return new Assignment($left, $id, $this->expression($parse, 9), $left->line);
     };
   }
 
   public function infix($id, $bp, $led= null) {
     $infix= $this->symbol($id, $bp);
     $infix->led= $led ? $led->bindTo($this, static::class) : function($parse, $token, $left) use($id, $bp) {
-      return new BinaryExpression($left, $id, $this->expression($parse, $bp), $token->line);
+      return new BinaryExpression($left, $id, $this->expression($parse, $bp), $left->line);
     };
   }
 
   public function infixr($id, $bp, $led= null) {
     $infix= $this->symbol($id, $bp);
     $infix->led= $led ? $led->bindTo($this, static::class) : function($parse, $token, $left) use($id, $bp) {
-      return new BinaryExpression($left, $id, $this->expression($parse, $bp - 1), $token->line);
+      return new BinaryExpression($left, $id, $this->expression($parse, $bp - 1), $left->line);
     };
   }
 
@@ -76,7 +76,7 @@ class Language {
   public function suffix($id, $bp, $led= null) {
     $suffix= $this->symbol($id, $bp);
     $suffix->led= $led ? $led->bindTo($this, static::class) : function($parse, $token, $left) use($id) {
-      $expr= new UnaryExpression('suffix', $left, $id, $token->line);
+      $expr= new UnaryExpression('suffix', $left, $id, $left->line);
       return $expr;
     };
   }
@@ -161,7 +161,7 @@ class Language {
     foreach ($cl->packageContents($package) as $item) {
       if (0 === substr_compare($item, \xp::CLASS_FILE_EXT, $offset)) {
         $class= $cl->loadClass($package.'.'.substr($item, 0, $offset));
-        if ($class->isSubclassOf(Extension::class)) yield $class->newInstance();
+        if (is_subclass_of($class->literal(), Extension::class)) yield $class->newInstance();
       }
     }
   }
@@ -173,7 +173,7 @@ class Language {
    * @param  ?lang.ast.Scope $scope
    * @return lang.ast.Parse
    */
-  public function parse($tokens, Scope $scope= null) {
+  public function parse($tokens, ?Scope $scope= null) {
     return new Parse($this, $tokens, $scope);
   }
 

@@ -18,7 +18,7 @@ class Parse {
    * @param  lang.ast.Tokens $tokens
    * @param  ?lang.ast.Scope $scope
    */
-  public function __construct($language, $tokens, Scope $scope= null) {
+  public function __construct($language, $tokens, ?Scope $scope= null) {
     $this->language= $language;
     $this->tokens= $tokens->iterator($language);
     $this->file= $tokens->source;

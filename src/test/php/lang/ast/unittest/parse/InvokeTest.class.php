@@ -10,6 +10,7 @@ use lang\ast\nodes\{
   UnpackExpression,
   ScopeExpression,
   Literal,
+  Placeholder,
   Variable
 };
 use lang\ast\types\{IsValue, IsLiteral, IsGeneric, IsNullable};
@@ -87,7 +88,11 @@ class InvokeTest extends ParseTest {
   #[Test]
   public function first_class_callable_function() {
     $this->assertParsed(
-      [new CallableExpression(new Literal('strlen', self::LINE), self::LINE)],
+      [new CallableExpression(
+        new Literal('strlen', self::LINE),
+        [Placeholder::$VARIADIC],
+        self::LINE
+      )],
       'strlen(...);'
     );
   }
@@ -95,7 +100,11 @@ class InvokeTest extends ParseTest {
   #[Test]
   public function first_class_callable_static() {
     $this->assertParsed(
-      [new CallableExpression(new ScopeExpression('self', new Literal('length', self::LINE), self::LINE), self::LINE)],
+      [new CallableExpression(
+        new ScopeExpression('self', new Literal('length', self::LINE), self::LINE),
+        [Placeholder::$VARIADIC],
+        self::LINE
+      )],
       'self::length(...);'
     );
   }
@@ -103,8 +112,36 @@ class InvokeTest extends ParseTest {
   #[Test]
   public function first_class_callable_object_creation() {
     $this->assertParsed(
-      [new CallableNewExpression(new NewExpression(new IsValue('\\T'), null, self::LINE), self::LINE)],
+      [new CallableNewExpression(
+        new NewExpression(new IsValue('\\T'), null, self::LINE),
+        [Placeholder::$VARIADIC],
+        self::LINE
+      )],
       'new T(...);'
+    );
+  }
+
+  #[Test]
+  public function partial_function_application() {
+    $this->assertParsed(
+      [new CallableExpression(
+        new Literal('str_replace', self::LINE),
+        [new Literal('"test"', self::LINE), new Literal('"ok"', self::LINE), Placeholder::$ARGUMENT],
+        self::LINE
+      )],
+      'str_replace("test", "ok", ?);'
+    );
+  }
+
+  #[Test]
+  public function partial_function_application_named() {
+    $this->assertParsed(
+      [new CallableExpression(
+        new Literal('str_replace', self::LINE),
+        [new Literal('"test"', self::LINE), new Literal('"ok"', self::LINE), 'subject' => Placeholder::$ARGUMENT],
+        self::LINE
+      )],
+      'str_replace("test", "ok", subject: ?);'
     );
   }
 
@@ -158,5 +195,31 @@ class InvokeTest extends ParseTest {
       [new ScopeExpression('self', $invoke, self::LINE)],
       'self::test<?string>();'
     );
+  }
+
+  #[Test]
+  public function chained_invocation_spanning_multiple_lines() {
+    $expr= new InvokeExpression(
+      new InstanceExpression(
+        new InvokeExpression(
+          new InstanceExpression(
+            new Variable('this', self::LINE),
+            new Literal('test', self::LINE + 1),
+            self::LINE
+          ),
+          [],
+          self::LINE
+        ),
+        new Literal('chained', self::LINE + 2),
+        self::LINE
+      ),
+      [],
+      self::LINE
+    );
+
+    $this->assertParsed([$expr], '$this
+      ->test()
+      ->chained()
+    ;');
   }
 }

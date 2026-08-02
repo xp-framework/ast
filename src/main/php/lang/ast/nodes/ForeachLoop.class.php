@@ -15,13 +15,13 @@ class ForeachLoop extends Node {
   }
 
   /** @return iterable */
-  public function children() {
+  public function &children() {
     yield $this->expression;
     if ($this->key) {
       yield $this->key;
     }
     yield $this->value;
-    foreach ($this->body as $element) {
+    foreach ($this->body as &$element) {
       yield $element;
     }
   }

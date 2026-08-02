@@ -14,7 +14,7 @@ class TernaryExpression extends Node {
   }
 
   /** @return iterable */
-  public function children() {
+  public function &children() {
     yield $this->condition;
     if ($this->expression) {
       yield $this->expression;

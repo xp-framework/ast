@@ -43,6 +43,11 @@ class TokensTest {
     (new Tokens($input))->iterator($this->language)->current();
   }
 
+  #[Test, Expect(class: FormatException::class, message: '/Unclosed heredoc literal/'), Values(['<<<EOD', "<<<EOD\n", "<<<EOD\nLine 1"])]
+  public function unclosed_heredoc_literals($input) {
+    (new Tokens($input))->iterator($this->language)->current();
+  }
+
   #[Test, Values(['0', '1', '1_000_000_000'])]
   public function integer_literal($input) {
     $this->assertTokens([['integer' => str_replace('_', '', $input)]], new Tokens($input));

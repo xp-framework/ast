@@ -14,6 +14,6 @@ class OffsetExpression extends Node {
 
   /** @return iterable */
   public function children() {
-    return $this->offset ? [$this->expression, $this->offset] : [$this->expression];
+    return $this->offset ? [&$this->expression, &$this->offset] : [&$this->expression];
   }
 }

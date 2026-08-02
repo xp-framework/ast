@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{Annotations, ClassDeclaration, Comment, Constant, Literal, Method, Property, Signature};
+use lang\ast\nodes\{Annotations, Block, ClassDeclaration, Comment, Constant, Literal, Method, Property, Signature};
 use lang\ast\types\IsValue;
 use test\{Assert, Test};
 
@@ -146,7 +146,14 @@ class CommentTest extends ParseTest {
   #[Test]
   public function apidoc_comment_attached_to_next_method() {
     $class= new ClassDeclaration([], new IsValue('\\T'), null, [], [], null, null, 2);
-    $class->declare(new Method(['public'], '__construct', new Signature([], null, false, 4), [], null, new Comment('/** @api */', 3), 4));
+    $class->declare(new Method(
+      ['public'],
+      '__construct',
+      new Signature([], null, false, 4),
+      new Block([], 4),
+      null,
+      new Comment('/** @api */', 3), 4)
+    );
 
     $this->assertParsed([$class], '
       class T {

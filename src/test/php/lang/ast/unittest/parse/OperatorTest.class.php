@@ -6,6 +6,7 @@ use lang\ast\nodes\{
   BinaryExpression,
   Braced,
   ClassDeclaration,
+  CloneExpression,
   InstanceExpression,
   InstanceOfExpression,
   InvokeExpression,
@@ -18,7 +19,7 @@ use lang\ast\nodes\{
   UnaryExpression,
   Variable
 };
-use lang\ast\types\{IsExpression, IsValue};
+use lang\ast\types\{IsExpression, IsGeneric, IsValue};
 use test\{Assert, Test, Values};
 
 class OperatorTest extends ParseTest {
@@ -63,12 +64,19 @@ class OperatorTest extends ParseTest {
     );
   }
 
-  #[Test, Values(['=', '+=', '-=', '*=', '/=', '.=', '**=', '&=', '|=', '^=', '>>=', '<<='])]
+  #[Test, Values(['=', '+=', '-=', '*=', '/=', '%=', '.=', '**=', '&=', '|=', '^=', '>>=', '<<=', '??='])]
   public function assignment($operator) {
     $this->assertParsed(
       [new Assignment(new Variable('a', self::LINE), $operator, new Variable('b', self::LINE), self::LINE)],
       '$a '.$operator.' $b;'
     );
+  }
+
+  #[Test, Values(['&&=', '||='])]
+  public function logical_assignment($operator) {
+    $assignment= new Assignment(new Variable('a', self::LINE), $operator, new Variable('b', self::LINE), self::LINE);
+    $assignment->kind= 'logicalassignment';
+    $this->assertParsed([$assignment], '$a '.$operator.' $b;');
   }
 
   #[Test]
@@ -115,8 +123,17 @@ class OperatorTest extends ParseTest {
   #[Test]
   public function clone_expression() {
     $this->assertParsed(
-      [new UnaryExpression('prefix', new Variable('a', self::LINE), 'clone', self::LINE)],
+      [new CloneExpression([new Variable('a', self::LINE)], self::LINE)],
       'clone $a;'
+    );
+  }
+
+  #[Test]
+  public function clone_with() {
+    $with= [[new Literal('"id"', self::LINE), new Literal('6100', self::LINE)]];
+    $this->assertParsed(
+      [new CloneExpression([new Variable('a', self::LINE), new ArrayLiteral($with, self::LINE)], self::LINE)],
+      'clone($a, ["id" => 6100]);'
     );
   }
 
@@ -283,6 +300,18 @@ class OperatorTest extends ParseTest {
     );
   }
 
+  #[Test]
+  public function instanceof_generic() {
+    $this->assertParsed(
+      [new InstanceOfExpression(
+        new Variable('this', self::LINE),
+        new IsGeneric(new IsValue('self'), [new IsValue('T')]),
+        self::LINE
+      )],
+      '$this instanceof self<T>;'
+    );
+  }
+
   #[Test, Values(['+', '-', '~'])]
   public function precedence_of_prefix($operator) {
     $this->assertParsed(
@@ -368,6 +397,19 @@ class OperatorTest extends ParseTest {
         self::LINE
       )],
       'test($this->test < THRESHOLD, THRESHOLD > 1);'
+    );
+  }
+
+  #[Test]
+  public function const_less_than_const() {
+    $this->assertParsed(
+      [new BinaryExpression(
+        new Literal('a', self::LINE),
+        '<',
+        new Literal('b', self::LINE),
+        self::LINE
+      )],
+      'a < b;'
     );
   }
 }

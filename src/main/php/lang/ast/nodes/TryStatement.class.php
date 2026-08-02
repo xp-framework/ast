@@ -14,11 +14,11 @@ class TryStatement extends Node {
   }
 
   /** @return iterable */
-  public function children() {
-    foreach ($this->body as $element) {
+  public function &children() {
+    foreach ($this->body as &$element) {
       yield $element;
     }
-    foreach ($this->catches as $catch) {
+    foreach ($this->catches as &$catch) {
       yield $catch;
     }
     if ($this->finally) {

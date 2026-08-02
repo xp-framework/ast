@@ -14,5 +14,5 @@ class Assignment extends Node {
   }
 
   /** @return iterable */
-  public function children() { return [$this->variable, $this->expression]; }
+  public function children() { return [&$this->variable, &$this->expression]; }
 }

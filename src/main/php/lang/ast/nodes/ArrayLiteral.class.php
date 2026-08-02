@@ -17,8 +17,8 @@ class ArrayLiteral extends Node {
   }
 
   /** @return iterable */
-  public function children() {
-    foreach ($this->values as $pair) {
+  public function &children() {
+    foreach ($this->values as &$pair) {
       if (null !== $pair[0]) yield $pair[0];
       yield $pair[1];
     }

@@ -110,6 +110,11 @@ class AttributesTest extends ParseTest {
     '));
   }
 
+  #[Test, Values(['#[Runtime, Service]', '#[Runtime] #[Service]'])]
+  public function multiple_annotations($declaration) {
+    $this->assertAnnotated(['Runtime' => [], 'Service' => []], $this->type($declaration.' class T { }'));
+  }
+
   #[Test]
   public function after_oneline_comment() {
     $this->assertAnnotated(['Service' => []], $this->type('

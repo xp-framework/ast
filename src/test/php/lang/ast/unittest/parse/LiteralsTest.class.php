@@ -50,6 +50,11 @@ class LiteralsTest extends ParseTest {
     $this->assertParsed([new Literal('"Test"', self::LINE)], '"Test";');
   }
 
+  #[Test]
+  public function exec_statement() {
+    $this->assertParsed([new Literal('`ls -al`', self::LINE)], '`ls -al`;');
+  }
+
   #[Test, Values(['[];', ['array();']])]
   public function empty_array($declaration) {
     $this->assertParsed([new ArrayLiteral([], self::LINE)], $declaration);
@@ -80,5 +85,57 @@ class LiteralsTest extends ParseTest {
   public function dangling_comma_in_key_value_map($declaration) {
     $pair= [new Literal('"key"', self::LINE), new Literal('"value"', self::LINE)];
     $this->assertParsed([new ArrayLiteral([$pair], self::LINE)], $declaration);
+  }
+
+  #[Test, Values(['EOD', '"EOD"', "'EOD'"])]
+  public function heredoc($label) {
+    $nowdoc= (
+      "<<<{$label}\n".
+      "Line 1\n".
+      "Line 2\n".
+      "\n".
+      "Line 4\n".
+      "EOD"
+    );
+    $this->assertParsed([new Literal($nowdoc, self::LINE)], $nowdoc.';');
+  }
+
+  #[Test]
+  public function heredoc_indentation() {
+    $nowdoc= (
+      "<<<EOD\n".
+      "  Line 1\n".
+      "  Line 2\n".
+      "\n".
+      "  Line 4\n".
+      "  EOD"
+    );
+    $this->assertParsed([new Literal($nowdoc, self::LINE)], $nowdoc.';');
+  }
+
+  #[Test]
+  public function line_number_after_multiline_string() {
+    $string= (
+      "'<html>\n".
+      "  ...\n".
+      "</html>'"
+    );
+    $this->assertParsed(
+      [new Literal($string, self::LINE), new Literal('null', self::LINE + 3)],
+      $string.";\nnull;"
+    );
+  }
+
+  #[Test]
+  public function line_number_after_heredoc() {
+    $nowdoc= (
+      "<<<EOD\n".
+      "  Line 1\n".
+      "  EOD"
+    );
+    $this->assertParsed(
+      [new Literal($nowdoc, self::LINE), new Literal('null', self::LINE + 3)],
+      $nowdoc.";\nnull;"
+    );
   }
 }

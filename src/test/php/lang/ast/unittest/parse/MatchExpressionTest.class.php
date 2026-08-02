@@ -36,11 +36,24 @@ class MatchExpressionTest extends ParseTest {
   }
 
   #[Test]
-  public function match_with_block() {
+  public function match_with_default_block() {
     $default= new Block([new ReturnStatement(new Literal('false', self::LINE), self::LINE)], self::LINE);
     $this->assertParsed(
       [new MatchExpression(new Variable('arg', self::LINE), [], $default, self::LINE)],
-      'match ($arg) { default => { return false; } };'
+      'match ($arg) { default { return false; } };'
+    );
+  }
+
+  #[Test]
+  public function match_with_case_block() {
+    $cases= [new MatchCondition(
+      [new Literal('0', self::LINE)],
+      new Block([new ReturnStatement(new Literal('false', self::LINE), self::LINE)], self::LINE),
+      self::LINE
+    )];
+    $this->assertParsed(
+      [new MatchExpression(new Variable('arg', self::LINE), $cases, null, self::LINE)],
+      'match ($arg) { 0 { return false; } };'
     );
   }
 

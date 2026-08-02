@@ -4,6 +4,7 @@ use lang\ast\nodes\{
   ArrayLiteral,
   Annotation,
   Annotations,
+  Assignment,
   Block,
   Braced,
   BreakStatement,
@@ -13,6 +14,7 @@ use lang\ast\nodes\{
   CastExpression,
   CatchStatement,
   ClassDeclaration,
+  CloneExpression,
   ClosureExpression,
   Comment,
   Constant,
@@ -28,6 +30,7 @@ use lang\ast\nodes\{
   FunctionDeclaration,
   Generic,
   GotoStatement,
+  Hook,
   IfStatement,
   InstanceExpression,
   InstanceOfExpression,
@@ -43,6 +46,8 @@ use lang\ast\nodes\{
   NullSafeInstanceExpression,
   OffsetExpression,
   Parameter,
+  PipeExpression,
+  Placeholder,
   Property,
   ReturnStatement,
   ScopeExpression,
@@ -129,18 +134,18 @@ class PHP extends Language {
     $this->infix('instanceof', 110, function($parse, $token, $left) {
       $type= $this->expression($parse, 110);
       if ($type instanceof Literal) {
-        return new InstanceOfExpression($left, $parse->scope->resolve($type->expression), $token->line);
+        return new InstanceOfExpression($left, $parse->scope->resolve($type->expression), $left->line);
       } else {
-        return new InstanceOfExpression($left, $type, $token->line);
+        return new InstanceOfExpression($left, $type, $left->line);
       }
     });
 
     $this->infix('->', 100, function($parse, $token, $left) {
-      return new InstanceExpression($left, $this->member($parse), $token->line);
+      return new InstanceExpression($left, $this->member($parse), $left->line);
     });
 
     $this->infix('?->', 100, function($parse, $node, $left) {
-      $value= new InstanceExpression($left, $this->member($parse), $node->line);
+      $value= new InstanceExpression($left, $this->member($parse), $left->line);
       $value->kind= 'nullsafeinstance';
       return $value;
     });
@@ -149,50 +154,43 @@ class PHP extends Language {
       $scope= $left instanceof Literal ? $parse->scope->resolve($left->expression) : $left;
       $expr= $this->member($parse);
 
+      // Wrap self::member() into an invoke expression
       if ('(' === $parse->token->value) {
         $parse->expecting('(', 'invoke expression');
-
-        // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
-        // callable reference vs. `func(...$it)` - a call with an unpacked argument
-        if ('...' === $parse->token->value) {
-          $dots= $parse->token;
-          $parse->forward();
-          if (')' === $parse->token->value) {
-            $parse->forward();
-            return new CallableExpression(new ScopeExpression($scope, $expr, $token->line), $token->line);
-          }
-
-          array_unshift($parse->queue, $parse->token);
-          $parse->token= $dots;
-        }
-
-        $arguments= $this->arguments($parse);
+        [$arguments, $callable]= $this->arguments($parse);
         $parse->expecting(')', 'invoke expression');
+
+        if ($callable) return new CallableExpression(
+          new ScopeExpression($scope, $expr, $token->line),
+          $arguments,
+          $token->line
+        );
+
         $expr= new InvokeExpression($expr, $arguments, $token->line);
       }
 
       return new ScopeExpression($scope, $expr, $token->line);
     });
 
+    $this->infix('|>', 40, function($parse, $token, $left) {
+      return new PipeExpression($left, $this->expression($parse, 40), $left->line);
+    });
+
+    $this->infix('?|>', 40, function($parse, $node, $left) {
+      $value= new PipeExpression($left, $this->expression($parse, 40), $left->line);
+      $value->kind= 'nullsafepipe';
+      return $value;
+    });
+
     $this->infix('(', 100, function($parse, $token, $left) {
-
-      // Resolve ambiguity by looking ahead: `func(...)` which is a first-class
-      // callable reference vs. `func(...$it)` - a call with an unpacked argument
-      if ('...' === $parse->token->value) {
-        $dots= $parse->token;
-        $parse->forward();
-        if (')' === $parse->token->value) {
-          $parse->forward();
-          return new CallableExpression($left, $token->line);
-        }
-
-        array_unshift($parse->queue, $parse->token);
-        $parse->token= $dots;
-      }
-
-      $arguments= $this->arguments($parse);
+      [$arguments, $callable]= $this->arguments($parse);
       $parse->expecting(')', 'invoke expression');
-      return new InvokeExpression($left, $arguments, $token->line);
+
+      if ($callable) {
+        return new CallableExpression($left, $arguments, $token->line);
+      } else {
+        return new InvokeExpression($left, $arguments, $left->line);
+      }
     });
 
     $this->infix('[', 100, function($parse, $token, $left) {
@@ -204,14 +202,14 @@ class PHP extends Language {
         $parse->expecting(']', 'offset access');
       }
 
-      return new OffsetExpression($left, $expr, $token->line);
+      return new OffsetExpression($left, $expr, $left->line);
     });
 
-    $this->infix('?', 80, function($parse, $token, $left) {
+    $this->infix('?', 30, function($parse, $token, $left) {
       $when= $this->expression($parse, 0);
       $parse->expecting(':', 'ternary');
       $else= $this->expression($parse, 0);
-      return new TernaryExpression($left, $when, $else, $token->line);
+      return new TernaryExpression($left, $when, $else, $left->line);
     });
 
     $this->prefix('@', 90);
@@ -222,7 +220,6 @@ class PHP extends Language {
     $this->prefix('-', 90);
     $this->prefix('++', 90);
     $this->prefix('--', 90);
-    $this->prefix('clone', 90);
 
     $this->assignment('=');
     $this->assignment('&=');
@@ -232,16 +229,27 @@ class PHP extends Language {
     $this->assignment('-=');
     $this->assignment('*=');
     $this->assignment('/=');
+    $this->assignment('%=');
     $this->assignment('.=');
     $this->assignment('**=');
     $this->assignment('>>=');
     $this->assignment('<<=');
     $this->assignment('??=');
 
+    // Logical AND and OR, not supported in PHP
+    foreach (['&&=', '||='] as $op) {
+      $this->symbol($op, 10)->led= function($parse, $token, $left) use($op) {
+        $assign= new Assignment($left, $op, $this->expression($parse, 9), $left->line);
+        $assign->kind= 'logicalassignment';
+        return $assign;
+      };
+    }
+
     // This is ambiguous:
     //
-    // - An expression surrounded by parentheses `($a ?? $b)->invoke()`;
-    // - A cast `(int)$a` or `(int)($a / 2)`.
+    // - An expression surrounded by parentheses `($a ?? $b)->invoke()`
+    // - An invocation of a braced expression like `($expr)()`
+    // - A cast `(int)$a` or `(int)($a / 2)`
     //
     // Resolve by looking ahead after the closing ")"
     $this->prefix('(', 0, function($parse, $token) {
@@ -261,7 +269,7 @@ class PHP extends Language {
         $parse->forward();
         $skipped[]= $parse->token;
       }
-      $parse->queue= $parse->queue ? array_merge($skipped, $parse->queue) : $skipped;
+      $parse->queue= $parse->queue ? [...$skipped, ...$parse->queue] : $skipped;
 
       if ($cast && ('operator' !== $parse->token->kind || '(' === $parse->token->value || '[' === $parse->token->value)) {
         $parse->forward();
@@ -280,10 +288,24 @@ class PHP extends Language {
       }
     });
 
-    $this->prefix('{', 0, function($parse, $token) {
-      $statements= $this->statements($parse);
-      $parse->expecting('}', 'block');
-      return new Block($statements, $token->line);
+    $this->prefix('clone', 90, function($parse, $token) {
+
+      // clone $x vs. clone($x) or clone($x, ["id" => 6100])
+      if ('(' === $parse->token->value) {
+        $parse->forward();
+        [$arguments, $callable]= $this->arguments($parse);
+        $parse->expecting(')', 'clone arguments');
+
+        if ($callable) return new CallableExpression(
+          new Literal('clone', $token->line),
+          $arguments,
+          $token->line
+        );
+      } else {
+        $arguments= [$this->expression($parse, 90)];
+      }
+
+      return new CloneExpression($arguments, $token->line);
     });
 
     $this->prefix('[', 0, function($parse, $token) {
@@ -322,32 +344,22 @@ class PHP extends Language {
       }
 
       $parse->expecting('(', 'new arguments');
+      [$arguments, $callable]= $this->arguments($parse);
+      $parse->expecting(')', 'new arguments');
 
       // Resolve ambiguity by looking ahead: `new T(...)` which is a first-class
       // callable reference vs. `new T(...$it)` - a call with an unpacked argument
-      if ('...' === $parse->token->value) {
-        $dots= $parse->token;
-        $parse->forward();
-        if (')' === $parse->token->value) {
-          $parse->forward();
-
-          if (null === $type) {
-            $class= $this->class($parse, null);
-            $class->annotations= $annotations;
-            $new= new NewClassExpression($class, null, $token->line);
-          } else {
-            $new= new NewExpression($type, null, $token->line);
-          }
-
-          return new CallableNewExpression($new, $token->line);
+      if ($callable) {
+        if (null === $type) {
+          $class= $this->class($parse, null);
+          $class->annotations= $annotations;
+          $new= new NewClassExpression($class, null, $token->line);
+        } else {
+          $new= new NewExpression($type, null, $token->line);
         }
 
-        array_unshift($parse->queue, $parse->token);
-        $parse->token= $dots;
+        return new CallableNewExpression($new, $arguments, $token->line);
       }
-
-      $arguments= $this->arguments($parse);
-      $parse->expecting(')', 'new arguments');
 
       if (null === $type) {
         $class= $this->class($parse, null);
@@ -359,21 +371,21 @@ class PHP extends Language {
     });
 
     $this->prefix('yield', 0, function($parse, $token) {
+      static $start= ['(' => 1, '[' => 1, '@' => 1, '&' => 1, '!' => 1, '~' => 1, '+' => 1, '-' => 1, '++' => 1, '--' => 1];
+
       if ('from' === $parse->token->value) {
         $parse->forward();
         return new YieldFromExpression($this->expression($parse, 0), $token->line);
+      } else if ('operator' === $parse->token->kind && !isset($start[$parse->token->value])) {
+        return new YieldExpression(null, null, $token->line);
+      }
+
+      $expr= $this->expression($parse, 0);
+      if ('=>' === $parse->token->value) {
+        $parse->forward();
+        return new YieldExpression($expr, $this->expression($parse, 0), $token->line);
       } else {
-        $expr= $this->expression($parse, 0);
-        if ('operator' === $expr->kind) {
-          array_unshift($parse->queue, $parse->token);
-          $parse->token= $expr;
-          return new YieldExpression(null, null, $token->line);
-        } else if ('=>' === $parse->token->value) {
-          $parse->forward();
-          return new YieldExpression($expr, $this->expression($parse, 0), $token->line);
-        } else {
-          return new YieldExpression(null, $expr, $token->line);
-        }
+        return new YieldExpression(null, $expr, $token->line);
       }
     });
 
@@ -383,9 +395,8 @@ class PHP extends Language {
 
     $this->prefix('fn', 0, function($parse, $token) {
       $signature= $this->signature($parse);
-      $parse->expecting('=>', 'fn');
-
-      return new LambdaExpression($signature, $this->expression($parse, 0), false, $token->line);
+      $scope= $this->scope($parse, 'fn');
+      return new LambdaExpression($signature, $scope, false, $token->line);
     });
 
     $this->prefix('function', 0, function($parse, $token) {
@@ -418,8 +429,8 @@ class PHP extends Language {
       } else if ('fn' === $parse->token->value) {
         $parse->forward();
         $signature= $this->signature($parse);
-        $parse->expecting('=>', 'fn');
-        return new LambdaExpression($signature, $this->expression($parse, 0), true, $token->line);
+        $scope= $this->scope($parse, 'fn');
+        return new LambdaExpression($signature, $scope, true, $token->line);
       } else {
         return new Literal($token->value, $token->line);
       }
@@ -446,15 +457,14 @@ class PHP extends Language {
       while ('}' !== $parse->token->value) {
         if ('default' === $parse->token->value) {
           $parse->forward();
-          $parse->expecting('=>', 'match');
-          $default= $this->expression($parse, 0);
+          $default= $this->scope($parse, 'match');
         } else {
           $match= [];
           do {
             $match[]= $this->expression($parse, 0);
           } while (',' === $parse->token->value && $parse->forward() | true);
-          $parse->expecting('=>', 'match');
-          $cases[]= new MatchCondition($match, $this->expression($parse, 0), $parse->token->line);
+
+          $cases[]= new MatchCondition($match, $this->scope($parse, 'match'), $parse->token->line);
         }
 
         if (',' === $parse->token->value) {
@@ -479,9 +489,49 @@ class PHP extends Language {
     });
 
     $this->prefix('(name)', 0, function($parse, $token) {
+      static $types= ['(' => 1, ')' => 1, ',' => 1, '?' => 1, ':' => 1, '|' => 1, '&' => 1];
+
+      // Disambiguate `Class<T>` from `const < expr` by looking ahead
+      if ('<' === $parse->token->value) {
+        $generic= true;
+        $level= 1;
+        $skipped= [$parse->token];
+        while ($level > 0) {
+          $parse->forward();
+          $skipped[]= $parse->token;
+
+          if ('<' === $parse->token->symbol->id) {
+            $level++;
+          } else if ('<?' === $parse->token->symbol->id) {
+            $level++;
+          } else if ('>' === $parse->token->symbol->id) {
+            $level--;
+          } else if ('>>' === $parse->token->symbol->id) {
+            $level-= 2;
+          } else if ('name' !== $parse->token->kind && !isset($types[$parse->token->value])) {
+            $generic= false;
+            break;
+          }
+        }
+
+        $parse->queue= $parse->queue ? [...$skipped, ...$parse->queue] : $skipped;
+        if ($generic) {
+          $parse->token= $token;
+          return $this->type($parse, false);
+        }
+
+        $parse->forward();
+      }
+
       return new Literal($token->value, $token->line);
     });
 
+    // Blocks and standalone semicolons
+    $this->stmt('{', function($parse, $token) {
+      $statements= $this->statements($parse);
+      $parse->expecting('}', 'block');
+      return new Block($statements, $token->line);
+    });
     $this->stmt(';', function($parse, $token) { return null; });
 
     // Unexpected standalone symbols, warn but continue
@@ -503,7 +553,7 @@ class PHP extends Language {
       if (':' === $parse->token->value) {
         $node= new Label($token->value, $token->line);
       } else {
-        $parse->queue[]= $parse->token;
+        array_unshift($parse->queue, $parse->token);
         $parse->token= $token;
         $node= $this->expression($parse, 0);
       }
@@ -582,7 +632,7 @@ class PHP extends Language {
             if ('as' === $parse->token->value) {
               $parse->forward();
               $names[$class]= $parse->token->value;
-              $parse->scope->import($parse->token->value);
+              $parse->scope->import($class, $parse->token->value);
               $parse->forward();
             } else {
               $names[$class]= null;
@@ -655,7 +705,7 @@ class PHP extends Language {
               continue;
             }
 
-            $parse->queue[]= $parse->token;
+            array_unshift($parse->queue, $parse->token);
             $parse->token= $const;
           }
 
@@ -835,14 +885,10 @@ class PHP extends Language {
 
       // Function expression used as statement (e.g. for pure side-effects!)
       if ('(' === $parse->token->value) {
-        $parse->queue= [$parse->token];
+        array_unshift($parse->queue, $parse->token);
         $parse->token= new Token($this->symbol('function'));
         $parse->token->line= $token->line;
-        $expr= $this->expression($parse, 0);
-
-        $parse->queue= [$parse->token];
-        $parse->token= new Token($this->symbol(';'));
-        return $expr;
+        return $this->expression($parse, 0);
       }
 
       if ('&' === $parse->token->value) {
@@ -856,11 +902,9 @@ class PHP extends Language {
       $parse->forward();
 
       $signature= $this->signature($parse, $byref);
-      $parse->expecting('{', 'function');
-      $statements= $this->statements($parse);
-      $parse->expecting('}', 'function');
+      $scope= $this->scope($parse, 'function');
 
-      return new FunctionDeclaration($name, $signature, $statements, $token->line);
+      return new FunctionDeclaration($name, $signature, $scope, $token->line);
     });
 
     $this->stmt('class', function($parse, $token) {
@@ -1030,8 +1074,8 @@ class PHP extends Language {
         if ('=' === $parse->token->value) {
           $name= $first->value;
         } else {
-          $parse->queue[]= $first;
-          $parse->queue[]= $parse->token;
+          array_unshift($parse->queue, $parse->token);
+          array_unshift($parse->queue, $first);
           $parse->token= $first;
 
           $type= $this->type($parse, false);
@@ -1087,15 +1131,20 @@ class PHP extends Language {
       $parse->forward();
       $signature= $this->signature($parse, $byref);
 
-      if ('{' === $parse->token->value) {          // Regular body
+      // Cannot use scope() here as we require a semicolon after single-expressions
+      if ('{' === $parse->token->value) {
         $parse->forward();
-        $statements= $this->statements($parse);
+        $scope= new Block($this->statements($parse), $parse->token->line);
         $parse->expecting('}', 'method declaration');
-      } else if (';' === $parse->token->value) {   // Abstract or interface method
-        $statements= null;
+      } else if ('=>' === $parse->token->value) {
+        $parse->forward();
+        $scope= $this->expression($parse, 0);
+        $parse->expecting(';', 'method declaration');
+      } else if (';' === $parse->token->value) {
+        $scope= null;
         $parse->expecting(';', 'method declaration');
       } else {
-        $parse->expecting('{ or ;', 'method declaration');
+        $parse->expecting('{, => or ;', 'method declaration');
         return;
       }
 
@@ -1103,7 +1152,7 @@ class PHP extends Language {
         $modifiers,
         $name,
         $signature,
-        $statements,
+        $scope,
         $meta[DETAIL_ANNOTATIONS] ?? null,
         $comment,
         $line
@@ -1274,7 +1323,7 @@ class PHP extends Language {
     return $components;
   }
 
-  private function type0($parse, $optional) {
+  public function type0($parse, $optional= false) {
     static $literal= [
       'string'   => true,
       'int'      => true,
@@ -1333,12 +1382,83 @@ class PHP extends Language {
     return isset($literal[$type]) ? new IsLiteral($type) : new IsValue($type);
   }
 
+  /** Parses property hooks block */
+  private function hooks($parse) {
+    $hooks= [];
+    while ('}' !== $parse->token->value) {
+      if ('final' === $parse->token->value) {
+        $modifiers= ['final'];
+        $parse->forward();
+      } else {
+        $modifiers= [];
+      }
+
+      if ('&' === $parse->token->value) {
+        $byref= true;
+        $parse->forward();
+      } else {
+        $byref= false;
+      }
+
+      $hook= $parse->token->value;
+      $parse->forward();
+
+      if ('(' === $parse->token->value) {
+        $parse->forward();
+
+        if ('#[' === $parse->token->value) {
+          $parse->forward();
+          $annotations= $this->annotations($parse, 'parameter annotations');
+        } else {
+          $annotations= null;
+        }
+
+        $line= $parse->token->line;
+        $type= $this->type($parse);
+
+        $parse->forward();
+        $param= $parse->token->value;
+        $parse->forward();
+
+        if ('=' === $parse->token->value) {
+          $parse->forward();
+          $default= $this->expression($parse, 0);
+        } else {
+          $default= null;
+        }
+
+        $parameter= new Parameter($param, $type, $default, false, false, null, $annotations, null, $line);
+        $parse->expecting(')', 'property hook parameters');
+      } else {
+        $parameter= null;
+      }
+
+      $line= $parse->token->line;
+      if ('=>' === $parse->token->value) {
+        $parse->forward();
+        $expr= $this->expression($parse, 0);
+        $parse->expecting(';', 'property hook');
+      } else if ('{' === $parse->token->value) {
+        $parse->forward();
+        $expr= new Block($this->statements($parse), $line);
+        $parse->expecting('}', 'property hook');
+      } else {
+        $parse->expecting(';', 'property hook');
+        $expr= null;
+      }
+
+      $hooks[$hook]= new Hook($modifiers, $hook, $expr, $byref, $parameter, $line);
+    }
+
+    return $hooks;
+  }
+
   private function properties($parse, &$body, $meta, $modifiers, $type) {
     $comment= $parse->comment;
     $parse->comment= null;
     $annotations= $meta[DETAIL_ANNOTATIONS] ?? null;
 
-    while (';' !== $parse->token->value) {
+    do {
       $line= $parse->token->line;
 
       // Untyped `$a` vs. typed `int $a`
@@ -1360,24 +1480,44 @@ class PHP extends Language {
       } else {
         $expr= null;
       }
+
       $body[$lookup]= new Property($modifiers, $name, $type, $expr, $annotations, $comment, $line);
 
-      if (',' === $parse->token->value) $parse->forward();
-    }
-    $parse->expecting(';', 'field declaration');
+      if (';' === $parse->token->value) {
+        $parse->forward();
+        return;
+      } else if (',' === $parse->token->value) {
+        $parse->forward();
+        continue;
+      } else if ('=>' === $parse->token->value) {
+        $parse->forward();
+        $expr= $this->expression($parse, 0);
+        $parse->expecting(';', 'property hook');
+        $body[$lookup]->hooks= ['get' => new Hook([], 'get', $expr, false, null, $line)];
+        return;
+      } else if ('{' === $parse->token->value) {
+        $parse->forward();
+        $body[$lookup]->hooks= $this->hooks($parse);
+        $parse->expecting('}', 'property hook');
+        return;
+      } else {
+        $parse->expecting(';, , or {', 'property');
+      }
+    } while (null !== $parse->token->value);
   }
 
   /** Parses PHP 8 attributes (#[Test]) */
   private function annotations($parse, $context) {
     $annotations= new Annotations([], $parse->token->line);
 
-    while ('name' === $parse->token->kind) {
+    next: while ('name' === $parse->token->kind) {
       $name= ltrim($parse->scope->resolve($parse->token->value), '\\');
       $parse->forward();
 
       if ('(' === $parse->token->value) {
         $parse->expecting('(', $context);
-        $annotations->add(new Annotation($name, $this->arguments($parse), $parse->token->line));
+        [$arguments, $callable]= $this->arguments($parse);
+        $annotations->add(new Annotation($name, $arguments, $parse->token->line));
         $parse->expecting(')', $context);
       } else {
         $annotations->add(new Annotation($name, [], $parse->token->line));
@@ -1387,11 +1527,45 @@ class PHP extends Language {
     }
     $parse->expecting(']', $context);
 
+    // Check if another annotation follows
+    if ('#[' === $parse->token->value) {
+      $parse->forward();
+      goto next;
+    }
+
     return $annotations;
   }
 
+  private function modifier($parse) {
+    static $hooks= ['set' => true];
+
+    $modifier= $parse->token->value;
+    $parse->forward();
+
+    if ('(' === $parse->token->value) {
+      $token= $parse->token;
+      $parse->expecting('(', 'modifiers');
+
+      if (isset($hooks[$parse->token->value])) {
+        $modifier.= '('.$parse->token->value.')';
+        $parse->forward();
+        $parse->expecting(')', 'modifiers');
+      } else {
+        array_unshift($parse->queue, $parse->token);
+        $parse->token= $token;
+      }
+    }
+    return $modifier;
+  }
+
   private function parameters($parse) {
-    static $promotion= ['private' => true, 'protected' => true, 'public' => true];
+    static $promotion= [
+      'private'   => true,
+      'protected' => true,
+      'public'    => true,
+      'readonly'  => true,
+      'final'     => true,
+    ];
 
     $parameters= [];
     while (')' !== $parse->token->value) {
@@ -1404,14 +1578,10 @@ class PHP extends Language {
 
       $line= $parse->token->line;
       if ('name' === $parse->token->kind && isset($promotion[$parse->token->value])) {
-        $promote= $parse->token->value;
-        $parse->forward();
-
-        // It would be better to use an array for promote, but this way we keep BC
-        if ('readonly' === $parse->token->value) {
-          $promote.= ' readonly';
-          $parse->forward();
-        }
+        $promote= [];
+        do {
+          $promote[]= $this->modifier($parse);
+        } while (isset($promotion[$parse->token->value]));
       } else {
         $promote= null;
       }
@@ -1445,7 +1615,30 @@ class PHP extends Language {
         $parse->forward();
         $default= $this->expression($parse, 0);
       }
-      $parameters[]= new Parameter($name, $type, $default, $byref, $variadic, $promote, $annotations, null, $line);
+
+      // Only promoted parameters can have hooks
+      if ($promote) {
+        $property= new Property($promote, $name, $type, null, null, null, $line);
+        if ('{' === $parse->token->value) {
+          $parse->forward();
+          $property->hooks= $this->hooks($parse);
+          $parse->expecting('}', 'property hook');
+        }
+      } else {
+        $property= null;
+      }
+
+      $parameters[]= new Parameter(
+        $name,
+        $type,
+        $default,
+        $byref,
+        $variadic,
+        $property,
+        $annotations,
+        null,
+        $line
+      );
 
       if (')' === $parse->token->value) {
         break;
@@ -1458,6 +1651,29 @@ class PHP extends Language {
       }
     }
     return $parameters;
+  }
+
+  public function scope($parse, $context) {
+    if ('=>' === $parse->token->value) {
+      $parse->forward();
+
+      // BC: Support deprecated arrow block syntax
+      if ('{' === $parse->token->value) {
+        trigger_error('Arrow block syntax `=> { ... }`', E_USER_DEPRECATED);
+        goto block;
+      }
+
+      return $this->expression($parse, 0);
+    } else if ('{' === $parse->token->value) {
+      block: $line= $parse->token->line;
+      $parse->forward();
+      $statements= $this->statements($parse);
+      $parse->expecting('}', $context);
+      return new Block($statements, $line);
+    } else {
+      $parse->expecting('=> or { ... }', $context);
+      return null;
+    }
   }
 
   public function body($id, $func) {
@@ -1480,8 +1696,7 @@ class PHP extends Language {
     $meta= [];
     while ('}' !== $parse->token->value) {
       if (isset($modifier[$parse->token->value])) {
-        $modifiers[]= $parse->token->value;
-        $parse->forward();
+        $modifiers[]= $this->modifier($parse);
       } else if ($f= $this->body[$parse->token->value] ?? $this->body['@'.$parse->token->kind] ?? null) {
         $f($parse, $body, $meta, $modifiers);
         $modifiers= [];
@@ -1498,6 +1713,9 @@ class PHP extends Language {
           'Expected a type, modifier, property, annotation, method or "}", have "%s"',
           $parse->token->symbol->id
         ));
+
+        // Continue parsing the body except on EOF
+        if (null === $parse->token->value) break;
         $parse->forward();
       }
     }
@@ -1524,7 +1742,10 @@ class PHP extends Language {
 
   public function closure($parse, $static) {
     $line= $parse->token->line;
-    $signature= $this->signature($parse);
+
+    $parse->expecting('(', 'signature');
+    $parameters= $this->parameters($parse);
+    $parse->expecting(')', 'signature');
 
     if ('use' === $parse->token->value) {
       $parse->forward();
@@ -1548,11 +1769,15 @@ class PHP extends Language {
       $use= null;
     }
 
-    $parse->expecting('{', 'function');
-    $statements= $this->statements($parse);
-    $parse->expecting('}', 'function');
+    if (':' === $parse->token->value) {
+      $parse->forward();
+      $return= $this->type($parse);
+    } else {
+      $return= null;
+    }
 
-    return new ClosureExpression($signature, $use, $statements, $static, $line);
+    $scope= $this->scope($parse, 'function');
+    return new ClosureExpression(new Signature($parameters, $return, false, $line), $use, $scope, $static, $line);
   }
 
   public function block($parse) {
@@ -1599,6 +1824,7 @@ class PHP extends Language {
 
   public function arguments($parse) {
     $arguments= [];
+    $callable= false;
     while (')' !== $parse->token->value) {
 
       // Named arguments (name: <argument>) vs. positional arguments
@@ -1607,14 +1833,32 @@ class PHP extends Language {
         $parse->forward();
         if (':' === $parse->token->value) {
           $parse->forward();
-          $arguments[$token->value]= $this->expression($parse, 0);
+          $offset= $token->value;
         } else {
           array_unshift($parse->queue, $parse->token);
           $parse->token= $token;
-          $arguments[]= $this->expression($parse, 0);
+          $offset= sizeof($arguments);
         }
       } else {
-        $arguments[]= $this->expression($parse, 0);
+        $offset= sizeof($arguments);
+      }
+
+      if ('?' === $parse->token->value) {
+        $callable= true;
+        $arguments[$offset]= Placeholder::$ARGUMENT;
+        $parse->forward();
+      } else if ('...' === $parse->token->value) {
+        $parse->forward();
+
+        // Resolve ambiguity between unpack and variadic placeholder at the end of arguments
+        if (')' === $parse->token->value || ',' === $parse->token->value) {
+          $callable= true;
+          $arguments[$offset]= Placeholder::$VARIADIC;
+        } else {
+          $arguments[$offset]= new UnpackExpression($this->expression($parse, 0), $parse->token->line);
+        }
+      } else {
+        $arguments[$offset]= $this->expression($parse, 0);
       }
 
       if (',' === $parse->token->value) {
@@ -1626,7 +1870,7 @@ class PHP extends Language {
         break;
       }
     }
-    return $arguments;
+    return [$arguments, $callable];
   }
 
   public function expressions($parse, $end) {
