@@ -1,6 +1,7 @@
 <?php namespace lang\ast\unittest\parse;
 
 use lang\ast\nodes\{NamespaceDeclaration, UseStatement};
+use lang\ast\types\{IsLiteral, IsUnion};
 use test\{Assert, Test};
 
 class NamespacesTest extends ParseTest {
@@ -106,6 +107,14 @@ class NamespacesTest extends ParseTest {
     $this->assertParsed(
       [new UseStatement('const', ['MODIFIER_STATIC' => null], self::LINE)],
       'use const MODIFIER_STATIC;'
+    );
+  }
+
+  #[Test]
+  public function use_type() {
+    $this->assertParsed(
+      [new UseStatement('type', ['Name' => new IsUnion([new IsLiteral('string'), new IsLiteral('null')])], self::LINE)],
+      'use Name = string|null;'
     );
   }
 }
