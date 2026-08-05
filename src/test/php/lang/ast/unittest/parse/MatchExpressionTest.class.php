@@ -8,7 +8,8 @@ use lang\ast\nodes\{
   Block,
   ReturnStatement,
   ThrowExpression,
-  NewExpression
+  NewExpression,
+  Scalar
 };
 use lang\ast\types\IsValue;
 use test\{Assert, Test};
@@ -26,8 +27,8 @@ class MatchExpressionTest extends ParseTest {
   #[Test]
   public function match() {
     $cases= [
-      new MatchCondition([new Literal('0', self::LINE)], new Literal('true', self::LINE), self::LINE),
-      new MatchCondition([new Literal('1', self::LINE)], new Literal('false', self::LINE), self::LINE)
+      new MatchCondition([new Scalar('0', 'integer', self::LINE)], new Literal('true', self::LINE), self::LINE),
+      new MatchCondition([new Scalar('1', 'integer', self::LINE)], new Literal('false', self::LINE), self::LINE)
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('arg', self::LINE), $cases, null, self::LINE)],
@@ -47,7 +48,7 @@ class MatchExpressionTest extends ParseTest {
   #[Test]
   public function match_with_case_block() {
     $cases= [new MatchCondition(
-      [new Literal('0', self::LINE)],
+      [new Scalar('0', 'integer', self::LINE)],
       new Block([new ReturnStatement(new Literal('false', self::LINE), self::LINE)], self::LINE),
       self::LINE
     )];
@@ -77,8 +78,8 @@ class MatchExpressionTest extends ParseTest {
   #[Test]
   public function match_with_trailing_comma() {
     $cases= [
-      new MatchCondition([new Literal('0', self::LINE)], new Literal('true', self::LINE), self::LINE),
-      new MatchCondition([new Literal('1', self::LINE)], new Literal('false', self::LINE), self::LINE)
+      new MatchCondition([new Scalar('0', 'integer', self::LINE)], new Literal('true', self::LINE), self::LINE),
+      new MatchCondition([new Scalar('1', 'integer', self::LINE)], new Literal('false', self::LINE), self::LINE)
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('arg', self::LINE), $cases, null, self::LINE)],
@@ -89,8 +90,16 @@ class MatchExpressionTest extends ParseTest {
   #[Test]
   public function match_with_multiple_cases() {
     $cases= [
-      new MatchCondition([new Literal('0', self::LINE), new Literal('1', self::LINE)], new Literal('true', self::LINE), self::LINE),
-      new MatchCondition([new Literal('2', self::LINE), new Literal('3', self::LINE)], new Literal('false', self::LINE), self::LINE)
+      new MatchCondition(
+        [new Scalar('0', 'integer', self::LINE), new Scalar('1', 'integer', self::LINE)],
+        new Literal('true', self::LINE),
+        self::LINE
+      ),
+      new MatchCondition(
+        [new Scalar('2', 'integer', self::LINE), new Scalar('3', 'integer', self::LINE)],
+        new Literal('false', self::LINE),
+        self::LINE
+      )
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('arg', self::LINE), $cases, null, self::LINE)],
@@ -101,8 +110,8 @@ class MatchExpressionTest extends ParseTest {
   #[Test]
   public function match_with_default() {
     $cases= [
-      new MatchCondition([new Literal('0', self::LINE)], new Literal('true', self::LINE), self::LINE),
-      new MatchCondition([new Literal('1', self::LINE)], new Literal('false', self::LINE), self::LINE)
+      new MatchCondition([new Scalar('0', 'integer', self::LINE)], new Literal('true', self::LINE), self::LINE),
+      new MatchCondition([new Scalar('1', 'integer', self::LINE)], new Literal('false', self::LINE), self::LINE)
     ];
     $this->assertParsed(
       [new MatchExpression(new Variable('arg', self::LINE), $cases, new Literal('null', self::LINE), self::LINE)],

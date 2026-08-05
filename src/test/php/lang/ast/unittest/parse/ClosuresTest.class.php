@@ -9,6 +9,7 @@ use lang\ast\nodes\{
   Literal,
   Parameter,
   ReturnStatement,
+  Scalar,
   Signature,
   Variable
 };
@@ -25,7 +26,7 @@ class ClosuresTest extends ParseTest {
         new BinaryExpression(
           new Variable('a', self::LINE),
           '+',
-          new Literal('1', self::LINE),
+          new Scalar('1', 'integer', self::LINE),
           self::LINE
         ),
         self::LINE

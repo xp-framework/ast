@@ -1,6 +1,6 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{Annotations, Block, ClassDeclaration, Comment, Constant, Literal, Method, Property, Signature};
+use lang\ast\nodes\{Annotations, Block, ClassDeclaration, Comment, Constant, Literal, Method, Property, Scalar, Signature};
 use lang\ast\types\IsValue;
 use test\{Assert, Test};
 
@@ -8,7 +8,7 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function oneline_double_slash() {
-    $this->assertParsed([new Literal('"test"', 3)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 3)], '
       // This is a comment
       "test";
     ');
@@ -16,14 +16,14 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function oneline_double_slash_at_end() {
-    $this->assertParsed([new Literal('"test"', 2)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 2)], '
       "test";  // This is a comment
     ');
   }
 
   #[Test]
   public function two_oneline_double_slash() {
-    $this->assertParsed([new Literal('"test"', 4)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 4)], '
       // This is a comment
       // This is another
       "test";
@@ -32,7 +32,7 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function oneline_hashtag() {
-    $this->assertParsed([new Literal('"test"', 3)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 3)], '
       # This is a comment
       "test";
     ');
@@ -40,14 +40,14 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function oneline_hashtag_at_end() {
-    $this->assertParsed([new Literal('"test"', 2)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 2)], '
       "test";  # This is a comment
     ');
   }
 
   #[Test]
   public function two_oneline_hashtags() {
-    $this->assertParsed([new Literal('"test"', 4)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 4)], '
       # This is a comment
       # This is another
       "test";
@@ -56,7 +56,7 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function oneline_slash_asterisk() {
-    $this->assertParsed([new Literal('"test"', 3)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 3)], '
       /* This is a comment */
       "test";
     ');
@@ -64,21 +64,21 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function oneline_slash_asterisk_at_end() {
-    $this->assertParsed([new Literal('"test"', 2)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 2)], '
       "test";  /* This is a comment */
     ');
   }
 
   #[Test]
   public function oneline_slash_asterisk_inbetween() {
-    $this->assertParsed([new Literal('"before"', 2), new Literal('"after"', 2)], '
+    $this->assertParsed([new Scalar('"before"', 'string', 2), new Scalar('"after"', 'string', 2)], '
       "before"; /* This is a comment */ "after";
     ');
   }
 
   #[Test]
   public function multiline_slash_asterisk() {
-    $this->assertParsed([new Literal('"test"', 5)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 5)], '
       /* This is a comment
        * spanning multiple lines.
        */
@@ -88,7 +88,7 @@ class CommentTest extends ParseTest {
 
   #[Test]
   public function apidoc_comment_at_end_discarded() {
-    $this->assertParsed([new Literal('"test"', 2)], '
+    $this->assertParsed([new Scalar('"test"', 'string', 2)], '
       "test";  /** Discarded */
     ');
   }
@@ -120,7 +120,7 @@ class CommentTest extends ParseTest {
   #[Test]
   public function apidoc_comment_attached_to_next_constant() {
     $class= new ClassDeclaration([], new IsValue('\\T'), null, [], [], null, null, 2);
-    $class->declare(new Constant(['public'], 'FIXTURE', null, new Literal('1', 4), null, new Comment('/** @api */', 3), 4));
+    $class->declare(new Constant(['public'], 'FIXTURE', null, new Scalar('1', 'integer', 4), null, new Comment('/** @api */', 3), 4));
 
     $this->assertParsed([$class], '
       class T {

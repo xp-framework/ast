@@ -10,6 +10,7 @@ use lang\ast\nodes\{
   Literal,
   Parameter,
   ReturnStatement,
+  Scalar,
   Signature,
   Variable,
   YieldExpression,
@@ -50,7 +51,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function single_expression_function() {
-    $scope= new Literal('"A"', self::LINE);
+    $scope= new Scalar('"A"', 'string', self::LINE);
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], null, false, self::LINE), $scope, self::LINE)],
       'function a() => "A";'
@@ -176,7 +177,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function generator_with_value() {
-    $yield= new YieldExpression(null, new Literal('1', self::LINE), self::LINE);
+    $yield= new YieldExpression(null, new Scalar('1', 'integer', self::LINE), self::LINE);
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], null, false, self::LINE), new Block([$yield], self::LINE), self::LINE)],
       'function a() { yield 1; }'
@@ -185,7 +186,7 @@ class FunctionsTest extends ParseTest {
 
   #[Test]
   public function generator_with_key_and_value() {
-    $yield= new YieldExpression(new Literal('"number"', self::LINE), new Literal('1', self::LINE), self::LINE);
+    $yield= new YieldExpression(new Scalar('"number"', 'string', self::LINE), new Scalar('1', 'integer', self::LINE), self::LINE);
     $this->assertParsed(
       [new FunctionDeclaration('a', new Signature([], null, false, self::LINE), new Block([$yield], self::LINE), self::LINE)],
       'function a() { yield "number" => 1; }'
@@ -220,7 +221,7 @@ class FunctionsTest extends ParseTest {
     $yield= new Assignment(
       new Variable('value', self::LINE),
       '=',
-      new YieldExpression(null, new Braced(new Literal('1', self::LINE), self::LINE), self::LINE),
+      new YieldExpression(null, new Braced(new Scalar('1', 'integer', self::LINE), self::LINE), self::LINE),
       self::LINE
     );
     $this->assertParsed(
@@ -263,7 +264,7 @@ class FunctionsTest extends ParseTest {
     $yield= new Assignment(
       new Variable('value', self::LINE),
       '=',
-      new ArrayLiteral([[new YieldExpression(null, null, self::LINE), new Literal('1', self::LINE)]], self::LINE),
+      new ArrayLiteral([[new YieldExpression(null, null, self::LINE), new Scalar('1', 'integer', self::LINE)]], self::LINE),
       self::LINE
     );
     $this->assertParsed(

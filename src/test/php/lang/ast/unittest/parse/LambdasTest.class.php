@@ -1,6 +1,17 @@
 <?php namespace lang\ast\unittest\parse;
 
-use lang\ast\nodes\{BinaryExpression, Block, InvokeExpression, LambdaExpression, Literal, Parameter, ReturnStatement, Signature, Variable};
+use lang\ast\nodes\{
+  BinaryExpression,
+  Block,
+  InvokeExpression,
+  LambdaExpression,
+  Literal,
+  Parameter,
+  ReturnStatement,
+  Signature,
+  Scalar,
+  Variable
+};
 use test\{Assert, Before, Test};
 
 class LambdasTest extends ParseTest {
@@ -8,7 +19,12 @@ class LambdasTest extends ParseTest {
 
   #[Before]
   public function expression() {
-    $this->expression= new BinaryExpression(new Variable('a', self::LINE), '+', new Literal('1', self::LINE), self::LINE);
+    $this->expression= new BinaryExpression(
+      new Variable('a', self::LINE),
+      '+',
+      new Scalar('1', 'integer', self::LINE),
+      self::LINE
+    );
     $this->parameter= new Parameter('a', null, null, false, false, null, null, null, self::LINE);
   }
 
