@@ -346,26 +346,22 @@ class PHP extends Language {
       [$arguments, $callable]= $this->arguments($parse);
       $parse->expecting(')', 'new arguments');
 
+      // Anonymous classes
+      if (null === $type) {
+        $class= $this->class($parse, null, null, [], $parse->token->line);
+        $class->annotations= $annotations;
+        $new= new NewClassExpression($class, null, $token->line);
+      } else {
+        $new= new NewExpression($type, null, $token->line);
+      }
+
       // Resolve ambiguity by looking ahead: `new T(...)` which is a first-class
       // callable reference vs. `new T(...$it)` - a call with an unpacked argument
       if ($callable) {
-        if (null === $type) {
-          $class= $this->class($parse, null);
-          $class->annotations= $annotations;
-          $new= new NewClassExpression($class, null, $token->line);
-        } else {
-          $new= new NewExpression($type, null, $token->line);
-        }
-
         return new CallableNewExpression($new, $arguments, $token->line);
-      }
-
-      if (null === $type) {
-        $class= $this->class($parse, null);
-        $class->annotations= $annotations;
-        return new NewClassExpression($class, $arguments, $token->line);
       } else {
-        return new NewExpression($type, $arguments, $token->line);
+        $new->arguments= $arguments;
+        return $new;
       }
     });
 
@@ -911,7 +907,47 @@ class PHP extends Language {
       $parse->comment= null;
       $name= $this->type($parse, false);
 
-      return $this->class($parse, $name, $comment);
+      // Primary constructors
+      if ('(' === $parse->token->value) {
+        $parse->expecting('(', 'class');
+        $parameters= $this->parameters($parse);
+        $parse->expecting(')', 'class');
+
+        // Check for call to parent constructor via `extends B(...)`:
+        $parent= null;
+        $statements= [];
+        if ('extends' === $parse->token->value) {
+          $parse->forward();
+          $parent= $this->type($parse, false);
+
+          if ('(' === $parse->token->value) {
+            $parse->expecting('(', 'base arguments');
+            [$arguments, $callable]= $this->arguments($parse);
+            $parse->expecting(')', 'base arguments');
+            $statements= [new ScopeExpression('parent', new InvokeExpression(
+              new Literal('__construct'),
+              $arguments
+            ))];
+          }
+        }
+
+        $constructor= new Method(
+          ['public'],
+          '__construct',
+          new Signature($parameters, null, false, $token->line),
+          new Block($statements, $token->line),
+          null,
+          $comment,
+          $token->line,
+        );
+        $class= $this->class($parse, $name, $comment, [], $token->line);
+        $class->body= ['__construct()' => $constructor] + $class->body;
+        $class->parent= $parent;
+      } else {
+        $class= $this->class($parse, $name, $comment, [], $token->line);
+      }
+
+      return $class;
     });
 
     $this->stmt('interface', function($parse, $token) {
@@ -1751,8 +1787,7 @@ class PHP extends Language {
     }
   }
 
-  public function class($parse, $name, $comment= null, $modifiers= []) {
-    $line= $parse->token->line;
+  public function class($parse, $name, $comment= null, $modifiers= [], $line= null) {
     $parent= null;
     if ('extends' === $parse->token->value) {
       $parse->forward();

@@ -2,16 +2,21 @@
 
 use lang\ast\Errors;
 use lang\ast\nodes\{
+  Block,
   ClassDeclaration,
   InterfaceDeclaration,
   EnumDeclaration,
   EnumCase,
+  Method,
   NamespaceDeclaration,
+  Parameter,
+  Property,
+  Signature,
   TraitDeclaration,
   UseExpression,
   Literal
 };
-use lang\ast\types\IsValue;
+use lang\ast\types\{IsValue, IsLiteral};
 use test\{Assert, Expect, Test};
 
 class TypesTest extends ParseTest {
@@ -171,6 +176,32 @@ class TypesTest extends ParseTest {
         C::c insteadof B;
       }
     }');
+  }
+
+  #[Test]
+  public function primary_constructor() {
+    $lo= new Property(['public'], 'lo', new IsLiteral('int'), null, null, null, self::LINE);
+    $hi= new Property(['public'], 'hi', new IsLiteral('int'), null, null, null, self::LINE);
+    $class= new ClassDeclaration([], new IsValue('\\Range'), null, [], [], null, null, self::LINE);
+    $class->declare(new Method(
+      ['public'],
+      '__construct',
+      new Signature(
+        [
+          new Parameter('lo', new IsLiteral('int'), null, false, false, $lo, null, null, self::LINE),
+          new Parameter('hi', new IsLiteral('int'), null, false, false, $hi, null, null, self::LINE),
+        ],
+        null,
+        false,
+        self::LINE
+      ),
+      new Block([], self::LINE),
+      null,
+      null,
+      self::LINE
+    ));
+
+    $this->assertParsed([$class], 'class Range(public int $lo, public int $hi) { }');
   }
 
   #[Test]
