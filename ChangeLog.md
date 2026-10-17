@@ -3,6 +3,10 @@ XP AST ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 13.1.0 / 2026-10-17
+
+* Implemented PR #48: Implement generic method syntax - @thekid
+
 ## 13.0.1 / 2026-08-01
 
 * Added forward-compatible refactoring for xp-framework/core#367
