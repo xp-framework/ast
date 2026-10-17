@@ -442,4 +442,15 @@ class MembersTest extends ParseTest {
 
     $this->assertParsed([$class], 'class A { public function __construct(private(set) int $a) { } }');
   }
+
+  #[Test]
+  public function generic_method() {
+    $signature= new Signature([], null, false, self::LINE);
+    $signature->generic= [new IsValue('T')];
+
+    $class= new ClassDeclaration([], new IsValue('\\A'), null, [], [], null, null, self::LINE);
+    $class->declare(new Method(['public'], 'a', $signature, [], null, null, self::LINE));
+
+    $this->assertParsed([$class], 'class A { public function a<T>() { } }');
+  }
 }

@@ -3,6 +3,7 @@
 use lang\ast\nodes\{
   CallableExpression,
   CallableNewExpression,
+  Generic,
   NewExpression,
   InstanceExpression,
   InvokeExpression,
@@ -12,7 +13,7 @@ use lang\ast\nodes\{
   Placeholder,
   Variable
 };
-use lang\ast\types\IsValue;
+use lang\ast\types\{IsValue, IsLiteral, IsGeneric, IsNullable};
 use test\{Assert, Test};
 
 /**
@@ -141,6 +142,58 @@ class InvokeTest extends ParseTest {
         self::LINE
       )],
       'str_replace("test", "ok", subject: ?);'
+    );
+  }
+
+  #[Test]
+  public function invoke_generic_method() {
+    $instance= new InstanceExpression(
+      new Variable('this', self::LINE),
+      new Generic('test', [new IsLiteral('string')], self::LINE),
+      self::LINE
+    );
+    $this->assertParsed(
+      [new InvokeExpression($instance, [], self::LINE)],
+      '$this->test<string>();'
+    );
+  }
+
+  #[Test]
+  public function invoke_generic_static_method() {
+    $invoke= new InvokeExpression(
+      new Generic('test', [new IsLiteral('string')], self::LINE),
+      [],
+      self::LINE
+    );
+    $this->assertParsed(
+      [new ScopeExpression('self', $invoke, self::LINE)],
+      'self::test<string>();'
+    );
+  }
+
+  #[Test]
+  public function invoke_with_nested_generic() {
+    $invoke= new InvokeExpression(
+      new Generic('test', [new IsGeneric('List', [new IsLiteral('string')])], self::LINE),
+      [],
+      self::LINE
+    );
+    $this->assertParsed(
+      [new ScopeExpression('self', $invoke, self::LINE)],
+      'self::test<List<string>>();'
+    );
+  }
+
+  #[Test]
+  public function invoke_with_nullable_generic() {
+    $invoke= new InvokeExpression(
+      new Generic('test', [new IsNullable(new IsLiteral('string'))], self::LINE),
+      [],
+      self::LINE
+    );
+    $this->assertParsed(
+      [new ScopeExpression('self', $invoke, self::LINE)],
+      'self::test<?string>();'
     );
   }
 
